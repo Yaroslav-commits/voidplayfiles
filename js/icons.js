@@ -1,0 +1,36 @@
+// Иконки интерфейса (inline SVG, цвет через currentColor)
+const s = (body, vb = '0 0 24 24', extra = '') =>
+  `<svg viewBox="${vb}" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" ${extra}>${body}</svg>`;
+
+export const icon = {
+  star: s('<path fill="currentColor" d="M12 2.2l2.95 6.2 6.8.82-5.02 4.68 1.3 6.73L12 17.3l-6.03 3.33 1.3-6.73L2.25 9.22l6.8-.82L12 2.2z"/>'),
+  starLine: s('<path stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M12 3.2l2.6 5.5 6 .73-4.43 4.13 1.15 5.94L12 16.56l-5.32 2.94 1.15-5.94L3.4 9.43l6-.73L12 3.2z"/>'),
+  gear: s('<path stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M10.3 2.8h3.4l.5 2.4c.6.2 1.1.5 1.6.9l2.3-.8 1.7 2.9-1.8 1.6c.1.6.1 1.2 0 1.8l1.8 1.6-1.7 2.9-2.3-.8c-.5.4-1 .7-1.6.9l-.5 2.4h-3.4l-.5-2.4c-.6-.2-1.1-.5-1.6-.9l-2.3.8-1.7-2.9 1.8-1.6a5.7 5.7 0 010-1.8L4.2 8.2l1.7-2.9 2.3.8c.5-.4 1-.7 1.6-.9l.5-2.4z"/><circle cx="12" cy="11.6" r="2.8" stroke="currentColor" stroke-width="2"/>'),
+  home: s('<path fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M4 10.2L12 3.5l8 6.7V20a1 1 0 01-1 1h-4.5v-6h-5v6H5a1 1 0 01-1-1v-9.8z"/>'),
+  leaders: s('<path stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" d="M3.5 21v-6.5h5.5V21M9 21V10.5h6V21M15 21v-8h5.5V21M2.5 21h19"/><path fill="currentColor" d="M12 2.5l1 2 2 .3-1.5 1.4.4 2L12 7.2l-1.9 1 .4-2L9 4.8l2-.3 1-2z"/>'),
+  profile: s('<circle cx="12" cy="7.5" r="4" stroke="currentColor" stroke-width="1.9"/><path stroke="currentColor" stroke-width="1.9" stroke-linecap="round" d="M4.5 21c.6-4 3.6-6.5 7.5-6.5s6.9 2.5 7.5 6.5"/>'),
+  close: s('<path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M7 7l10 10M17 7L7 17"/>'),
+  question: s('<path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M9 9.2a3 3 0 115.2 2c-.9.9-2.2 1.4-2.2 3"/><circle cx="12" cy="18.2" r="1.3" fill="currentColor"/>'),
+  plusCircle: s('<circle cx="12" cy="12" r="10" fill="currentColor"/><path stroke="#ff6a86" stroke-width="2.4" stroke-linecap="round" d="M12 7.5v9M7.5 12h9"/>'),
+  share: s('<circle cx="18" cy="5.5" r="3" fill="currentColor"/><circle cx="6" cy="12" r="3" fill="currentColor"/><circle cx="18" cy="18.5" r="3" fill="currentColor"/><path stroke="currentColor" stroke-width="2" d="M8.6 10.6l6.8-3.7M8.6 13.4l6.8 3.7"/>'),
+  arrowRight: s('<path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h13M13 6l6 6-6 6"/>'),
+  chevronRight: s('<path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>'),
+  chevronUp: s('<path fill="currentColor" d="M12 6l8 10H4l8-10z"/>'),
+  search: s('<circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2.4"/><path stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M15.5 15.5L20 20"/>'),
+  copy: s('<rect x="8" y="8" width="12" height="12" rx="2.5" fill="currentColor" stroke="currentColor" stroke-width="1.6"/><path stroke="currentColor" stroke-width="1.6" d="M16 5.5V5a1.5 1.5 0 00-1.5-1.5H5A1.5 1.5 0 003.5 5v9.5A1.5 1.5 0 005 16h.5"/>'),
+  clock: s('<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 7v5l3 2"/>'),
+  sound: s('<path fill="currentColor" d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M15.5 9a4.2 4.2 0 010 6M18 6.5a7.8 7.8 0 010 11"/>'),
+  lang: s('<path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M3.5 5.5h9M8 3.5v2M6 5.5c.8 3 2.8 5.2 5.5 6.5M10.5 5.5c-.7 3-2.6 5.6-6 7.2M12.5 20.5l3.8-9 3.8 9M13.8 17.5h5"/>'),
+  doc: s('<path stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M6 3h8.5L19 7.5V20a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M8.5 12h7M8.5 15.5h7M8.5 8.5h3"/>'),
+  wallet: s('<path fill="currentColor" fill-rule="evenodd" d="M4 5.5A2.5 2.5 0 016.5 3h11A2.5 2.5 0 0120 5.5V7H6.5a.75.75 0 000 1.5H20v10A2.5 2.5 0 0117.5 21h-11A2.5 2.5 0 014 18.5v-13zM16.5 12.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/>'),
+  ton: s('<path fill="currentColor" d="M5.6 4h12.8c1.7 0 2.8 1.9 1.9 3.4l-7.2 12.3a1.3 1.3 0 01-2.2 0L3.7 7.4C2.8 5.9 3.9 4 5.6 4zm5.5 2.2H6.3c-.4 0-.6.4-.4.8l5.2 9.1V6.2zm1.8 0v9.9l5.2-9.1c.2-.4 0-.8-.4-.8h-4.8z"/>'),
+  diamond: s('<path fill="currentColor" d="M7 3.5h10l4.5 5.5L12 21 2.5 9 7 3.5zm.9 2L5.7 8.2h3.6l1.2-2.7H7.9zm4.1 0l-1.2 2.7h2.4L12 5.5zm1.5 0l1.2 2.7h3.6l-2.2-2.7h-2.6zM5.9 10l4.8 6.2L9 10H5.9zm4.9 0L12 15l1.2-5h-2.4zm4.2 0l-1.7 6.2 4.8-6.2H15z"/>'),
+  dollar: s('<path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M12 3v18M16.5 7.5c-.6-1.4-2.3-2.3-4.5-2.3-2.6 0-4.3 1.3-4.3 3.2 0 4.5 9 2.3 9 7 0 2-1.9 3.4-4.7 3.4-2.4 0-4.2-1-4.8-2.6"/>'),
+  cardIn: s('<rect x="2.5" y="5" width="19" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" d="M2.5 9.5h19"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M6 15h4"/><path d="M17 12.5v5M14.5 15h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'),
+  cardOut: s('<rect x="2.5" y="5" width="19" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" d="M2.5 9.5h19"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M6 15h4M14.5 15h5"/>'),
+  people: s('<circle cx="9" cy="8" r="3.5" fill="currentColor"/><path fill="currentColor" d="M2.5 19c.4-3.6 3-6 6.5-6s6.1 2.4 6.5 6h-13z"/><circle cx="16.5" cy="8.5" r="2.8" fill="currentColor" opacity=".75"/><path fill="currentColor" opacity=".75" d="M16 13c3 0 5.2 2.1 5.5 5.2h-4.8c-.2-2-1-3.8-2.4-5 .5-.1 1.1-.2 1.7-.2z"/>'),
+  link: s('<path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M10 14a4.2 4.2 0 006 0l3-3a4.2 4.2 0 00-6-6l-1.2 1.2M14 10a4.2 4.2 0 00-6 0l-3 3a4.2 4.2 0 006 6l1.2-1.2"/>'),
+  levels: s('<path fill="currentColor" d="M4 14h4v7H4zM10 9h4v12h-4zM16 3h4v18h-4z"/>'),
+  live: s('<path fill="currentColor" d="M3 3l8 5-8 5V3z"/>', '0 0 12 16'),
+  support: s('<path stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" d="M4 12a8 8 0 1116 0v4.5a2 2 0 01-2 2h-1.5V12H20M4 12h3.5v6.5H6a2 2 0 01-2-2V12z"/>'),
+};
