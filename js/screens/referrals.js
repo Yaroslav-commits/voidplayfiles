@@ -2,12 +2,12 @@
 import { api } from '../api.js';
 import { t } from '../i18n.js';
 import { icon } from '../icons.js';
-import { esc, fmt, img, sound, starIco } from '../ui.js';
-import { copyRef, openLevels, LEVELS, levelCard } from '../sheets.js';
+import { esc, fmt, img, sound, starIco, avatarHtml, tgAttr } from '../ui.js';
+import { copyRef, openLevels, levels, levelCard } from '../sheets.js';
 
 export function render(root) {
   const r = api.state.referrals;
-  const L = LEVELS[Math.max(0, r.level - 1)];
+  const L = levels()[Math.max(0, r.level - 1)] || levels()[0];
   root.innerHTML = `
     <section class="rcard">
       <span class="blob" style="left:168px;top:57px;width:206px;height:122px;background:#677df9"></span>
@@ -38,7 +38,7 @@ export function render(root) {
     <section class="rcard">
       <div class="rlist__h"><div class="rcard__h"><span class="ico">${icon.people}</span>${t('ref.all')}</div><span>${t('ref.total', { n: r.count })}</span></div>
       ${r.list.length
-        ? r.list.map((f) => `<div class="rrow"><span class="rrow__u"><i></i>${esc(f.name)}</span><span class="rrow__v">${starIco()}${fmt(f.earned)}</span></div>`).join('')
+        ? r.list.map((f) => `<div class="rrow" ${tgAttr(f)}><span class="rrow__u">${avatarHtml(f, api.avatarUrl(f), 'rrow__ava')}${esc(f.username ? '@' + f.username : f.name)}</span><span class="rrow__v">${starIco()}${fmt(f.earned)}</span></div>`).join('')
         : `<div class="rrow rrow--empty">${t('ref.none')}</div>`}
     </section>`;
 

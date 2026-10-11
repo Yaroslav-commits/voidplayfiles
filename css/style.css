@@ -36,9 +36,8 @@ img { display: block; max-width: 100%; }
 
 /* фоновый дудл-паттерн */
 .bg-pattern {
-  position: fixed; inset: -20%; z-index: 0; pointer-events: none; opacity: .03;
-  background: url("../assets/img/bg-pattern.svg") center / 1030px auto repeat;
-  transform: rotate(-13deg);
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .03;
+  background: url("../assets/img/bg-pattern.svg") center top / 1186px auto repeat;
 }
 
 /* ===================== Загрузка ===================== */
@@ -556,3 +555,30 @@ img { display: block; max-width: 100%; }
 @media (min-width: 420px) {
   .pcard { margin-left: auto; margin-right: auto; max-width: 302px; }
 }
+
+/* ===================== Игроки: аватарки и переход в ЛС ===================== */
+.ava { display: block; flex: none; border-radius: 50%; object-fit: cover; background: #3a3a3a; }
+[data-tg] { cursor: pointer; }
+.win-item { font: inherit; color: inherit; background: none; border: 0; border-right: 1px solid rgba(76, 76, 76, .15); cursor: pointer; padding: 5px 0 0; }
+.win-item .win-item__ava { position: absolute; top: 3px; right: 3px; width: 15px; height: 15px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1.5px #171718; }
+.wins__empty { flex: 1; display: grid; place-items: center; padding: 0 12px; font-size: 12px; color: var(--muted); text-align: center; }
+.player { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 4px 6px 6px; }
+.player__ava { width: 88px; height: 88px; border: 2px solid #fff; margin-bottom: 4px; }
+.player__name { font-weight: 700; font-size: 20px; }
+.player__user { font-weight: 500; font-size: 16px; color: var(--blue); }
+.player__win { width: 100%; margin-top: 8px; padding: 10px 12px; border-radius: 15px; background: #222223; box-shadow: var(--inset); display: flex; align-items: center; gap: 12px; font-size: 15px; color: #d2d2d2; }
+.player__win img { width: 48px; height: 48px; object-fit: contain; }
+.player__win b { color: #fff; }
+.player__win em { display: inline-flex; align-items: center; gap: 3px; margin-left: 6px; font-style: normal; font-weight: 700; color: var(--gold); }
+.player__win em .ico { font-size: 12px; }
+.player__dm { height: 40px; margin-top: 8px; font-weight: 700; font-size: 15px; }
+.player__dm:disabled { opacity: .5; }
+.rrow__ava { width: 18px; height: 18px; }
+.pod .pod__ava { width: 24px; height: 24px; margin-top: 10px; object-fit: cover; }
+.pod__u { max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pod--empty { opacity: .4; }
+.lrow .lrow__ava { width: 34px; height: 34px; object-fit: cover; }
+.lrow__nick { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lead-empty { margin-top: 30px; text-align: center; color: var(--muted); font-size: 15px; }
+.sub__heroimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+.sub__hero.has-img .sub__orb, .sub__hero.has-img .sub__pill, .sub__hero.has-img::before { display: none; }

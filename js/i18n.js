@@ -80,6 +80,16 @@ const dict = {
     'lead.season': 'СЕЗОН {n}', 'lead.active': 'активный', 'lead.members': '{n} участников', 'lead.until': 'до {d}',
     'lead.d': 'ДН', 'lead.h': 'Ч', 'lead.m': 'МИН', 'lead.s': 'СЕК', 'lead.how': 'Как это работает', 'lead.howText': 'Призы, оборот, сроки сезона',
     'lead.update': 'Обновление рейтинга через {n} дня',
+    // API / новое
+    'err.already': 'Уже получено', 'err.notFound': 'Не найдено', 'err.notReady': 'Задание ещё не выполнено',
+    'err.badAmount': 'Неверная сумма', 'err.checkFailed': 'Не удалось проверить подписку, попробуй позже',
+    'err.auth': 'Открой приложение через бота', 'err.banned': 'Аккаунт заблокирован',
+    'tx.bonus': 'Бонус', 'tx.ref': 'Реферальный бонус',
+    'player.dm': 'Написать в ЛС', 'player.won': 'выиграл(а)', 'player.noUser': 'У игрока нет юзернейма',
+    'pay.paid': 'Оплата прошла!', 'pay.wdSent': 'Заявка на вывод отправлена', 'pay.minWd': 'Минимум для вывода: {n}',
+    'pay.starsOnly': 'Пока доступна оплата только звёздами',
+    'demo': 'Демо-режим: бэкенд не подключён',
+    'lead.empty': 'В этом сезоне ещё никто не играл', 'feed.empty': 'Здесь появятся выигрыши игроков',
   },
   en: {
     'loader.welcome': 'Welcome 2 Void Play',
@@ -151,6 +161,15 @@ const dict = {
     'lead.season': 'SEASON {n}', 'lead.active': 'active', 'lead.members': '{n} players', 'lead.until': 'until {d}',
     'lead.d': 'D', 'lead.h': 'H', 'lead.m': 'MIN', 'lead.s': 'SEC', 'lead.how': 'How it works', 'lead.howText': 'Prizes, turnover, season dates',
     'lead.update': 'Rating updates in {n} days',
+    'err.already': 'Already claimed', 'err.notFound': 'Not found', 'err.notReady': 'Task is not completed yet',
+    'err.badAmount': 'Invalid amount', 'err.checkFailed': 'Could not check subscription, try later',
+    'err.auth': 'Open the app via the bot', 'err.banned': 'Account banned',
+    'tx.bonus': 'Bonus', 'tx.ref': 'Referral bonus',
+    'player.dm': 'Message', 'player.won': 'won', 'player.noUser': 'This player has no username',
+    'pay.paid': 'Payment received!', 'pay.wdSent': 'Withdrawal request sent', 'pay.minWd': 'Minimum withdrawal: {n}',
+    'pay.starsOnly': 'Only Stars payments are available for now',
+    'demo': 'Demo mode: backend is not connected',
+    'lead.empty': 'Nobody has played this season yet', 'feed.empty': 'Players\' wins will appear here',
   },
 };
 

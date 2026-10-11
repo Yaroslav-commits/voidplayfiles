@@ -1,8 +1,8 @@
 // Точка входа: загрузка → шапка/навигация → роутер → модалка подписки
-import { api, initUser } from './api.js';
+import { api, letterAvatar } from './api.js';
 import { t, setLang } from './i18n.js';
 import { icon } from './icons.js';
-import { $, esc, fmt, img, sound, haptic, prefs, tg, initLayers } from './ui.js';
+import { $, esc, fmt, sound, haptic, prefs, tg, initLayers, toast } from './ui.js';
 import { openPay, openSettings, openSubscribe } from './sheets.js';
 import { startRouter, render as rerender, go, onRoute, NAV_OF } from './router.js';
 import { GAMES } from './screens/home.js';
@@ -13,7 +13,7 @@ if (tg) {
   try { tg.setHeaderColor('#171718'); tg.setBackgroundColor('#171718'); tg.disableVerticalSwipes?.(); } catch (e) { /* ignore */ }
 }
 setLang(prefs.get('lang') || (tg?.initDataUnsafe?.user?.language_code === 'en' ? 'en' : 'ru'));
-initUser();
+window.__letterAvatar = letterAvatar;
 document.querySelector('.loader__welcome').textContent = t('loader.welcome');
 
 // ---------- Шапка ----------
@@ -22,7 +22,7 @@ function drawHead() {
   $('#head').innerHTML = `
     <button class="head__balance" id="balBtn"><span class="head__coin">${icon.star}</span><span id="balVal">${fmt(api.state.balance.stars)}</span></button>
     <button class="head__btn" id="setBtn" aria-label="settings">${icon.gear}</button>
-    <button class="head__ava" id="avaBtn" aria-label="profile">${u.photo ? img(u.photo) : '<span></span>'}</button>`;
+    <button class="head__ava" id="avaBtn" aria-label="profile"><img src="${esc(api.avatarUrl(u))}" alt="" onerror="this.replaceWith(document.createElement('span'))" /></button>`;
   $('#balBtn').addEventListener('click', () => { sound(); haptic(); openPay('dep'); });
   $('#setBtn').addEventListener('click', () => { sound(); openSettings({ onLang: relocalize }); });
   $('#avaBtn').addEventListener('click', () => { sound(); go('profile'); });
@@ -46,7 +46,8 @@ function relocalize() { drawHead(); rerender(); }
 
 // ---------- Загрузка: прогресс = предзагрузка картинок ----------
 const PRELOAD = [
-  'assets/img/logo.png', 'assets/img/nft/pepe.png', 'assets/img/promo-art.png', 'assets/img/deco/calendar.png', 'assets/img/deco/bear.png',
+  'assets/img/logo.png', 'assets/img/bg-pattern.svg', 'assets/img/nft/pepe.png', 'assets/img/promo-art.png', 'assets/img/deco/calendar.png', 'assets/img/deco/bear.png',
+  'assets/img/deco/deco-0259.png', 'assets/img/deco/deco-0251.png', 'assets/img/sub-hero.png',
   ...GAMES.map((g) => `assets/img/games/${g.id}.png`),
 ];
 function boot() {
@@ -60,7 +61,9 @@ function boot() {
     const target = Math.max(done / total, 0.15) * 100;
     shown += (target - shown) * 0.25; fill.style.width = `${Math.min(100, shown)}%`;
   }, 60);
-  Promise.all([Promise.race([Promise.all(loads), new Promise((r) => setTimeout(r, 6000))]), minTime]).then(() => {
+  // вход на сервер (initData) идёт параллельно с загрузкой картинок
+  const auth = api.init().catch(() => false);
+  Promise.all([Promise.race([Promise.all(loads), new Promise((r) => setTimeout(r, 6000))]), minTime, auth]).then(([, , live]) => {
     clearInterval(anim); fill.style.width = '100%';
     setTimeout(() => {
       $('#loader').classList.add('is-done');
@@ -69,6 +72,7 @@ function boot() {
       setTimeout(() => $('#loader').remove(), 500);
       // Модалка подписки — при каждом входе, пока не выполнено условие
       if (!api.state.subscribed) setTimeout(openSubscribe, 500);
+      if (!live && tg?.initData) setTimeout(() => toast(t('demo'), 'error'), 1200);
     }, 250);
   });
 }

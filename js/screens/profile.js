@@ -6,7 +6,7 @@ import { icon } from '../icons.js';
 import { starsBg } from '../decor.js';
 import { esc, fmt, img, sound, toast, haptic, openLink } from '../ui.js';
 import { openAddGift, openInventory, shareRef, connectWallet } from '../sheets.js';
-import { go } from '../router.js';
+import { go, current } from '../router.js';
 
 // фон карточки — россыпь слова статуса (Figma: Frame 145, opacity 4%)
 function words(word) {
@@ -20,7 +20,7 @@ const dt = (ts) => { const d = new Date(ts); return `${pad(d.getDate())}.${pad(d
 const curIco = (c) => (c === 'TON' ? icon.ton : c === 'USD' ? icon.dollar : icon.starLine);
 
 export function txRow(x) {
-  const plus = x.type === 'win' || x.type === 'dep';
+  const plus = ['win', 'dep', 'bonus', 'ref'].includes(x.type);
   const title = t(`tx.${x.type}`);
   const meta = x.game ? `“${esc(x.game)}”<i></i>${esc(x.item || '')}` : `<i></i>${esc(x.currency || '')}`;
   const amt = `${plus ? '+' : '-'}${fmt(x.amount)}`;
@@ -33,7 +33,8 @@ export function txRow(x) {
     <div class="tx__r">${right}</div></div>`;
 }
 
-export function render(root) {
+export function render(root, fresh = false) {
+  if (api.live && !fresh) api.refresh().then(() => current() === 'profile' && render(root, true)).catch(() => {});
   const st = api.state; const u = st.user;
   const inv = st.inventory;
   const initial = (u.name || '?').trim()[0]?.toUpperCase() || '?';
@@ -41,7 +42,7 @@ export function render(root) {
   root.innerHTML = `
     <section class="pcard">
       <div class="pcard__words">${words(t('prof.status'))}</div>
-      <div class="pcard__ava">${u.photo ? img(u.photo) : `<b>${esc(initial)}</b>`}</div>
+      <div class="pcard__ava"><img src="${esc(api.avatarUrl(u))}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'${esc(initial)}'}))" /></div>
       <div class="pcard__name">${esc(u.name)}${u.username ? `<span class="pcard__user">@${esc(u.username)}</span>` : ''}</div>
       <div class="pcard__status"><span>${t('prof.status')}</span><button id="stHelp" aria-label="?">${icon.question}</button></div>
     </section>

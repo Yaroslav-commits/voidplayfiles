@@ -156,3 +156,28 @@ export function initLayers() {
 }
 
 export const soonToast = () => toast(t('common.soonToast'));
+
+// ---------- Игроки: аватар и переход в ЛС ----------
+// Любой элемент с data-tg="username" по тапу открывает личку игрока в Telegram
+export const tgAttr = (u) => (u?.username ? `data-tg="${esc(u.username)}"` : '');
+export function avatarHtml(u, src, cls = '') {
+  return `<img class="ava ${cls}" src="${esc(src)}" alt="" loading="lazy" ${tgAttr(u)} onerror="this.onerror=null;this.src=window.__letterAvatar?window.__letterAvatar(${JSON.stringify(String(u?.name || u?.username || '?')).replace(/"/g, '&quot;')},${Number(u?.id) || 0}):''" />`;
+}
+export function openUser(username) {
+  if (!username) return;
+  sound(); haptic();
+  openLink(`https://t.me/${String(username).replace(/^@/, '')}`);
+}
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-tg]');
+  if (el) { e.stopPropagation(); openUser(el.dataset.tg); }
+}, true);
+
+// ---------- Ошибки API → понятный тост ----------
+export function errToast(e) {
+  const map = {
+    no_stars: 'toast.noStars', already: 'err.already', not_found: 'err.notFound', not_ready: 'err.notReady',
+    bad_amount: 'err.badAmount', not_subscribed: 'sub.notYet', check_failed: 'err.checkFailed', auth: 'err.auth', banned: 'err.banned',
+  };
+  toast(t(map[e?.code] || 'common.error'), 'error');
+}

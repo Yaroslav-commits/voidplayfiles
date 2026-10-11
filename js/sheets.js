@@ -1,18 +1,16 @@
-// Шторки и модалки: пополнение/вывод, настройки, подписка, подарки, промокод и т.д.
+// Шторки и модалки: пополнение/вывод, настройки, подписка, подарки, промокод, игрок и т.д.
 import { api } from './api.js';
 import { CONFIG } from './config.js';
 import { t, setLang, getLang } from './i18n.js';
 import { icon } from './icons.js';
-import { sheet, modal, toast, sound, haptic, esc, fmt, img, starIco, prefs, openLink, soonToast, tg } from './ui.js';
+import { sheet, modal, toast, sound, haptic, esc, fmt, img, starIco, prefs, openLink, soonToast, errToast, avatarHtml, openUser, tg } from './ui.js';
 
 const balanceChanged = () => document.dispatchEvent(new Event('balance'));
 
-// ---------- Пополнение / вывод (Frame 198 / 199) ----------
+// ---------- Пополнение / вывод (Frame 198 / 199). 1 ⭐ в игре = 1 Telegram Star ----------
 export function openPay(mode = 'dep') {
   const st = api.state;
-  const PACKS = [{ s: 100, b: 5 }, { s: 500, b: 50 }, { s: 1000, b: 150 }];
-  const TON_BONUS = 5; // +N% при пополнении в TON
-  let amount = 0, pack = null;
+  let amount = 0, pack = null, busy = false;
 
   const body = () => {
     const dep = mode === 'dep';
@@ -30,8 +28,8 @@ export function openPay(mode = 'dep') {
         <div class="pay__label">${t(dep ? 'pay.depAmount' : 'pay.wdAmount')}</div>
         <label class="field"><input id="payIn" inputmode="numeric" placeholder="${t('pay.sum')}" value="${amount || ''}" /><span class="ico">${icon.star}</span></label>
         ${dep ? `<div class="pay__packs-title">${t('pay.packs')}</div>
-        <div class="packs">${PACKS.map((p, i) => `<button class="pack ${pack === i ? 'is-sel' : ''}" data-p="${i}">${fmt(p.s)}<span class="pack__bonus">+${p.b}${starIco()}</span></button>`).join('')}</div>` : ''}
-        <button class="method method--ton" data-pay="ton"><span class="ico">${icon.diamond}</span>${ton}<span class="method__badge">+${TON_BONUS}%</span></button>
+        <div class="packs">${st.packs.map((p, i) => `<button class="pack ${pack === i ? 'is-sel' : ''}" data-p="${i}">${fmt(p.stars)}${p.bonus ? `<span class="pack__bonus">+${fmt(p.bonus)}${starIco()}</span>` : ''}</button>`).join('')}</div>` : ''}
+        <button class="method method--ton" data-pay="ton"><span class="ico">${icon.diamond}</span>${ton}</button>
         <button class="method method--stars" data-pay="stars"><span class="ico">${icon.star}</span>${stars}</button>
         ${dep ? `<button class="method method--usd" data-pay="usd"><span class="ico">${icon.dollar}</span>${usd}</button>` : ''}
       </div>`;
@@ -45,25 +43,27 @@ export function openPay(mode = 'dep') {
   function wire(el) {
     el.querySelectorAll('[data-m]').forEach((b) => b.addEventListener('click', () => { sound('tick'); mode = b.dataset.m; pack = null; redraw(); }));
     el.querySelector('#payIn').addEventListener('input', (e) => { amount = parseInt(e.target.value.replace(/\D/g, ''), 10) || 0; pack = null; redraw(true); });
-    el.querySelectorAll('[data-p]').forEach((b) => b.addEventListener('click', () => { sound('tick'); pack = +b.dataset.p; amount = PACKS[pack].s; redraw(); }));
+    el.querySelectorAll('[data-p]').forEach((b) => b.addEventListener('click', () => { sound('tick'); pack = +b.dataset.p; amount = st.packs[pack].stars; redraw(); }));
     el.querySelectorAll('[data-pay]').forEach((b) => b.addEventListener('click', async () => {
       sound(); haptic();
+      if (busy) return;
       if (!amount) return toast(t('pay.min'), 'error');
       const method = b.dataset.pay;
-      if (mode === 'dep') {
-        // TODO бэкенд: stars → tg.openInvoice(link), ton → TON Center, usd → CryptoBot
-        const bonus = (pack !== null ? PACKS[pack].b : 0) + (method === 'ton' ? Math.round(amount * TON_BONUS / 100) : 0);
-        await api.deposit({ method, stars: amount });
-        st.balance.stars += amount + bonus;
-        st.transactions.unshift({ type: 'dep', currency: method === 'ton' ? 'TON' : method === 'usd' ? 'USD' : 'STARS', amount: amount + bonus, date: Date.now() });
-        balanceChanged(); toast(t('toast.gotStars', { n: fmt(amount + bonus) }), 'success'); s.close();
-      } else {
-        const r = await api.withdraw({ method, stars: amount });
-        if (!r.ok) return toast(t('toast.noStars'), 'error');
-        st.balance.stars -= amount;
-        st.transactions.unshift({ type: 'wd', currency: method === 'ton' ? 'TON' : 'STARS', amount, date: Date.now() });
-        balanceChanged(); toast(`-${fmt(amount)} Stars`, 'success'); s.close();
-      }
+      // TON и $ подключим позже — сейчас только Telegram Stars
+      if (method !== 'stars') return toast(t('pay.starsOnly'));
+      busy = true;
+      try {
+        if (mode === 'dep') {
+          const r = await api.deposit(amount);
+          if (r.ok) { balanceChanged(); toast(r.credited ? t('toast.gotStars', { n: fmt(r.credited) }) : t('pay.paid'), 'success'); s.close(); }
+        } else {
+          const min = api.cfg('minWithdraw', 100);
+          if (amount < min) { busy = false; return toast(t('pay.minWd', { n: min }), 'error'); }
+          await api.withdraw(amount, method);
+          balanceChanged(); toast(t('pay.wdSent'), 'success'); s.close();
+        }
+      } catch (e) { errToast(e); }
+      busy = false;
     }));
   }
 }
@@ -89,16 +89,18 @@ export function openSettings({ onLang } = {}) {
     sound('tick'); prefs.set('lang', b.dataset.l); setLang(b.dataset.l); s.close(); onLang && onLang();
   }));
   el.querySelector('#terms').addEventListener('click', () => { sound(); openLink(CONFIG.TERMS_URL); });
-  el.querySelector('#support').addEventListener('click', () => { sound(); openLink(CONFIG.SUPPORT_URL); });
+  el.querySelector('#support').addEventListener('click', () => { sound(); openLink(api.cfg('supportUrl', CONFIG.SUPPORT_URL)); });
 }
 
-// ---------- Подписка на канал за 15 Stars (Frame 523) ----------
+// ---------- Подписка на канал (Frame 523) ----------
 export function openSubscribe() {
-  const n = CONFIG.SUBSCRIBE_REWARD;
+  const n = api.cfg('subscribeReward', CONFIG.SUBSCRIBE_REWARD);
   const orb = (x, y, sz, o) => `<span class="sub__orb" style="left:${x}%;top:${y}%;width:${sz}px;height:${sz}px;opacity:${o}">${icon.star}</span>`;
   let waiting = false;
   const m = modal(`
-    <div class="sub__hero">${orb(-4, 30, 70, .9)}${orb(78, 46, 72, .9)}${orb(52, -22, 52, .55)}
+    <div class="sub__hero">
+      <img class="sub__heroimg" src="assets/img/sub-hero.png" alt="" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()" />
+      ${orb(-4, 30, 70, .9)}${orb(78, 46, 72, .9)}${orb(52, -22, 52, .55)}
       <div class="sub__pill"><span class="ico">${icon.star}</span>${n}</div></div>
     <div class="sub__title">${t('sub.title', { n })}</div>
     <div class="steps">
@@ -112,23 +114,27 @@ export function openSubscribe() {
   async function check() {
     if (!waiting) return; waiting = false;
     btn.disabled = true; btn.textContent = t('sub.checking');
-    const r = await api.checkSubscription();
-    if (r.ok) { balanceChanged(); toast(t('toast.gotStars', { n: r.reward }), 'success'); m.close(); }
-    else { btn.disabled = false; btn.textContent = t('sub.btn'); toast(t('sub.notYet'), 'error'); }
+    try {
+      const r = await api.checkSubscription();
+      balanceChanged();
+      if (r.reward) toast(t('toast.gotStars', { n: r.reward }), 'success');
+      m.close();
+    } catch (e) {
+      btn.disabled = false; btn.textContent = t('sub.btn'); errToast(e);
+    }
   }
-  function onBack() { if (document.visibilityState === 'visible') setTimeout(check, 400); }
+  function onBack() { if (document.visibilityState === 'visible') setTimeout(check, 600); }
   document.addEventListener('visibilitychange', onBack);
   btn.addEventListener('click', () => {
     sound(); haptic();
-    waiting = true; openLink(CONFIG.CHANNEL_URL);
-    // если вкладка не уходила в фон (браузер/десктоп) — проверяем через 4 c
-    setTimeout(check, 4000);
+    waiting = true; openLink(api.cfg('channelUrl', CONFIG.CHANNEL_URL));
+    setTimeout(check, 5000);
   });
 }
 
 // ---------- Как добавить подарок (Frame 424) ----------
 export function openAddGift() {
-  const acc = CONFIG.GIFTS_ACCOUNT;
+  const acc = api.cfg('giftsAccount', CONFIG.GIFTS_ACCOUNT);
   const s = sheet(`
     <div class="gift-add">
       <div class="gift-add__title">${t('gift.title')}</div>
@@ -162,15 +168,26 @@ export function openInventory() {
     : `<div class="inv__box is-empty" style="width:100%">${t('common.empty')}</div>`}`);
 }
 
+// ---------- Карточка игрока (из LIVE-ленты) ----------
+export function openPlayer(win) {
+  const u = win.user || {};
+  const s = sheet(`
+    <div class="player">
+      ${avatarHtml(u, api.avatarUrl(u), 'player__ava')}
+      <div class="player__name">${esc(u.name || u.username)}</div>
+      ${u.username ? `<div class="player__user">@${esc(u.username)}</div>` : ''}
+      ${win.gift ? `<div class="player__win">${img(win.gift.img)}<span>${t('player.won')} <b>${esc(win.gift.name)}</b><em>${fmt(win.price ?? win.gift.price)}${starIco()}</em></span></div>` : ''}
+      <button class="btn-blue player__dm" id="dmBtn" ${u.username ? '' : 'disabled'}>${u.username ? t('player.dm') : t('player.noUser')}</button>
+    </div>`);
+  s.el.querySelector('#dmBtn').addEventListener('click', () => openUser(u.username));
+}
+
 // ---------- Реферальные уровни (Frame 496) ----------
-export const LEVELS = [
-  { n: 1, pct: 5, from: 0, g1: '#ffbbb9', g2: '#ff9696' },
-  { n: 2, pct: 7, from: 1000, g1: '#ff7c00', g2: '#ff7c00' },
-  { n: 3, pct: 10, from: 5000, g1: '#e552ff', g2: '#e253ff' },
-  { n: 4, pct: 12, from: 15000, g1: '#4d96ce', g2: '#fff1c3' },
-  { n: 5, pct: 15, from: 50000, g1: '#ffcc00', g2: '#ffc300' },
-  { n: 6, pct: 20, from: 150000, g1: '#6cf967', g2: '#11ff00' },
-];
+const GLOWS = [['#ffbbb9', '#ff9696'], ['#ff7c00', '#ff7c00'], ['#e552ff', '#e253ff'], ['#4d96ce', '#fff1c3'], ['#ffcc00', '#ffc300'], ['#6cf967', '#11ff00']];
+export function levels() {
+  const L = api.state.levels || [{ n: 1, pct: 5, from: 0 }, { n: 2, pct: 7, from: 1000 }, { n: 3, pct: 10, from: 5000 }, { n: 4, pct: 12, from: 15000 }, { n: 5, pct: 15, from: 50000 }, { n: 6, pct: 20, from: 150000 }];
+  return L.map((x, i) => ({ ...x, g1: GLOWS[i % 6][0], g2: GLOWS[i % 6][1] }));
+}
 export const levelCard = (L, imgSrc = `assets/img/levels/${L.n}.png`) => `
   <div class="lvl">
     <span class="lvl__glow1" style="background:${L.g1}"></span><span class="lvl__glow2" style="background:${L.g2}"></span>
@@ -178,7 +195,7 @@ export const levelCard = (L, imgSrc = `assets/img/levels/${L.n}.png`) => `
     <div class="lvl__txt"><b>${t('ref.levelN', { n: L.n })}</b><span>${t('ref.percent', { n: L.pct })}</span><small>${t('ref.from', { n: fmt(L.from) })}</small></div>
   </div>`;
 export function openLevels() {
-  sheet(`<div class="sheet__title">${t('ref.levels')}</div><div class="levels">${LEVELS.map((L) => levelCard(L)).join('')}</div>`);
+  sheet(`<div class="sheet__title">${t('ref.levels')}</div><div class="levels">${levels().map((L) => levelCard(L)).join('')}</div>`);
 }
 
 // ---------- Промокод ----------
@@ -193,16 +210,18 @@ export function openPromo() {
   s.el.querySelector('#promoGo').addEventListener('click', async () => {
     sound();
     if (!inp.value.trim()) return;
-    const r = await api.activatePromo(inp.value);
-    if (r.ok) { balanceChanged(); toast(t('toast.gotStars', { n: r.reward }), 'success'); s.close(); }
-    else toast(t('promo.invalid'), 'error');
+    try {
+      const reward = await api.activatePromo(inp.value);
+      balanceChanged(); toast(t('toast.gotStars', { n: reward }), 'success'); s.close();
+    } catch (e) {
+      if (e.code === 'not_found') toast(t('promo.invalid'), 'error'); else errToast(e);
+    }
   });
 }
 
-// ---------- Поделиться реферальной ссылкой ----------
+// ---------- Реферальная ссылка ----------
 export function shareRef() {
-  const link = api.refLink();
-  const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(t('prof.shareText'))}`;
+  const url = `https://t.me/share/url?url=${encodeURIComponent(api.refLink())}&text=${encodeURIComponent(t('prof.shareText'))}`;
   openLink(url);
 }
 
@@ -216,7 +235,7 @@ export async function copyRef() {
 }
 
 // ---------- Кошелёк TON ----------
-// TODO: подключение через TON Connect (@tonconnect/ui), проверка платежей — через TON Center API на бэке
+// TODO: TON Connect (@tonconnect/ui) + проверка платежей через TON Center на бэке
 export function connectWallet() { soonToast(); }
 
 export { tg };

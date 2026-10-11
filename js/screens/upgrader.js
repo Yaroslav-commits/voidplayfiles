@@ -3,7 +3,7 @@ import { api } from '../api.js';
 import { t } from '../i18n.js';
 import { icon } from '../icons.js';
 import { starsBg, choiceShape } from '../decor.js';
-import { esc, fmt, img, sound, toast, haptic, starIco } from '../ui.js';
+import { esc, fmt, img, sound, toast, haptic, starIco, errToast } from '../ui.js';
 import { openAddGift, openNftPicker } from '../sheets.js';
 
 const S = { tab: 'stars', stake: 0, gift: null, target: null, q: '', spinning: false, rot: 0 };
@@ -152,8 +152,10 @@ export function render(root) {
     if (S.tab === 'stars' && v > st.balance.stars) { sound('lose'); return toast(t('toast.noStars'), 'error'); }
     S.spinning = true; drawChoices(); sound(); haptic('medium');
     const ring = $('#ring'); ring.classList.remove('is-win', 'is-lose');
-    const res = await api.upgrade({ stakeStars: S.tab === 'stars' ? v : 0, stakeGift: S.tab === 'gifts' ? S.gift : null, target: S.target });
-    if (!res.ok) { S.spinning = false; drawChoices(); return toast(t('toast.noStars'), 'error'); }
+    let res;
+    try {
+      res = await api.upgrade({ stakeStars: S.tab === 'stars' ? v : 0, stakeGift: S.tab === 'gifts' ? S.gift : null, target: S.target });
+    } catch (e) { S.spinning = false; drawChoices(); return errToast(e); }
     document.dispatchEvent(new Event('balance'));
     // Сектор выигрыша — от 0° (верх) по часовой до chance*360°. Стрелка изначально внизу (180°)
     const sector = res.chance * 360;
