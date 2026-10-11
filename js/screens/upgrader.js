@@ -5,6 +5,7 @@ import { icon } from '../icons.js';
 import { starsBg, choiceShape } from '../decor.js';
 import { esc, fmt, img, sound, toast, haptic, starIco, errToast } from '../ui.js';
 import { openAddGift, openNftPicker } from '../sheets.js';
+import { winReveal } from '../fx.js';
 
 const S = { tab: 'stars', stake: 0, gift: null, target: null, q: '', spinning: false, rot: 0 };
 
@@ -151,7 +152,7 @@ export function render(root) {
     if (!v) return toast(t('toast.pickStake'), 'error');
     if (S.tab === 'stars' && v > st.balance.stars) { sound('lose'); return toast(t('toast.noStars'), 'error'); }
     S.spinning = true; drawChoices(); sound(); haptic('medium');
-    const ring = $('#ring'); ring.classList.remove('is-win', 'is-lose');
+    const ring = $('#ring'); ring.classList.remove('is-win', 'is-lose', 'is-shake'); ring.classList.add('is-spinning');
     let res;
     try {
       res = await api.upgrade({ stakeStars: S.tab === 'stars' ? v : 0, stakeGift: S.tab === 'gifts' ? S.gift : null, target: S.target });
@@ -167,9 +168,11 @@ export function render(root) {
     let ticks = 0; const tk = setInterval(() => { if (++ticks > 18) clearInterval(tk); sound('tick'); }, 180);
     setTimeout(() => {
       S.spinning = false;
+      const won = S.target;
+      ring.classList.remove('is-spinning');
       ring.classList.add(res.win ? 'is-win' : 'is-lose');
-      sound(res.win ? 'win' : 'lose');
-      toast(t(res.win ? 'toast.win' : 'toast.lose'), res.win ? 'win' : 'lose');
+      if (res.win) { toast(t('toast.win'), 'win'); winReveal(won); }
+      else { ring.classList.add('is-shake'); sound('lose'); haptic('error'); toast(t('toast.lose'), 'lose'); }
       if (S.tab === 'gifts') S.gift = null;
       if (S.tab === 'stars') S.stake = Math.min(S.stake, Math.floor(st.balance.stars));
       drawBet(); drawChoices();

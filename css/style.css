@@ -582,3 +582,90 @@ img { display: block; max-width: 100%; }
 .lead-empty { margin-top: 30px; text-align: center; color: var(--muted); font-size: 15px; }
 .sub__heroimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
 .sub__hero.has-img .sub__orb, .sub__hero.has-img .sub__pill, .sub__hero.has-img::before { display: none; }
+
+/* ===================== «Имбы»: эффекты ===================== */
+.fx-confetti { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 400; pointer-events: none; }
+
+/* баланс в шапке */
+#balVal { display: inline-block; transition: color .3s; font-variant-numeric: tabular-nums; }
+#balVal.is-bump { color: #ffce00; animation: bump .5s ease; }
+#balVal.is-drop { color: #ff4d6d; }
+@keyframes bump { 40% { transform: scale(1.3); } }
+.head__coin { box-shadow: 0 0 0 0 rgba(242, 193, 29, .6); animation: coinPulse 3s ease-in-out infinite; }
+@keyframes coinPulse { 50% { box-shadow: 0 0 14px 2px rgba(242, 193, 29, .45); } }
+
+/* карточки игр: появление лесенкой и блик */
+.game { animation: tileIn .55s cubic-bezier(.2, .8, .2, 1) both; }
+.game:nth-child(2) { animation-delay: .05s; } .game:nth-child(3) { animation-delay: .1s; } .game:nth-child(4) { animation-delay: .15s; }
+.game:nth-child(5) { animation-delay: .2s; } .game:nth-child(6) { animation-delay: .25s; } .game:nth-child(7) { animation-delay: .3s; } .game:nth-child(8) { animation-delay: .35s; }
+@keyframes tileIn { from { opacity: 0; transform: translateY(18px) scale(.96); } }
+.game::after {
+  content: ""; position: absolute; inset: -20%; pointer-events: none;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, .22) 50%, transparent 60%);
+  transform: translateX(-120%); animation: shine 7s ease-in-out infinite;
+}
+.game:nth-child(even)::after { animation-delay: 1.2s; }
+.game:nth-child(3n)::after { animation-delay: 2.4s; }
+@keyframes shine { 0%, 70% { transform: translateX(-120%); } 85%, 100% { transform: translateX(120%); } }
+.game:active::after { animation: none; transform: translateX(0); }
+
+/* декор баннеров плавает */
+.slide__deco { animation: floaty 5s ease-in-out infinite; }
+.slide__deco:nth-of-type(2) { animation-duration: 6.5s; animation-delay: -2s; }
+.slide__deco:nth-of-type(3) { animation-duration: 4.2s; animation-delay: -1s; }
+@keyframes floaty { 50% { translate: 0 -7px; } }
+.slide__btn { overflow: hidden; position: absolute; }
+.slide__btn::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .25) 50%, transparent 65%); transform: translateX(-120%); animation: shine 5s ease-in-out infinite 1s; }
+
+/* нажатия */
+.btn-blue, .btn-dark, .btn-pink, .btn-white, .method, .pack, .nav__item, .head__balance, .head__btn, .slide__btn, .promo__btn, .invite__btn, .invite__share, .invite__more, .task__btn, .bet__btns button, .bet__wide { transition: transform .12s ease, filter .2s; }
+.btn-blue:active, .btn-dark:active, .btn-pink:active, .btn-white:active, .method:active, .pack:active, .nav__item:active, .head__balance:active, .head__btn:active, .slide__btn:active, .promo__btn:active, .invite__btn:active, .invite__share:active, .invite__more:active, .task__btn:active, .bet__btns button:active, .bet__wide:active { transform: scale(.95); }
+.btn-pink { animation: pinkGlow 2.4s ease-in-out infinite; }
+@keyframes pinkGlow { 50% { box-shadow: 0 0 22px rgba(255, 77, 109, .55), inset 0 1px 0 rgba(255, 255, 255, .35); } }
+
+/* апгрейдер: свечение кнопки, вращение, тряска */
+.up__go:not(:disabled) { animation: goGlow 2.2s ease-in-out infinite; }
+@keyframes goGlow { 50% { box-shadow: 0 0 26px rgba(0, 51, 255, .65); border-color: rgba(163, 181, 255, .6); } }
+.up__go:not(:disabled):active { transform: translateX(-50%) scale(.95); }
+.ring.is-spinning .ring__outer { animation: ringPulse .6s ease-in-out infinite; }
+@keyframes ringPulse { 50% { box-shadow: 0 0 34px rgba(48, 161, 245, .75), inset 0 0 4px 2px rgba(255, 255, 255, .25); } }
+.ring.is-shake { animation: shake .45s cubic-bezier(.36, .07, .19, .97); }
+@keyframes shake { 20%, 60% { transform: translateX(calc(-50% - 7px)); } 40%, 80% { transform: translateX(calc(-50% + 7px)); } }
+.ring__inner { transition: background .3s; }
+.ring.is-win .ring__inner { background: radial-gradient(circle, #1f5a2a, #2a2a2a 70%); }
+.ring.is-lose .ring__inner { background: radial-gradient(circle, #5a1f2a, #2a2a2a 70%); }
+.choice__img { animation: floaty 4s ease-in-out infinite; }
+
+/* окно выигрыша */
+.win-reveal { position: fixed; inset: 0; z-index: 350; display: grid; place-items: center; padding: 24px; background: rgba(5, 8, 20, .78); backdrop-filter: blur(6px); opacity: 0; transition: opacity .3s; overflow: hidden; }
+.win-reveal.is-open { opacity: 1; }
+.win-reveal__rays { position: absolute; left: 50%; top: 42%; width: 900px; height: 900px; margin: -450px 0 0 -450px; border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(48, 161, 245, .28) 0 7deg, transparent 7deg 20deg);
+  -webkit-mask: radial-gradient(circle, #000 10%, transparent 62%); mask: radial-gradient(circle, #000 10%, transparent 62%);
+  animation: spinRays 14s linear infinite; }
+@keyframes spinRays { to { transform: rotate(360deg); } }
+.win-reveal__card { position: relative; width: min(100%, 300px); padding: 26px 20px 18px; border-radius: 26px; text-align: center;
+  background: linear-gradient(180deg, rgba(48, 161, 245, .25), rgba(0, 51, 255, .12) 60%, rgba(23, 23, 24, .9)), #1b1b1d;
+  border: 1px solid rgba(255, 255, 255, .18); box-shadow: 0 20px 60px rgba(0, 51, 255, .35), inset 0 0 18px rgba(255, 255, 255, .06);
+  transform: scale(.6) translateY(30px); transition: transform .5s cubic-bezier(.2, 1.4, .3, 1); }
+.win-reveal.is-open .win-reveal__card { transform: none; }
+.win-reveal__glow { position: absolute; left: 50%; top: 70px; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 206, 0, .55), transparent 65%); filter: blur(10px); animation: glowPulse 1.8s ease-in-out infinite; }
+@keyframes glowPulse { 50% { transform: scale(1.15); opacity: .7; } }
+.win-reveal__img { position: relative; width: 150px; height: 150px; object-fit: contain; margin: 0 auto; animation: winPop .8s cubic-bezier(.2, 1.5, .3, 1) both .15s, floaty 3s ease-in-out infinite 1s; filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .5)); }
+@keyframes winPop { from { transform: scale(.2) rotate(-25deg); opacity: 0; } }
+.win-reveal__label { position: relative; margin-top: 10px; font-family: var(--font-brand); font-weight: 600; font-size: 13px; letter-spacing: 1px; color: #7fd0ff; text-transform: uppercase; }
+.win-reveal__name { position: relative; margin-top: 6px; font-family: var(--font-brand); font-weight: 600; font-size: 24px; }
+.win-reveal__price { position: relative; margin-top: 6px; display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; background: rgba(255, 206, 0, .14); color: #ffce00; font-weight: 800; font-size: 18px; }
+.win-reveal__price .ico { font-size: 15px; }
+.win-reveal__btn { position: relative; display: block; width: 100%; height: 44px; margin-top: 18px; border-radius: 15px; background: var(--blue-grad); font-weight: 700; font-size: 17px; box-shadow: 0 6px 20px rgba(0, 51, 255, .45); }
+
+/* LIVE: новый выигрыш подсвечивается */
+.win-item.is-new { animation: slideIn .45s cubic-bezier(.2, .8, .2, 1), newGlow 1.6s ease-out; }
+@keyframes newGlow { 0% { background: rgba(48, 161, 245, .35); } 100% { background: transparent; } }
+
+/* шторки с пружинкой */
+.sheet { transition: transform .38s cubic-bezier(.2, 1.15, .3, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

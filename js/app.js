@@ -4,6 +4,7 @@ import { t, setLang } from './i18n.js';
 import { icon } from './icons.js';
 import { $, esc, fmt, sound, haptic, prefs, tg, initLayers, toast } from './ui.js';
 import { openPay, openSettings, openSubscribe } from './sheets.js';
+import { countUp } from './fx.js';
 import { startRouter, render as rerender, go, onRoute, NAV_OF } from './router.js';
 import { GAMES } from './screens/home.js';
 
@@ -20,7 +21,7 @@ document.querySelector('.loader__welcome').textContent = t('loader.welcome');
 function drawHead() {
   const u = api.state.user;
   $('#head').innerHTML = `
-    <button class="head__balance" id="balBtn"><span class="head__coin">${icon.star}</span><span id="balVal">${fmt(api.state.balance.stars)}</span></button>
+    <button class="head__balance" id="balBtn"><span class="head__coin">${icon.star}</span><span id="balVal" data-v="${api.state.balance.stars}">${fmt(api.state.balance.stars)}</span></button>
     <button class="head__btn" id="setBtn" aria-label="settings">${icon.gear}</button>
     <button class="head__ava" id="avaBtn" aria-label="profile"><img src="${esc(api.avatarUrl(u))}" alt="" onerror="this.replaceWith(document.createElement('span'))" /></button>`;
   $('#balBtn').addEventListener('click', () => { sound(); haptic(); openPay('dep'); });
@@ -29,8 +30,7 @@ function drawHead() {
 }
 document.addEventListener('balance', () => {
   const el = $('#balVal'); if (!el) return;
-  el.textContent = fmt(api.state.balance.stars);
-  el.animate([{ transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 300 });
+  countUp(el, api.state.balance.stars);
 });
 
 // ---------- Нижнее меню ----------

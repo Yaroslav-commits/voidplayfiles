@@ -15,14 +15,16 @@
 2. На GitHub: **Settings → Pages → Deploy from a branch → main, папка `/ (root)`** → Save.
 3. Через минуту сайт: `https://<ник>.github.io/voidplay-webapp/` — этот адрес нужен бэкенду (`WEBAPP_URL`).
 
-## Картинки из Figma (один раз)
+## Картинки из Figma — кнопкой на GitHub (один раз)
 
-1. Figma → аватарка → **Settings → Security → Personal access tokens** → создать токен (права *File content: Read*).
-2. В папке репозитория:
-   ```bash
-   python tools/figma_export.py ТВОЙ_ТОКЕН
-   ```
-3. Картинки появятся в `assets/img/` → `git add . && git commit -m "images" && git push`.
+1. Figma → аватарка → **Settings → Security → Personal access tokens** → создать токен (права *File content: Read only*), скопировать.
+2. В репозитории на GitHub: **Settings → Secrets and variables → Actions → New repository secret**
+   Name: `FIGMA_TOKEN`, Secret: вставить токен → Add secret.
+3. Вкладка **Actions** → слева «Картинки из Figma» → **Run workflow**.
+4. Через минуту в репозитории появится коммит «Картинки из Figma», GitHub Pages обновится сам.
+
+Поменял картинки в Figma — снова нажми Run workflow.
+(Можно и с компа: `python tools/figma_export.py ТОКЕН`.)
 
 ## Связь с бэкендом
 

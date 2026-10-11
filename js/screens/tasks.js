@@ -1,6 +1,7 @@
 // Задания (Figma: tasks + Frame 525/526). Список заданий потом придёт с бэка
 import { api } from '../api.js';
 import { current } from '../router.js';
+import { confetti } from '../fx.js';
 import { t } from '../i18n.js';
 import { icon } from '../icons.js';
 import { esc, sound, toast, haptic, starIco, errToast } from '../ui.js';
@@ -29,7 +30,7 @@ export function render(root) {
         const reward = await api.claimTask(b.dataset.claim);
         sound('win'); haptic('success');
         document.dispatchEvent(new Event('balance'));
-        toast(t('toast.gotStars', { n: reward }), 'success');
+        toast(t('toast.gotStars', { n: reward }), 'success'); confetti({ count: 80 });
       } catch (e) { errToast(e); }
       draw();
     }));

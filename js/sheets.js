@@ -3,6 +3,7 @@ import { api } from './api.js';
 import { CONFIG } from './config.js';
 import { t, setLang, getLang } from './i18n.js';
 import { icon } from './icons.js';
+import { confetti } from './fx.js';
 import { sheet, modal, toast, sound, haptic, esc, fmt, img, starIco, prefs, openLink, soonToast, errToast, avatarHtml, openUser, tg } from './ui.js';
 
 const balanceChanged = () => document.dispatchEvent(new Event('balance'));
@@ -55,7 +56,7 @@ export function openPay(mode = 'dep') {
       try {
         if (mode === 'dep') {
           const r = await api.deposit(amount);
-          if (r.ok) { balanceChanged(); toast(r.credited ? t('toast.gotStars', { n: fmt(r.credited) }) : t('pay.paid'), 'success'); s.close(); }
+          if (r.ok) { balanceChanged(); toast(r.credited ? t('toast.gotStars', { n: fmt(r.credited) }) : t('pay.paid'), 'success'); s.close(); confetti(); }
         } else {
           const min = api.cfg('minWithdraw', 100);
           if (amount < min) { busy = false; return toast(t('pay.minWd', { n: min }), 'error'); }
@@ -117,7 +118,7 @@ export function openSubscribe() {
     try {
       const r = await api.checkSubscription();
       balanceChanged();
-      if (r.reward) toast(t('toast.gotStars', { n: r.reward }), 'success');
+      if (r.reward) { toast(t('toast.gotStars', { n: r.reward }), 'success'); confetti(); }
       m.close();
     } catch (e) {
       btn.disabled = false; btn.textContent = t('sub.btn'); errToast(e);

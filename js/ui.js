@@ -150,6 +150,10 @@ export function modal(html, { closeDelay = 0, onClose, cls = '', onMount } = {})
   return entry;
 }
 
+export function closeAll() {
+  while (stack.length) stack[stack.length - 1].close();
+}
+
 export function initLayers() {
   $('#overlay').addEventListener('click', closeTop);
   tg?.BackButton?.onClick(() => closeTop());

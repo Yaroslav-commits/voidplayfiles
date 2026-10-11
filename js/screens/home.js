@@ -6,6 +6,7 @@ import { icon } from '../icons.js';
 import { esc, fmt, img, sound, toast, soonToast, starIco, haptic, errToast } from '../ui.js';
 import { openPay, openPromo, shareRef, connectWallet, openPlayer } from '../sheets.js';
 import { go } from '../router.js';
+import { confetti } from '../fx.js';
 
 const D = 'assets/img/deco/';
 // Декор слайдов: [файл, x, y, w, h, rotation°, opacity] — координаты из Figma (Section 1)
@@ -141,7 +142,7 @@ export function render(root) {
       try {
         const reward = await api.claimDaily();
         document.dispatchEvent(new Event('balance'));
-        toast(t('toast.gotStars', { n: reward }), 'success');
+        toast(t('toast.gotStars', { n: reward }), 'success'); confetti({ y: 0.25, count: 90 });
       } catch (err) {
         if (err.code === 'already') toast(t('bonus.daily.taken'), 'error'); else errToast(err);
       }

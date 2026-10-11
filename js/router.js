@@ -5,6 +5,7 @@ import * as profile from './screens/profile.js';
 import * as referrals from './screens/referrals.js';
 import * as tasks from './screens/tasks.js';
 import * as leaders from './screens/leaders.js';
+import { closeAll } from './ui.js';
 
 const ROUTES = { home, upgrader, profile, referrals, tasks, leaders };
 // к какому пункту нижнего меню относится экран
@@ -20,6 +21,7 @@ export function render() {
   let name = current();
   if (!ROUTES[name]) name = 'home';
   if (typeof cleanup === 'function') cleanup();
+  closeAll();
   const root = document.getElementById('screen');
   root.style.animation = 'none'; void root.offsetWidth; root.style.animation = '';
   cleanup = ROUTES[name].render(root);
