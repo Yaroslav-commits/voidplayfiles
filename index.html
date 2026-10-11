@@ -10,20 +10,107 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- ===== Экран загрузки (Figma: frame «load», 380×456) — стили целиком здесь ===== -->
+  <style>
+    #loader {
+      position: fixed; inset: 0; z-index: 100; overflow: hidden;
+      background: #171718; color: #fff;
+      font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      transition: opacity .45s ease;
+    }
+    #loader.is-done { opacity: 0; pointer-events: none; }
+
+    /* дудл-паттерн: мини-НЛО, повёрнуто на 13° */
+    #loader .vpl-pattern { position: absolute; inset: -30%; width: 160%; height: 160%; }
+
+    /* сцена держит пропорции макета: ширина 380, логотип сверху, полоска снизу */
+    #loader .vpl-stage {
+      position: relative; z-index: 1; height: 100%; max-width: 380px; margin: 0 auto;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: env(safe-area-inset-top, 0px) 31px calc(31px + env(safe-area-inset-bottom, 0px));
+    }
+    #loader .vpl-brand { position: relative; height: 140px; }
+    /* тёмная подложка под надписью (Figma: Rectangle 3, blur 7.5) */
+    #loader .vpl-brand::before {
+      content: ""; position: absolute; left: 50%; top: 95px; width: 282px; height: 59px; transform: translateX(-50%);
+      background: #171718; filter: blur(7.5px);
+    }
+    #loader .vpl-logo {
+      position: absolute; left: 50%; top: -15px; width: 120px; height: 120px; margin-left: -60px;
+      filter: drop-shadow(0 0 6px rgba(255, 255, 255, .55)) drop-shadow(0 0 20px rgba(255, 255, 255, .4)) drop-shadow(0 0 38px rgba(255, 255, 255, .22));
+    }
+    #loader .vpl-title {
+      position: absolute; left: 0; right: 0; top: 80px; text-align: center; white-space: nowrap;
+      font-family: "Unbounded", "SF Pro Display", sans-serif; font-weight: 600; font-size: 40px; line-height: 50px;
+      letter-spacing: .2px; color: #f4f4f4;
+    }
+    /* светящаяся полоска под надписью (Figma: Vector под «VOID PLAY») */
+    #loader .vpl-title::after {
+      content: ""; position: absolute; left: 50%; bottom: 3px; width: 250px; height: 5px; transform: translateX(-50%);
+      border-radius: 50%; background: rgba(255, 255, 255, .45); filter: blur(5px); mix-blend-mode: luminosity;
+    }
+
+    /* низ: затемнение, приветствие, полоска загрузки */
+    #loader .vpl-bottom { position: relative; display: flex; flex-direction: column; align-items: center; }
+    #loader .vpl-bottom::before {
+      content: ""; position: absolute; left: -112px; right: -112px; top: -64px; bottom: -72px;
+      background: #171718; filter: blur(25px); z-index: -1;
+    }
+    #loader .loader__welcome { font-weight: 700; font-size: 15px; line-height: 18px; margin-bottom: 28px; }
+    #loader .vpl-bar { position: relative; width: 318px; max-width: 100%; height: 20px; border-radius: 10px; background: #343434; overflow: hidden; }
+    #loader .vpl-fill { height: 100%; width: 0; border-radius: 10px; background: #d9d9d9; transition: width .25s ease; }
+  </style>
 </head>
 <body>
   <!-- Фоновый паттерн (дудлы из Figma) -->
   <div class="bg-pattern" aria-hidden="true"></div>
 
-  <!-- Экран загрузки -->
-  <section id="loader" class="loader">
-    <div class="loader__brand">
-      <img class="loader__logo" src="assets/img/logo.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'loader__logo loader__logo--fallback'}))" />
-      <div class="loader__title">VOID PLAY</div>
-    </div>
-    <div class="loader__bottom">
-      <div class="loader__welcome" data-i18n="loader.welcome">Welcome 2 Void Play</div>
-      <div class="loader__bar"><div class="loader__fill" id="loaderFill"></div></div>
+  <!-- ===== Экран загрузки ===== -->
+  <section id="loader" aria-label="Загрузка">
+    <svg class="vpl-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- мини-НЛО контуром -->
+        <symbol id="vpl-ufo" viewBox="0 0 24 18">
+          <g fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6.6 8.4a5.4 5.4 0 0 1 10.8 0"/>
+            <ellipse cx="12" cy="9.6" rx="10" ry="3.1"/>
+            <path d="M8.2 12.7a4.6 4.6 0 0 0 7.6 0"/>
+          </g>
+        </symbol>
+        <pattern id="vpl-pat" width="50" height="46" patternUnits="userSpaceOnUse" patternTransform="rotate(-13)">
+          <use href="#vpl-ufo" x="3" y="4" width="17" height="13" transform="rotate(-18 11 10)"/>
+          <use href="#vpl-ufo" x="28" y="27" width="17" height="13" transform="rotate(14 36 33)"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#vpl-pat)" opacity=".06"/>
+    </svg>
+
+    <div class="vpl-stage">
+      <div class="vpl-brand">
+        <!-- логотип: «чёрная дыра» с кольцом (Figma: Group 1) -->
+        <svg class="vpl-logo" viewBox="0 0 120 120" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <defs><clipPath id="vpl-top"><rect x="0" y="0" width="120" height="61"/></clipPath></defs>
+          <!-- низ планеты под тарелкой -->
+          <path d="M41.5 69A18.5 12 0 0 0 78.5 69Z" fill="#000" stroke="#000" stroke-width="6.5" stroke-linejoin="round"/>
+          <path d="M43 69A17 10.5 0 0 0 77 69Z" fill="#000" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+          <!-- силуэт тарелки: тонкая чёрная обводка вокруг белого -->
+          <g stroke="#000" stroke-width="4.5" fill="#000">
+            <ellipse cx="60" cy="61" rx="38" ry="10"/>
+            <circle cx="60" cy="59" r="21" clip-path="url(#vpl-top)"/>
+          </g>
+          <ellipse cx="60" cy="61" rx="38" ry="10" fill="#fff"/>
+          <circle cx="60" cy="59" r="21" fill="#fff" clip-path="url(#vpl-top)"/>
+          <!-- чёрный купол -->
+          <path d="M41.5 60A18.5 18.5 0 0 1 78.5 60Q60 66 41.5 60Z" fill="#000"/>
+        </svg>
+        <div class="vpl-title">VOID PLAY</div>
+      </div>
+
+      <div class="vpl-bottom">
+        <div class="loader__welcome" data-i18n="loader.welcome">Welcome 2 Void Play</div>
+        <div class="vpl-bar"><div class="vpl-fill" id="loaderFill"></div></div>
+      </div>
     </div>
   </section>
 
