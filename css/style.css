@@ -1,6 +1,6 @@
 /* ===================== Void Play — стили ===================== */
 :root {
-  --bg: #171718;
+  --bg: #161618;
   --bg-2: #1c1c1c;
   --card: #2a2a2a;
   --card-2: #222223;
@@ -23,7 +23,9 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: var(--font); -webkit-font-smoothing: antialiased; }
+html { background: var(--bg); }
+body { background: url("../assets/img/galaxy-pattern.svg") 0 0 / 124px 124px repeat; }
+html, body { margin: 0; padding: 0; color: #fff; font-family: var(--font); -webkit-font-smoothing: antialiased; }
 body { min-height: 100vh; overflow-x: hidden; }
 body.is-locked { overflow: hidden; }
 button { font: inherit; color: inherit; border: 0; background: none; padding: 0; cursor: pointer; }
@@ -35,10 +37,7 @@ img { display: block; max-width: 100%; }
 .img-missing { visibility: hidden; }
 
 /* фоновый дудл-паттерн */
-.bg-pattern {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .03;
-  background: url("../assets/img/bg-pattern.svg") center top / 1186px auto repeat;
-}
+.bg-pattern { display: none; }
 
 /* ===================== Загрузка ===================== */
 .loader {
@@ -71,10 +70,10 @@ img { display: block; max-width: 100%; }
   display: flex; align-items: center; gap: 12px; height: 40px; padding: 6px 12px; border-radius: 8px;
   background: rgba(41, 41, 41, .75); font-weight: 700; font-size: 15.4px; margin-right: auto;
 }
-.head__coin { width: 28px; height: 28px; border-radius: 8px; background: #f2c11d; color: #fff; display: grid; place-items: center; font-size: 17px; }
-.head__btn { width: 40px; height: 40px; border-radius: 50%; background: #2a2a2a; display: grid; place-items: center; font-size: 22px; }
-.head__ava { width: 40px; height: 40px; border-radius: 50%; padding: 4px; backdrop-filter: blur(6px); }
-.head__ava span, .head__ava img { width: 31px; height: 31px; border-radius: 50%; background: #fff; object-fit: cover; display: block; }
+.head__coin { width: 27.7px; height: 27.7px; border-radius: 7.7px; background: #ddce29; color: #ddce29; display: grid; place-items: center; font-size: 19px; }
+.head__btn { width: 40px; height: 40px; border-radius: 50%; background: #2a2a2a; display: grid; place-items: center; font-size: 25px; color: #fff; }
+.head__ava { width: 40px; height: 40px; border-radius: 50%; padding: 4.3px; background: rgba(8, 8, 9, .55); box-shadow: inset 0 1px 1px rgba(255, 255, 255, .14), inset 0 -1px 1px rgba(255, 255, 255, .08); backdrop-filter: blur(5.7px); -webkit-backdrop-filter: blur(5.7px); }
+.head__ava span, .head__ava img { width: 31.4px; height: 31.4px; border-radius: 50%; background: #fff; object-fit: cover; display: block; }
 
 .connect-btn { display: block; margin: -4px 0 6px auto; height: 32px; padding: 0 25px; border-radius: 26px; background: var(--blue); font-weight: 700; font-size: 15px; }
 
@@ -82,10 +81,10 @@ img { display: block; max-width: 100%; }
 .nav {
   position: fixed; z-index: 20; left: 50%; bottom: calc(10px + var(--safe-b)); transform: translateX(-50%);
   display: flex; gap: 5px; padding: 0; height: 64px; border-radius: 27px; background: #171718;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 255, 255, .04);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .35);
 }
-.nav__item { width: 66px; height: 64px; border-radius: 26px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-weight: 500; font-size: 10.7px; transition: background .2s; }
-.nav__item .ico { font-size: 19px; }
+.nav__item { width: 66.1px; height: 64px; border-radius: 26.7px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-weight: 500; font-size: 10.7px; transition: background .2s; }
+.nav__item .ico { font-size: 21px; }
 .nav__item.is-active { background: var(--blue-grad); }
 
 /* ===================== Главная ===================== */
@@ -550,7 +549,8 @@ img { display: block; max-width: 100%; }
 .lrow img { width: 25px; height: 25px; object-fit: contain; }
 
 /* Заглушка «Скоро» */
-.soon { margin: 80px auto 0; width: 255px; height: 109px; border-radius: 20px; background: #2a2a2a; display: grid; place-items: center; font-weight: 700; font-size: 35px; }
+.soon-screen { min-height: calc(100vh - 170px); display: grid; place-items: center; }
+.soon { width: 255px; height: 109px; border-radius: 30px; background: #171718; box-shadow: 0 0 22px 14px #171718; display: grid; place-items: center; font-weight: 700; font-size: 35px; color: #3d3d3d; letter-spacing: .2px; }
 
 @media (min-width: 420px) {
   .pcard { margin-left: auto; margin-right: auto; max-width: 302px; }
@@ -591,8 +591,6 @@ img { display: block; max-width: 100%; }
 #balVal.is-bump { color: #ffce00; animation: bump .5s ease; }
 #balVal.is-drop { color: #ff4d6d; }
 @keyframes bump { 40% { transform: scale(1.3); } }
-.head__coin { box-shadow: 0 0 0 0 rgba(242, 193, 29, .6); animation: coinPulse 3s ease-in-out infinite; }
-@keyframes coinPulse { 50% { box-shadow: 0 0 14px 2px rgba(242, 193, 29, .45); } }
 
 /* карточки игр: появление лесенкой и блик */
 .game { animation: tileIn .55s cubic-bezier(.2, .8, .2, 1) both; }
@@ -669,3 +667,6 @@ img { display: block; max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+.head__coin svg { width: 22px; height: 22px; }
+.head__btn svg { width: 27px; height: 27px; }
+.nav__item svg { width: 22px; height: 22px; }

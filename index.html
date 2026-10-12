@@ -15,14 +15,14 @@
   <style>
     #loader {
       position: fixed; inset: 0; z-index: 100; overflow: hidden;
-      background: #171718; color: #fff;
+      background: #161618; color: #fff;
       font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
       transition: opacity .45s ease;
     }
     #loader.is-done { opacity: 0; pointer-events: none; }
 
-    /* дудл-паттерн: мини-НЛО, повёрнуто на 13° */
-    #loader .vpl-pattern { position: absolute; inset: -30%; width: 160%; height: 160%; }
+    /* фон из галактик (тот же, что во всём приложении) */
+    #loader .vpl-pattern { position: absolute; inset: 0; background: url("assets/img/galaxy-pattern.svg") 0 0 / 124px 124px repeat; }
 
     /* сцена держит пропорции макета: ширина 380, логотип сверху, полоска снизу */
     #loader .vpl-stage {
@@ -63,28 +63,9 @@
   </style>
 </head>
 <body>
-  <!-- Фоновый паттерн (дудлы из Figma) -->
-  <div class="bg-pattern" aria-hidden="true"></div>
-
   <!-- ===== Экран загрузки ===== -->
   <section id="loader" aria-label="Загрузка">
-    <svg class="vpl-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <!-- мини-НЛО контуром -->
-        <symbol id="vpl-ufo" viewBox="0 0 24 18">
-          <g fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6.6 8.4a5.4 5.4 0 0 1 10.8 0"/>
-            <ellipse cx="12" cy="9.6" rx="10" ry="3.1"/>
-            <path d="M8.2 12.7a4.6 4.6 0 0 0 7.6 0"/>
-          </g>
-        </symbol>
-        <pattern id="vpl-pat" width="50" height="46" patternUnits="userSpaceOnUse" patternTransform="rotate(-13)">
-          <use href="#vpl-ufo" x="3" y="4" width="17" height="13" transform="rotate(-18 11 10)"/>
-          <use href="#vpl-ufo" x="28" y="27" width="17" height="13" transform="rotate(14 36 33)"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#vpl-pat)" opacity=".06"/>
-    </svg>
+    <div class="vpl-pattern" aria-hidden="true"></div>
 
     <div class="vpl-stage">
       <div class="vpl-brand">

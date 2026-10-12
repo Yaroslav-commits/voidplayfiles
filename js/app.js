@@ -21,7 +21,7 @@ document.querySelector('.loader__welcome').textContent = t('loader.welcome');
 function drawHead() {
   const u = api.state.user;
   $('#head').innerHTML = `
-    <button class="head__balance" id="balBtn"><span class="head__coin">${icon.star}</span><span id="balVal" data-v="${api.state.balance.stars}">${fmt(api.state.balance.stars)}</span></button>
+    <button class="head__balance" id="balBtn"><span class="head__coin">${icon.coin}</span><span id="balVal" data-v="${api.state.balance.stars}">${fmt(api.state.balance.stars)}</span></button>
     <button class="head__btn" id="setBtn" aria-label="settings">${icon.gear}</button>
     <button class="head__ava" id="avaBtn" aria-label="profile"><img src="${esc(api.avatarUrl(u))}" alt="" onerror="this.replaceWith(document.createElement('span'))" /></button>`;
   $('#balBtn').addEventListener('click', () => { sound(); haptic(); openPay('dep'); });
@@ -46,7 +46,7 @@ function relocalize() { drawHead(); rerender(); }
 
 // ---------- Загрузка: прогресс = предзагрузка картинок ----------
 const PRELOAD = [
-  'assets/img/logo.png', 'assets/img/bg-pattern.svg', 'assets/img/nft/pepe.png', 'assets/img/promo-art.png', 'assets/img/deco/calendar.png', 'assets/img/deco/bear.png',
+  'assets/img/galaxy-pattern.svg', 'assets/img/nft/pepe.png', 'assets/img/promo-art.png', 'assets/img/deco/calendar.png', 'assets/img/deco/bear.png',
   'assets/img/deco/deco-0259.png', 'assets/img/deco/deco-0251.png', 'assets/img/sub-hero.png',
   ...GAMES.map((g) => `assets/img/games/${g.id}.png`),
 ];

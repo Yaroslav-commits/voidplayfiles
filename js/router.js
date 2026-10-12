@@ -5,11 +5,12 @@ import * as profile from './screens/profile.js';
 import * as referrals from './screens/referrals.js';
 import * as tasks from './screens/tasks.js';
 import * as leaders from './screens/leaders.js';
+import * as soon from './screens/soon.js';
 import { closeAll } from './ui.js';
 
-const ROUTES = { home, upgrader, profile, referrals, tasks, leaders };
+const ROUTES = { home, upgrader, profile, referrals, tasks, leaders, soon };
 // к какому пункту нижнего меню относится экран
-export const NAV_OF = { home: 'home', upgrader: 'home', leaders: 'leaders', profile: 'profile', referrals: 'profile', tasks: 'profile' };
+export const NAV_OF = { home: 'home', upgrader: 'home', soon: 'home', leaders: 'leaders', profile: 'profile', referrals: 'profile', tasks: 'profile' };
 
 let cleanup = null;
 let onChange = () => {};
