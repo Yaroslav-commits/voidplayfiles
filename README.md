@@ -15,16 +15,15 @@
 2. На GitHub: **Settings → Pages → Deploy from a branch → main, папка `/ (root)`** → Save.
 3. Через минуту сайт: `https://<ник>.github.io/voidplay-webapp/` — этот адрес нужен бэкенду (`WEBAPP_URL`).
 
-## Картинки из Figma — кнопкой на GitHub (один раз)
+## Картинки из Figma (вручную — без лимитов)
 
-1. Figma → аватарка → **Settings → Security → Personal access tokens** → создать токен (права *File content: Read only*), скопировать.
-2. В репозитории на GitHub: **Settings → Secrets and variables → Actions → New repository secret**
-   Name: `FIGMA_TOKEN`, Secret: вставить токен → Add secret.
-3. Вкладка **Actions** → слева «Картинки из Figma» → **Run workflow**.
-4. Через минуту в репозитории появится коммит «Картинки из Figma», GitHub Pages обновится сам.
+Автоматическая выгрузка через Figma API на бесплатном плане почти сразу упирается в лимит (≈20 запросов в месяц), поэтому экспортируем руками:
 
-Поменял картинки в Figma — снова нажми Run workflow.
-(Можно и с компа: `python tools/figma_export.py ТОКЕН`.)
+1. Открой файл в Figma. На холсте, зажав **Shift**, кликни по названиям фреймов:
+   `main`, `Section 1`, `Section 3`, `load`, `upgrader update`, `profile`, `referals`, `Frame 496`, `leaders`, `Frame 523`.
+2. Справа внизу блок **Export** → **+** → выбери **3x** и **PNG**.
+3. Нажми **Export** — скачается zip.
+4. Скинь zip в чат — картинки будут нарезаны и разложены по `assets/img/`.
 
 ## Связь с бэкендом
 

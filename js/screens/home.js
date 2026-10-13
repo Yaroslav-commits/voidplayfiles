@@ -157,7 +157,7 @@ export function render(root) {
   root.querySelectorAll('.game').forEach((el) => el.addEventListener('click', () => {
     sound(); haptic();
     const g = GAMES.find((x) => x.id === el.dataset.game);
-    if (g.route) go(g.route); else soonToast();
+    go(g.route || 'soon');
   }));
 
   return () => { alive = false; clearTimeout(timer); clearTimeout(liveTimer); };

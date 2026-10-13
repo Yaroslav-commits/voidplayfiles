@@ -8,6 +8,8 @@ import { countUp } from './fx.js';
 import { startRouter, render as rerender, go, onRoute, NAV_OF } from './router.js';
 import { GAMES } from './screens/home.js';
 
+window.__vpStarted = true;
+
 // ---------- Telegram WebApp ----------
 if (tg) {
   tg.ready(); tg.expand();
@@ -62,7 +64,7 @@ function boot() {
     shown += (target - shown) * 0.25; fill.style.width = `${Math.min(100, shown)}%`;
   }, 60);
   // вход на сервер (initData) идёт параллельно с загрузкой картинок
-  const auth = api.init().catch(() => false);
+  const auth = Promise.race([api.init().catch(() => false), new Promise((r) => setTimeout(() => r(false), 8000))]);
   Promise.all([Promise.race([Promise.all(loads), new Promise((r) => setTimeout(r, 6000))]), minTime, auth]).then(([, , live]) => {
     clearInterval(anim); fill.style.width = '100%';
     setTimeout(() => {

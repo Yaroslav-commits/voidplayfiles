@@ -53,12 +53,22 @@ function applyState(st) {
   if (st.catalog?.length) api.catalog = st.catalog;
 }
 
-async function request(path, body, method = body === undefined ? 'GET' : 'POST') {
-  const res = await fetch(CONFIG.API_BASE + path, {
-    method,
-    headers: { 'Content-Type': 'application/json', 'X-Init-Data': tg?.initData || '' },
-    body: method === 'POST' ? JSON.stringify(body || {}) : undefined,
-  });
+async function request(path, body, method = body === undefined ? 'GET' : 'POST', timeoutMs = 10000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  let res;
+  try {
+    res = await fetch(CONFIG.API_BASE + path, {
+      method,
+      headers: { 'Content-Type': 'application/json', 'X-Init-Data': tg?.initData || '' },
+      body: method === 'POST' ? JSON.stringify(body || {}) : undefined,
+      signal: ctrl.signal,
+    });
+  } catch (e) {
+    throw new ApiError(e.name === 'AbortError' ? 'timeout' : 'network');
+  } finally {
+    clearTimeout(timer);
+  }
   let data = {};
   try { data = await res.json(); } catch (e) { /* ignore */ }
   if (!res.ok || data.ok === false) throw new ApiError(data.error || `http_${res.status}`);

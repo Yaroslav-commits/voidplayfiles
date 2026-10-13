@@ -63,7 +63,6 @@
   </style>
 </head>
 <body>
-  <!-- ===== Экран загрузки ===== -->
   <section id="loader" aria-label="Загрузка">
     <div class="vpl-pattern" aria-hidden="true"></div>
 
@@ -95,17 +94,36 @@
     </div>
   </section>
 
-  <!-- Приложение -->
   <div id="app" class="app" hidden>
     <header class="head" id="head"></header>
     <main id="screen" class="screen"></main>
     <nav class="nav" id="nav"></nav>
   </div>
 
-  <!-- Слои поверх -->
   <div id="toasts" class="toasts" aria-live="polite"></div>
   <div id="overlay" class="overlay" hidden></div>
 
+  <script>
+    // Если что-то сломалось и приложение не запустилось — показываем причину на экране загрузки
+    (function () {
+      var errs = [];
+      window.addEventListener('error', function (e) {
+        var src = (e.filename || (e.target && (e.target.src || e.target.href)) || '').split('/').slice(-2).join('/');
+        errs.push((e.message || 'не загрузился файл') + (src ? ' (' + src + ')' : ''));
+      }, true);
+      window.addEventListener('unhandledrejection', function (e) { errs.push(String(e.reason && e.reason.message || e.reason)); });
+      setTimeout(function () {
+        var l = document.getElementById('loader');
+        if (!l || l.classList.contains('is-done')) return;
+        var w = l.querySelector('.loader__welcome');
+        if (!w) return;
+        w.style.cssText = 'font-size:12px;line-height:1.4;color:#ff6b81;text-align:center;max-width:300px;white-space:normal';
+        w.textContent = window.__vpStarted
+          ? 'Сервер не отвечает. Проверь, что бот запущен.' + (errs.length ? ' ' + errs.join(' · ') : '')
+          : 'Ошибка запуска — не все файлы сайта на месте. Залей архив сайта целиком. ' + errs.join(' · ');
+      }, 12000);
+    })();
+  </script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
