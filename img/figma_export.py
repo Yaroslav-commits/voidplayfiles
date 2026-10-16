@@ -1,3 +1,19 @@
+r"""
+Скачивает картинки Void Play из Figma в папку img сайта.
+
+КАК ЗАПУСТИТЬ (Windows):
+  1. Положи этот файл в папку сайта (рядом с index.html) или в папку img — без разницы.
+  2. Дважды кликни по нему. Откроется чёрное окно и попросит токен Figma —
+     вставь его (правой кнопкой мыши) и нажми Enter.
+  3. Жди надпись «Готово». Уже скачанные картинки он пропускает,
+     при обрыве интернета просто запусти ещё раз.
+  4. После этого файл можно удалить (и .figma_cache.json рядом с index.html тоже).
+
+Если двойной клик открывает файл в редакторе (PyCharm и т.п.):
+  в проводнике кликни в адресную строку, напиши  cmd  и нажми Enter,
+  в чёрном окне напиши  py figma_export.py  и нажми Enter
+  (если файл лежит в img — сначала  cd img ).
+"""
 from __future__ import annotations
 
 import http.client
@@ -10,7 +26,17 @@ import urllib.request
 from pathlib import Path
 
 FILE_KEY = "6UMCDoHAmhPTvE6fDQoLl1"
-OUT = Path.cwd() / "img"            # запускать из папки сайта (где index.html)
+HERE = Path(__file__).resolve().parent
+# папка сайта: где лежит index.html (скрипт может лежать и в самой папке img)
+if HERE.name.lower() == "img":
+    SITE = HERE.parent
+elif (HERE / "index.html").exists():
+    SITE = HERE
+elif (Path.cwd() / "index.html").exists():
+    SITE = Path.cwd()
+else:
+    SITE = HERE
+OUT = SITE / "img"
 API = "https://api.figma.com/v1"
 
 # Рендер узлов (PNG 2x): путь → id слоя в Figma
@@ -58,7 +84,7 @@ IMAGE_FILLS = {
 SUB_MODAL = "247:45889"                  # Frame 523 — модалка «Забирай 15 Stars»
 
 
-CACHE = Path.cwd() / ".figma_cache.json"
+CACHE = SITE / ".figma_cache.json"
 
 
 def _load_cache() -> dict:
@@ -221,10 +247,11 @@ def sub_hero(token: str):
 
 def main():
     token = (sys.argv[1] if len(sys.argv) > 1 else os.getenv("FIGMA_TOKEN", "")).strip()
-    if not token:
-        sys.exit("\n❌ Не передан токен Figma.\n\nЗапусти так (токен начинается с figd_):\n"
-                 "  python figma_export.py figd_ТВОЙ_ТОКЕН\n"
-                 "На Windows:\n  py figma_export.py figd_ТВОЙ_ТОКЕН\n")
+    print(f"Папка сайта: {SITE}\nКартинки будут в: {OUT}\n")
+    if not (SITE / "index.html").exists():
+        print("⚠ Рядом нет index.html — положи этот файл в папку сайта или в папку img.\n")
+    while not token:
+        token = input("Вставь токен Figma (начинается с figd_) и нажми Enter: ").strip().strip('"')
     if not token.startswith("figd_"):
         print("⚠ Токен обычно начинается с figd_ — проверь, что скопировал его целиком.")
     OUT.mkdir(parents=True, exist_ok=True)
@@ -237,8 +264,18 @@ def main():
         sub_hero(token)
     except Exception as e:  # noqa: BLE001
         print(f"  ✗ {e}")
-    print(f"\nГотово → {OUT}\nТеперь: git add img  →  git commit -m \"Картинки из Figma\"  →  git push")
+    print(f"\n✅ Готово! Картинки в папке: {OUT}")
+    print("Теперь закинь папку img на GitHub (git add img → git commit → git push).")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SystemExit as e:
+        if e.code not in (None, 0):
+            print(e.code)
+    except KeyboardInterrupt:
+        print("\nОстановлено.")
+    except Exception as e:  # noqa: BLE001
+        print(f"\n❌ Ошибка: {e}\nЗапусти ещё раз — уже скачанное не потеряется.")
+    input("\nНажми Enter, чтобы закрыть окно…")
