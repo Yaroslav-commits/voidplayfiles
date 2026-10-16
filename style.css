@@ -1,5 +1,6 @@
 /* ===================== Void Play — стили ===================== */
 :root {
+  --galaxy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='124' height='124' viewBox='0 0 17 17'%3E %3Cdefs%3E%3Csymbol id='g' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round'%3E %3Cellipse cx='24.5' cy='23' rx='9.3' ry='13' transform='rotate%2852 24.5 23%29'/%3E %3Cpath d='M13.5 12C8 18 6.5 28 11.5 33.5C14.5 37 19.5 37.5 22 36.5'/%3E %3Cpath d='M30 10C38 11 41.5 18 40 25C39.3 28.5 37.5 32 35 35'/%3E%3C/g%3E %3Cg fill='%23fff'%3E%3Ccircle cx='23.8' cy='23' r='2.7'/%3E%3Ccircle cx='19' cy='7' r='2'/%3E%3Ccircle cx='28.5' cy='40.5' r='2'/%3E%3C/g%3E%3C/symbol%3E%3C/defs%3E %3Cg opacity='.027'%3E%3Cuse href='%23g' x='-1.206' y='-1.206' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='-1.206' y='15.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='15.794' y='-1.206' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='15.794' y='15.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='2.794' y='-0.206' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='2.794' y='16.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='6.794' y='0.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='6.794' y='17.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='10.794' y='1.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='-2.206' y='2.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='14.794' y='2.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='1.794' y='3.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='5.794' y='4.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='9.794' y='5.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='-3.206' y='6.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='13.794' y='6.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='0.794' y='7.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='17.794' y='7.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='4.794' y='8.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='8.794' y='9.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='12.794' y='10.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='-0.206' y='11.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='16.794' y='11.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='3.794' y='12.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='7.794' y='-3.206' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='7.794' y='13.794' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='11.794' y='-2.206' width='2.413' height='2.413'/%3E%3Cuse href='%23g' x='11.794' y='14.794' width='2.413' height='2.413'/%3E%3C/g%3E%3C/svg%3E");
   --bg: #161618;
   --bg-2: #1c1c1c;
   --card: #2a2a2a;
@@ -24,7 +25,7 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { background: var(--bg); }
-body { background: url("../assets/img/galaxy-pattern.svg") 0 0 / 124px 124px repeat; }
+body { background: var(--galaxy) 0 0 / 124px 124px repeat; }
 html, body { margin: 0; padding: 0; color: #fff; font-family: var(--font); -webkit-font-smoothing: antialiased; }
 body { min-height: 100vh; overflow-x: hidden; }
 body.is-locked { overflow: hidden; }
@@ -37,27 +38,56 @@ img { display: block; max-width: 100%; }
 .img-missing { visibility: hidden; }
 
 /* фоновый дудл-паттерн */
-.bg-pattern { display: none; }
 
-/* ===================== Загрузка ===================== */
-.loader {
-  position: fixed; inset: 0; z-index: 100; background: var(--bg);
-  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-  padding: 0 31px calc(31px + var(--safe-b)); transition: opacity .45s ease;
+/* ===================== Загрузка (Figma: frame «load», 380×456) ===================== */
+#loader {
+  position: fixed; inset: 0; z-index: 100; overflow: hidden;
+  background: #161618; color: #fff;
+  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  transition: opacity .45s ease;
 }
-.loader.is-done { opacity: 0; pointer-events: none; }
-.loader__brand { position: relative; margin-top: 10vh; display: flex; flex-direction: column; align-items: center; }
-.loader__logo { width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 0 22px rgba(255, 255, 255, .55)); animation: float 3.2s ease-in-out infinite; }
-.loader__logo--fallback { border-radius: 50%; background: radial-gradient(circle at 50% 40%, #fff 0 22%, #111 23% 40%, #fff 41% 46%, transparent 47%); }
-.loader__title {
-  margin-top: -18px; font-family: var(--font-brand); font-weight: 600; font-size: 40px; color: #f4f4f4; letter-spacing: .5px;
-  text-shadow: 0 0 18px rgba(255, 255, 255, .35);
+#loader.is-done { opacity: 0; pointer-events: none; }
+
+/* фон из галактик (тот же, что во всём приложении) */
+#loader .vpl-pattern { position: absolute; inset: 0; background: var(--galaxy) 0 0 / 124px 124px repeat; }
+
+/* сцена держит пропорции макета: ширина 380, логотип сверху, полоска снизу */
+#loader .vpl-stage {
+  position: relative; z-index: 1; height: 100%; max-width: 380px; margin: 0 auto;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: env(safe-area-inset-top, 0px) 31px calc(31px + env(safe-area-inset-bottom, 0px));
 }
-.loader__bottom { width: 100%; max-width: 318px; display: flex; flex-direction: column; align-items: center; gap: 26px; }
-.loader__welcome { font-weight: 700; font-size: 15px; }
-.loader__bar { width: 100%; height: 20px; border-radius: 10px; background: #2f2f2f; overflow: hidden; }
-.loader__fill { height: 100%; width: 0; border-radius: 10px; background: #d9d9d9; transition: width .25s ease; }
-@keyframes float { 50% { transform: translateY(-6px); } }
+#loader .vpl-brand { position: relative; height: 140px; }
+/* тёмная подложка под надписью (Figma: Rectangle 3, blur 7.5) */
+#loader .vpl-brand::before {
+  content: ""; position: absolute; left: 50%; top: 95px; width: 282px; height: 59px; transform: translateX(-50%);
+  background: #171718; filter: blur(7.5px);
+}
+#loader .vpl-logo {
+  position: absolute; left: 50%; top: -15px; width: 120px; height: 120px; margin-left: -60px;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, .55)) drop-shadow(0 0 20px rgba(255, 255, 255, .4)) drop-shadow(0 0 38px rgba(255, 255, 255, .22));
+}
+#loader .vpl-title {
+  position: absolute; left: 0; right: 0; top: 80px; text-align: center; white-space: nowrap;
+  font-family: "Unbounded", "SF Pro Display", sans-serif; font-weight: 600; font-size: 40px; line-height: 50px;
+  letter-spacing: .2px; color: #f4f4f4;
+}
+/* светящаяся полоска под надписью (Figma: Vector под «VOID PLAY») */
+#loader .vpl-title::after {
+  content: ""; position: absolute; left: 50%; bottom: 3px; width: 250px; height: 5px; transform: translateX(-50%);
+  border-radius: 50%; background: rgba(255, 255, 255, .45); filter: blur(5px); mix-blend-mode: luminosity;
+}
+
+/* низ: затемнение, приветствие, полоска загрузки */
+#loader .vpl-bottom { position: relative; display: flex; flex-direction: column; align-items: center; }
+#loader .vpl-bottom::before {
+  content: ""; position: absolute; left: -112px; right: -112px; top: -64px; bottom: -72px;
+  background: #171718; filter: blur(25px); z-index: -1;
+}
+#loader .loader__welcome { font-weight: 700; font-size: 15px; line-height: 18px; margin-bottom: 28px; }
+#loader .vpl-bar { position: relative; width: 318px; max-width: 100%; height: 20px; border-radius: 10px; background: #343434; overflow: hidden; }
+#loader .vpl-fill { height: 100%; width: 0; border-radius: 10px; background: #d9d9d9; transition: width .25s ease; }
+  
 
 /* ===================== Каркас ===================== */
 .app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; min-height: 100vh; padding: 10px 10px calc(96px + var(--safe-b)); }
@@ -670,3 +700,6 @@ img { display: block; max-width: 100%; }
 .head__coin svg { width: 22px; height: 22px; }
 .head__btn svg { width: 27px; height: 27px; }
 .nav__item svg { width: 22px; height: 22px; }
+
+.game.has-img { background: none; }
+.game.has-img::after { border-radius: 15px; }

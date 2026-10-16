@@ -1,14 +1,15 @@
 r"""
-Выгрузка всех картинок Void Play из Figma в assets/img/ — одной командой.
+Выгрузка всех картинок Void Play из Figma в папку img/ сайта — одной командой.
+Положи этот файл в папку сайта (рядом с index.html), запусти, потом можешь удалить.
 
 1. Figma → аватарка → Settings → Security → Personal access tokens → Generate new token
    (права: File content — Read only). Скопируй токен.
 2. Открой терминал в папке сайта (где лежит index.html) и запусти:
-       python tools/figma_export.py figd_ТВОЙ_ТОКЕН
+       python figma_export.py figd_ТВОЙ_ТОКЕН
    Windows:
-       py tools\figma_export.py figd_ТВОЙ_ТОКЕН
+       py figma_export.py figd_ТВОЙ_ТОКЕН
    Если интернет оборвётся — просто запусти ещё раз, скачанное не потеряется.
-3. Закоммить assets/img/ и запушь.
+3. Закоммить img/ и запушь.
 
 Нужен только Python 3.9+, без библиотек. Использует официальный Figma REST API.
 """
@@ -24,64 +25,55 @@ import urllib.request
 from pathlib import Path
 
 FILE_KEY = "6UMCDoHAmhPTvE6fDQoLl1"
-OUT = Path(__file__).resolve().parent.parent / "assets" / "img"
+OUT = Path.cwd() / "img"            # запускать из папки сайта (где index.html)
 API = "https://api.figma.com/v1"
 
 # Рендер узлов (PNG 2x): путь → id слоя в Figma
 NODES_PNG = {
-    "logo.png": "247:35114",             # load → НЛО
-    "games/mines.png": "247:35184",      # main → карточки игр
-    "games/lottery.png": "247:35212",
-    "games/cases.png": "247:35231",
-    "games/crash.png": "247:35252",
-    "games/upgrade.png": "247:35279",
-    "games/waterball.png": "247:35303",
-    "games/ball.png": "247:35329",
-    "games/hockey.png": "247:35347",
+    "game-mines.png": "247:35184",      # main → карточки игр
+    "game-lottery.png": "247:35212",
+    "game-cases.png": "247:35231",
+    "game-crash.png": "247:35252",
+    "game-upgrade.png": "247:35279",
+    "game-waterball.png": "247:35303",
+    "game-ball.png": "247:35329",
+    "game-hockey.png": "247:35347",
     "promo-art.png": "247:35387",        # main → promocode → Mask group
     # NFT-подарки (компоненты Default xxx)
-    "nft/gift-120.png": "247:35138",
-    "nft/gift-127.png": "247:37605",
-    "nft/gift-128.png": "247:37606",
-    "nft/gift-129.png": "247:37607",
-    "nft/gift-047.png": "247:35248",
-    "nft/gift-132.png": "247:35249",
-    "nft/gift-103.png": "247:35251",
-    "nft/gift-126.png": "247:43579",
-    "nft/gift-004.png": "247:41187",
-    "nft/gift-020.png": "247:41366",
-    "nft/gift-065.png": "247:41374",
-    "nft/gift-023.png": "247:41382",
-    "nft/gift-090.png": "247:41390",
-    "nft/gift-074.png": "247:41398",
-    # иконки уровней рефералки
-    "levels/current.png": "247:41187",
-    "levels/1.png": "247:41366",
-    "levels/2.png": "247:41374",
-    "levels/3.png": "247:41382",
-    "levels/4.png": "247:41390",
-    "levels/5.png": "247:41398",
-    "levels/6.png": "247:41406",
+    "gift-120.png": "247:35138",
+    "gift-127.png": "247:37605",
+    "gift-128.png": "247:37606",
+    "gift-129.png": "247:37607",
+    "gift-047.png": "247:35248",
+    "gift-132.png": "247:35249",
+    "gift-103.png": "247:35251",
+    "gift-126.png": "247:43579",
+    "gift-004.png": "247:41187",
+    "gift-020.png": "247:41366",
+    "gift-065.png": "247:41374",
+    "gift-023.png": "247:41382",
+    "gift-090.png": "247:41390",
+    "gift-074.png": "247:41398",
 }
 
 # Исходные картинки-заливки (по началу хэша) — без поворотов и прозрачности
 IMAGE_FILLS = {
-    "deco/calendar.png": "a787dc67",
-    "deco/bear.png": "5ed82493",
-    "deco/deco-0259.png": "20bb0060",
-    "deco/deco-0543.png": "4f274054",
-    "deco/deco-0251.png": "dc1fc7cd",
-    "deco/deco-0249.png": "90deed21",
-    "deco/deco-0246.png": "bb4e216b",
-    "deco/deco-0311.png": "4fa73495",
-    "deco/star-char.png": "606b49",
-    "nft/pepe.png": "eafd34",
+    "calendar.png": "a787dc67",
+    "bear.png": "5ed82493",
+    "deco-0259.png": "20bb0060",
+    "deco-0543.png": "4f274054",
+    "deco-0251.png": "dc1fc7cd",
+    "deco-0249.png": "90deed21",
+    "deco-0246.png": "bb4e216b",
+    "deco-0311.png": "4fa73495",
+    "star-char.png": "606b49",
+    "pepe.png": "eafd34",
 }
 
 SUB_MODAL = "247:45889"                  # Frame 523 — модалка «Забирай 15 Stars»
 
 
-CACHE = Path(__file__).resolve().parent / ".figma_cache.json"
+CACHE = Path.cwd() / ".figma_cache.json"
 
 
 def _load_cache() -> dict:
@@ -92,7 +84,7 @@ def _load_cache() -> dict:
 
 
 def api(path: str, token: str) -> dict:
-    """Запрос к Figma API. Ответ сохраняется в tools/.figma_cache.json — повторный запуск
+    """Запрос к Figma API. Ответ сохраняется в .figma_cache.json — повторный запуск
     не тратит лимит запросов (на бесплатном плане их ~20 в месяц)."""
     cache = _load_cache()
     if path in cache:
@@ -173,6 +165,8 @@ def download(url: str, rel: str, post=None):
 
 def done(rel: str) -> bool:
     p = OUT / rel
+    if p.with_suffix(".webp").exists():
+        p = p.with_suffix(".webp")
     if p.exists() and p.stat().st_size > 0:
         print(f"  · {rel} уже есть, пропускаю")
         return True
@@ -180,7 +174,7 @@ def done(rel: str) -> bool:
 
 
 def render(nodes: dict, token: str, fmt: str, scale: float = 2):
-    if all((OUT / rel).exists() for rel in nodes):
+    if all((OUT / rel).exists() or (OUT / rel).with_suffix(".webp").exists() for rel in nodes):
         for rel in nodes:
             done(rel)
         return
@@ -244,8 +238,8 @@ def main():
     token = (sys.argv[1] if len(sys.argv) > 1 else os.getenv("FIGMA_TOKEN", "")).strip()
     if not token:
         sys.exit("\n❌ Не передан токен Figma.\n\nЗапусти так (токен начинается с figd_):\n"
-                 "  python tools/figma_export.py figd_ТВОЙ_ТОКЕН\n"
-                 "На Windows:\n  py tools\\figma_export.py figd_ТВОЙ_ТОКЕН\n")
+                 "  python figma_export.py figd_ТВОЙ_ТОКЕН\n"
+                 "На Windows:\n  py figma_export.py figd_ТВОЙ_ТОКЕН\n")
     if not token.startswith("figd_"):
         print("⚠ Токен обычно начинается с figd_ — проверь, что скопировал его целиком.")
     OUT.mkdir(parents=True, exist_ok=True)
@@ -258,7 +252,7 @@ def main():
         sub_hero(token)
     except Exception as e:  # noqa: BLE001
         print(f"  ✗ {e}")
-    print(f"\nГотово → {OUT}\nТеперь: git add assets/img  →  git commit -m \"Картинки из Figma\"  →  git push")
+    print(f"\nГотово → {OUT}\nТеперь: git add img  →  git commit -m \"Картинки из Figma\"  →  git push")
 
 
 if __name__ == "__main__":

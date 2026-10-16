@@ -1,13 +1,37 @@
-// Точка входа: загрузка → шапка/навигация → роутер → модалка подписки
-import { api, letterAvatar } from './api.js';
-import { t, setLang } from './i18n.js';
-import { icon } from './icons.js';
-import { $, esc, fmt, sound, haptic, prefs, tg, initLayers, toast } from './ui.js';
-import { openPay, openSettings, openSubscribe } from './sheets.js';
-import { countUp } from './fx.js';
-import { startRouter, render as rerender, go, onRoute, NAV_OF } from './router.js';
-import { GAMES } from './screens/home.js';
+'use strict';
+// Void Play — роутер и запуск
 
+// ======================= router.js =======================
+// Простой hash-роутер: #/home, #/upgrader, #/profile, #/referrals, #/tasks, #/leaders
+const ROUTES = { home, upgrader, profile, referrals, tasks, leaders, soon };
+// к какому пункту нижнего меню относится экран
+const NAV_OF = { home: 'home', upgrader: 'home', soon: 'home', leaders: 'leaders', profile: 'profile', referrals: 'profile', tasks: 'profile' };
+
+let cleanup = null;
+let onChange = () => {};
+const current = () => (location.hash.replace(/^#\/?/, '') || 'home').split('?')[0];
+const go = (name) => { if (current() === name) render(); else location.hash = `#/${name}`; };
+const onRoute = (fn) => { onChange = fn; };
+
+function render() {
+  let name = current();
+  if (!ROUTES[name]) name = 'home';
+  if (typeof cleanup === 'function') cleanup();
+  closeAll();
+  const root = document.getElementById('screen');
+  root.style.animation = 'none'; void root.offsetWidth; root.style.animation = '';
+  cleanup = ROUTES[name].render(root);
+  window.scrollTo(0, 0);
+  onChange(name);
+}
+
+function startRouter() {
+  window.addEventListener('hashchange', render);
+  render();
+}
+
+// ======================= app.js =======================
+// Точка входа: загрузка → шапка/навигация → роутер → модалка подписки
 window.__vpStarted = true;
 
 // ---------- Telegram WebApp ----------
@@ -48,9 +72,8 @@ function relocalize() { drawHead(); rerender(); }
 
 // ---------- Загрузка: прогресс = предзагрузка картинок ----------
 const PRELOAD = [
-  'assets/img/galaxy-pattern.svg', 'assets/img/nft/pepe.png', 'assets/img/promo-art.png', 'assets/img/deco/calendar.png', 'assets/img/deco/bear.png',
-  'assets/img/deco/deco-0259.png', 'assets/img/deco/deco-0251.png', 'assets/img/sub-hero.png',
-  ...GAMES.map((g) => `assets/img/games/${g.id}.png`),
+  'img/pepe.png', 'img/promo-art.png', 'img/calendar.png', 'img/bear.png', 'img/deco-0259.png', 'img/deco-0251.png', 'img/sub-hero.png',
+  ...home.GAMES.map((g) => `img/game-${g.id}.webp`),
 ];
 function boot() {
   const fill = $('#loaderFill');

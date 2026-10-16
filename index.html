@@ -8,61 +8,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="style.css" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- ===== Экран загрузки (Figma: frame «load», 380×456) — стили целиком здесь ===== -->
-  <style>
-    #loader {
-      position: fixed; inset: 0; z-index: 100; overflow: hidden;
-      background: #161618; color: #fff;
-      font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
-      transition: opacity .45s ease;
-    }
-    #loader.is-done { opacity: 0; pointer-events: none; }
-
-    /* фон из галактик (тот же, что во всём приложении) */
-    #loader .vpl-pattern { position: absolute; inset: 0; background: url("assets/img/galaxy-pattern.svg") 0 0 / 124px 124px repeat; }
-
-    /* сцена держит пропорции макета: ширина 380, логотип сверху, полоска снизу */
-    #loader .vpl-stage {
-      position: relative; z-index: 1; height: 100%; max-width: 380px; margin: 0 auto;
-      display: flex; flex-direction: column; justify-content: space-between;
-      padding: env(safe-area-inset-top, 0px) 31px calc(31px + env(safe-area-inset-bottom, 0px));
-    }
-    #loader .vpl-brand { position: relative; height: 140px; }
-    /* тёмная подложка под надписью (Figma: Rectangle 3, blur 7.5) */
-    #loader .vpl-brand::before {
-      content: ""; position: absolute; left: 50%; top: 95px; width: 282px; height: 59px; transform: translateX(-50%);
-      background: #171718; filter: blur(7.5px);
-    }
-    #loader .vpl-logo {
-      position: absolute; left: 50%; top: -15px; width: 120px; height: 120px; margin-left: -60px;
-      filter: drop-shadow(0 0 6px rgba(255, 255, 255, .55)) drop-shadow(0 0 20px rgba(255, 255, 255, .4)) drop-shadow(0 0 38px rgba(255, 255, 255, .22));
-    }
-    #loader .vpl-title {
-      position: absolute; left: 0; right: 0; top: 80px; text-align: center; white-space: nowrap;
-      font-family: "Unbounded", "SF Pro Display", sans-serif; font-weight: 600; font-size: 40px; line-height: 50px;
-      letter-spacing: .2px; color: #f4f4f4;
-    }
-    /* светящаяся полоска под надписью (Figma: Vector под «VOID PLAY») */
-    #loader .vpl-title::after {
-      content: ""; position: absolute; left: 50%; bottom: 3px; width: 250px; height: 5px; transform: translateX(-50%);
-      border-radius: 50%; background: rgba(255, 255, 255, .45); filter: blur(5px); mix-blend-mode: luminosity;
-    }
-
-    /* низ: затемнение, приветствие, полоска загрузки */
-    #loader .vpl-bottom { position: relative; display: flex; flex-direction: column; align-items: center; }
-    #loader .vpl-bottom::before {
-      content: ""; position: absolute; left: -112px; right: -112px; top: -64px; bottom: -72px;
-      background: #171718; filter: blur(25px); z-index: -1;
-    }
-    #loader .loader__welcome { font-weight: 700; font-size: 15px; line-height: 18px; margin-bottom: 28px; }
-    #loader .vpl-bar { position: relative; width: 318px; max-width: 100%; height: 20px; border-radius: 10px; background: #343434; overflow: hidden; }
-    #loader .vpl-fill { height: 100%; width: 0; border-radius: 10px; background: #d9d9d9; transition: width .25s ease; }
-  </style>
+  
 </head>
 <body>
+  <!-- ===== Экран загрузки ===== -->
   <section id="loader" aria-label="Загрузка">
     <div class="vpl-pattern" aria-hidden="true"></div>
 
@@ -94,12 +46,14 @@
     </div>
   </section>
 
+  <!-- Приложение -->
   <div id="app" class="app" hidden>
     <header class="head" id="head"></header>
     <main id="screen" class="screen"></main>
     <nav class="nav" id="nav"></nav>
   </div>
 
+  <!-- Слои поверх -->
   <div id="toasts" class="toasts" aria-live="polite"></div>
   <div id="overlay" class="overlay" hidden></div>
 
@@ -120,10 +74,12 @@
         w.style.cssText = 'font-size:12px;line-height:1.4;color:#ff6b81;text-align:center;max-width:300px;white-space:normal';
         w.textContent = window.__vpStarted
           ? 'Сервер не отвечает. Проверь, что бот запущен.' + (errs.length ? ' ' + errs.join(' · ') : '')
-          : 'Ошибка запуска — не все файлы сайта на месте. Залей архив сайта целиком. ' + errs.join(' · ');
+          : 'Ошибка запуска — не все файлы на месте (index.html, style.css, core.js, screens.js, app.js). ' + errs.join(' · ');
       }, 12000);
     })();
   </script>
-  <script type="module" src="js/app.js"></script>
+  <script src="core.js" defer></script>
+  <script src="screens.js" defer></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
