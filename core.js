@@ -105,7 +105,7 @@ const dict = {
     // Лидеры
     'lead.season': 'СЕЗОН {n}', 'lead.active': 'активный', 'lead.members': '{n} участников', 'lead.until': 'до {d}',
     'lead.d': 'ДН', 'lead.h': 'Ч', 'lead.m': 'МИН', 'lead.s': 'СЕК', 'lead.how': 'Как это работает', 'lead.howText': 'Призы, оборот, сроки сезона',
-    'lead.update': 'Обновление рейтинга через {n} дня',
+    'lead.update': 'Обновление рейтинга',
     // API / новое
     'err.already': 'Уже получено', 'err.notFound': 'Не найдено', 'err.notReady': 'Задание ещё не выполнено',
     'err.badAmount': 'Неверная сумма', 'err.checkFailed': 'Не удалось проверить подписку, попробуй позже',
@@ -116,6 +116,20 @@ const dict = {
     'pay.starsOnly': 'Пока доступна оплата только звёздами',
     'demo': 'Демо-режим: бэкенд не подключён',
     'lead.empty': 'В этом сезоне ещё никто не играл', 'feed.empty': 'Здесь появятся выигрыши игроков',
+    'up.back': 'Назад', 'nft.name': 'Nft name',
+    'mines.count': 'Количество мин', 'mines.of': 'звёзд: {n}', 'mines.play': 'ИГРАТЬ', 'mines.cash': 'ЗАБРАТЬ {n}',
+    'mines.mult': 'Множитель', 'mines.next': 'Следующий', 'mines.win': 'Выигрыш',
+    'mines.helpTitle': 'Как играть в Мины', 'mines.h1': 'Введите ставку и выберите, сколько мин спрятать',
+    'mines.h2': 'Открывайте клетки — каждая звезда увеличивает множитель', 'mines.h3': 'Забирайте выигрыш в любой момент',
+    'mines.h4': 'Попали на мину — ставка сгорает', 'mines.boom': 'Бум! Это была мина', 'mines.won': 'Вы забрали {n} Stars!',
+    'how.title': 'Как это работает', 'how.sub': 'Делай ставки, поднимайся в топ, забирай призы',
+    'how.turnH': 'Что такое оборот', 'how.turn1': 'Сумма всех твоих ставок в STARS за сезон',
+    'how.turn2': 'Считаются ставки во всех играх: апгрейдер, мины и другие', 'how.prizesH': 'Призы из ТОП-3',
+    'how.prizesNote': 'Призы выдаются после завершения сезона. Звёзды начисляются победителям на баланс автоматически, NFT выдаются отдельно.',
+    'how.datesH': 'Сроки сезона', 'how.dur': 'Длительность:', 'how.durV': '1 месяц', 'how.end': 'Окончание:',
+    'how.reset': 'После завершения оборот обнуляется и стартует новый забег с чистого листа.', 'how.warnH': 'Предупреждение',
+    'how.warn': 'Абуз, мультиаккаунты, накрутки, использование багов и любые злоупотребления механиками турнира будут наказываться. Очки могут быть списаны, место аннулировано, а приз не выдан.',
+    'how.ok': 'Понятно', 'lead.updateIn': 'через {n} {d}', 'days': 'день|дня|дней',
   },
   en: {
     'loader.welcome': 'Welcome 2 Void Play',
@@ -186,7 +200,7 @@ const dict = {
 
     'lead.season': 'SEASON {n}', 'lead.active': 'active', 'lead.members': '{n} players', 'lead.until': 'until {d}',
     'lead.d': 'D', 'lead.h': 'H', 'lead.m': 'MIN', 'lead.s': 'SEC', 'lead.how': 'How it works', 'lead.howText': 'Prizes, turnover, season dates',
-    'lead.update': 'Rating updates in {n} days',
+    'lead.update': 'Rating update',
     'err.already': 'Already claimed', 'err.notFound': 'Not found', 'err.notReady': 'Task is not completed yet',
     'err.badAmount': 'Invalid amount', 'err.checkFailed': 'Could not check subscription, try later',
     'err.auth': 'Open the app via the bot', 'err.banned': 'Account banned',
@@ -196,12 +210,33 @@ const dict = {
     'pay.starsOnly': 'Only Stars payments are available for now',
     'demo': 'Demo mode: backend is not connected',
     'lead.empty': 'Nobody has played this season yet', 'feed.empty': 'Players\' wins will appear here',
+    'up.back': 'Back', 'nft.name': 'Nft name',
+    'mines.count': 'Mines', 'mines.of': 'stars: {n}', 'mines.play': 'PLAY', 'mines.cash': 'CASH OUT {n}',
+    'mines.mult': 'Multiplier', 'mines.next': 'Next', 'mines.win': 'Win',
+    'mines.helpTitle': 'How to play Mines', 'mines.h1': 'Enter a bet and choose how many mines to hide',
+    'mines.h2': 'Open tiles — every star raises the multiplier', 'mines.h3': 'Cash out any time',
+    'mines.h4': 'Hit a mine — the bet is lost', 'mines.boom': 'Boom! That was a mine', 'mines.won': 'You cashed out {n} Stars!',
+    'how.title': 'How it works', 'how.sub': 'Place bets, climb the top, grab prizes',
+    'how.turnH': 'What is turnover', 'how.turn1': 'The sum of all your STARS bets this season',
+    'how.turn2': 'Bets in all games count: upgrader, mines and others', 'how.prizesH': 'Top-3 prizes',
+    'how.prizesNote': 'Prizes are given after the season ends. Stars are credited automatically, NFTs are sent separately.',
+    'how.datesH': 'Season dates', 'how.dur': 'Duration:', 'how.durV': '1 month', 'how.end': 'Ends:',
+    'how.reset': 'After the season, turnover resets and a new race starts from scratch.', 'how.warnH': 'Warning',
+    'how.warn': 'Abuse, multi-accounts, boosting, bug exploits and any misuse of tournament mechanics will be punished. Points may be removed, place cancelled and the prize withheld.',
+    'how.ok': 'Got it', 'lead.updateIn': 'in {n} {d}', 'days': 'day|days|days',
   },
 };
 
 let lang = 'ru';
 const setLang = (l) => { lang = dict[l] ? l : 'ru'; document.documentElement.lang = lang; };
 const getLang = () => lang;
+// 1 день, 2 дня, 5 дней
+function plural(n, key) {
+  const [one, few, many] = t(key).split('|');
+  const a = Math.abs(n) % 100, b = a % 10;
+  if (lang === 'en') return n === 1 ? one : few;
+  return a > 10 && a < 20 ? many : b === 1 ? one : b >= 2 && b <= 4 ? few : many;
+}
 function t(key, vars = {}) {
   let s = dict[lang][key] ?? dict.ru[key] ?? key;
   for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, v);
@@ -244,6 +279,16 @@ const icon = {
   link: s('<path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M10 14a4.2 4.2 0 006 0l3-3a4.2 4.2 0 00-6-6l-1.2 1.2M14 10a4.2 4.2 0 00-6 0l-3 3a4.2 4.2 0 006 6l1.2-1.2"/>'),
   levels: s('<path fill="currentColor" d="M4 14h4v7H4zM10 9h4v12h-4zM16 3h4v18h-4z"/>'),
   live: s('<path fill="currentColor" d="M3 3l8 5-8 5V3z"/>', '0 0 12 16'),
+  arrowLeft: s('<path stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" d="M19 12H5.5M11 5.5L4.5 12l6.5 6.5"/>'),
+  helpCircle: s('<circle cx="12" cy="12" r="9.6" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M9.4 9.6a2.7 2.7 0 1 1 3.9 2.4c-.8.4-1.3 1-1.3 1.9v.4"/><circle cx="12" cy="17.2" r="1.15" fill="currentColor"/>'),
+  swirl: s('<g stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><ellipse cx="12.2" cy="11.6" rx="4.6" ry="6.5" transform="rotate(52 12.2 11.6)"/><path d="M6.6 6C3.9 9 3.1 14 5.6 16.7c1.5 1.8 4 2 5.3 1.5M15 5c4 .5 5.8 4 5 7.5-.3 1.8-1.2 3.5-2.5 5"/></g><circle cx="11.9" cy="11.5" r="1.4" fill="currentColor"/>'),
+  calendar: s('<rect x="3.5" y="5" width="17" height="15.5" rx="3" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M3.5 10h17M8 3v4M16 3v4"/>'),
+  users: s('<circle cx="9" cy="8.5" r="3.3" stroke="currentColor" stroke-width="1.7"/><path stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M3 19c.5-3.2 2.9-5.2 6-5.2s5.5 2 6 5.2"/><path stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M15.5 5.6a3 3 0 0 1 0 5.8M17.8 14.2c1.8.7 3 2.4 3.2 4.6"/>'),
+  refresh: s('<path stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5"/><path stroke="currentColor" stroke-width="1.9" stroke-linecap="round" d="M12 8v4.3l2.6 1.6"/>'),
+  check: s('<path stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M4 12.5l5 5L20 6.5"/>'),
+  info: s('<circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M12 11v6"/><circle cx="12" cy="7.6" r="1.3" fill="currentColor"/>'),
+  bomb: s('<circle cx="11" cy="14" r="7.2" fill="currentColor"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M15.6 9.4l2.2-2.2"/><path stroke="#ffce00" stroke-width="1.8" stroke-linecap="round" d="M18.6 4.2l.6-1.4M20.6 6.2l1.4-.6M19.9 4.9l1-1"/><circle cx="8.6" cy="11.6" r="1.6" fill="#fff" opacity=".55"/>'),
+  play: s('<path fill="currentColor" d="M8 5.5v13c0 .8.9 1.3 1.6.8l9.6-6.5a1 1 0 0 0 0-1.6L9.6 4.7C8.9 4.2 8 4.7 8 5.5z"/>'),
   support: s('<path stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" d="M4 12a8 8 0 1116 0v4.5a2 2 0 01-2 2h-1.5V12H20M4 12h3.5v6.5H6a2 2 0 01-2-2V12z"/>'),
 };
 
@@ -263,16 +308,16 @@ function starsBg(cls = '') {
   return `<div class="stars-bg ${cls}" aria-hidden="true">${cached}</div>`;
 }
 
-// Карточки «Ставка/Выигрыш» с вогнутой стороной под кольцо (Figma: "выборы" → Exclude)
-function choiceShape(side = 'l') {
-  // прямоугольник 105×103 r15, со стороны кольца вырезана дуга
-  const d = side === 'l'
-    ? 'M15 .5H104.5C88 18 82 34 82 51.5S88 85 104.5 102.5H15A14.5 14.5 0 0 1 .5 88V15A14.5 14.5 0 0 1 15 .5Z'
-    : 'M90 .5H.5C17 18 23 34 23 51.5S17 85 .5 102.5H90A14.5 14.5 0 0 0 104.5 88V15A14.5 14.5 0 0 0 90 .5Z';
-  return `<svg class="choice__bg" viewBox="0 0 105 103" preserveAspectRatio="none"><path d="${d}"/></svg>`;
+// Карточки «Ставка/Выигрыш» 114×110 с неглубоким вырезом под кольцо (Figma: "выборы" → Exclude)
+function choiceShape() {
+  const d = 'M14 .5H101C109 .5 113.3 4 113 11A170 170 0 0 0 113 99C113.3 106 109 109.5 101 109.5H14A13.5 13.5 0 0 1 .5 96V14A13.5 13.5 0 0 1 14 .5Z';
+  return `<svg class="choice__bg" viewBox="0 0 114 110" preserveAspectRatio="none"><path d="${d}"/></svg>`;
 }
 
 const starIcon = icon.star;
+
+// Кубок для «Как это работает» — запасной рисунок, если нет img/trophy.png
+const TROPHY_SVG = `<svg viewBox="0 0 54 76" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="tg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe9a3"/><stop offset=".45" stop-color="#f2b822"/><stop offset="1" stop-color="#a86a06"/></linearGradient><radialGradient id="tg2" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#bfe3ff"/><stop offset=".5" stop-color="#2f8cf0"/><stop offset="1" stop-color="#0b3f9e"/></radialGradient></defs><path d="M9 6c4 9 6 22 18 30 12-8 14-21 18-30" fill="none" stroke="url(#tg1)" stroke-width="5" stroke-linecap="round"/><path d="M14 4c2 10 5 20 13 26 8-6 11-16 13-26" fill="none" stroke="url(#tg1)" stroke-width="3.5" stroke-linecap="round"/><circle cx="27" cy="22" r="11" fill="url(#tg2)" stroke="#f7d36a" stroke-width="2"/><text x="27" y="25.5" font-family="Arial" font-weight="900" font-size="9" fill="#fff" text-anchor="middle">TOP</text><path d="M24 36h6l2 14h-10z" fill="url(#tg1)"/><path d="M15 52h24l3 9H12z" fill="url(#tg1)"/><rect x="9" y="61" width="36" height="9" rx="2.5" fill="#7a4a07"/><rect x="11" y="63" width="32" height="5" rx="1.5" fill="url(#tg1)"/></svg>`;
 
 // ======================= api.js =======================
 // Слой данных. В Telegram — реальный бэкенд (CONFIG.API_BASE), в обычном браузере — демо-режим на моках.
@@ -316,6 +361,8 @@ const state = {
   tasks: [],
   packs: [{ stars: 100, bonus: 0 }, { stars: 500, bonus: 0 }, { stars: 1000, bonus: 0 }],
   levels: null,
+  mines: null,
+  prizes: null,
   config: {},
 };
 
@@ -324,6 +371,7 @@ function applyState(st) {
     user: st.user, balance: st.balance, subscribed: st.subscribed, wallet: st.wallet,
     inventory: st.inventory, transactions: st.transactions, referrals: st.referrals, tasks: st.tasks,
     packs: st.packs || state.packs, levels: st.levels, rates: st.rates || state.rates, config: st.config || {},
+    mines: st.mines || null, prizes: st.prizes || null,
   });
   if (st.catalog?.length) api.catalog = st.catalog;
 }
@@ -472,10 +520,58 @@ const api = {
     return { ok: true, win, chance };
   },
 
+  // ---------- мины ----------
+  minesMult(mines, opened) {
+    if (opened <= 0) return 1;
+    let m = 1;
+    for (let i = 0; i < opened; i++) m *= (25 - i) / (25 - mines - i);
+    return Math.round(m * (1 - this.cfg('minesEdge', 0.03)) * 100) / 100;
+  },
+  _minesView(g) {
+    const k = g.opened.length;
+    return { stake: g.stake, mines: g.mines, opened: [...g.opened], mult: this.minesMult(g.mines, k), next: k < 25 - g.mines ? this.minesMult(g.mines, k + 1) : null };
+  },
+  async minesStart(stake, mines) {
+    if (this.live) { const r = await request('/api/mines/start', { stake, mines }); state.balance.stars = r.balance; state.mines = r.game; return r.game; }
+    if (stake < 1) throw new ApiError('bad_amount');
+    if (stake > state.balance.stars) throw new ApiError('no_stars');
+    const cells = [...Array(25).keys()];
+    for (let i = cells.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cells[i], cells[j]] = [cells[j], cells[i]]; }
+    this._demoMines = { stake, mines, board: cells.slice(0, mines), opened: [] };
+    state.balance.stars -= stake; demoTx('fee', stake, { game: 'Мины', item: 'stars' });
+    state.mines = this._minesView(this._demoMines);
+    return state.mines;
+  },
+  _demoFinish(g) {
+    const mult = this.minesMult(g.mines, g.opened.length), win = Math.floor(g.stake * mult);
+    state.balance.stars += win; demoTx('win', win, { game: 'Мины', item: 'stars' });
+    this._demoMines = null; state.mines = null;
+    return { win, mult, board: g.board, game: null };
+  },
+  async minesOpen(cell) {
+    if (this.live) { const r = await request('/api/mines/open', { cell }); state.balance.stars = r.balance; state.mines = r.game; return r; }
+    const g = this._demoMines; if (!g) throw new ApiError('not_found');
+    await wait(120);
+    if (g.board.includes(cell)) { this._demoMines = null; state.mines = null; return { boom: true, cell, board: g.board, game: null }; }
+    if (!g.opened.includes(cell)) g.opened.push(cell);
+    if (g.opened.length >= 25 - g.mines) return { boom: false, cell, ...this._demoFinish(g) };
+    state.mines = this._minesView(g);
+    return { boom: false, cell, game: state.mines };
+  },
+  async minesCashout() {
+    if (this.live) { const r = await request('/api/mines/cashout', {}); state.balance.stars = r.balance; state.mines = null; return r; }
+    const g = this._demoMines; if (!g) throw new ApiError('not_found');
+    if (!g.opened.length) throw new ApiError('not_ready');
+    return this._demoFinish(g);
+  },
+
   // ---------- пополнение Stars (1 ⭐ = 1 Telegram Star) ----------
   async deposit(stars) {
     if (this.live) {
-      const { link } = await request('/api/invoice', { stars });
+      const r = await request('/api/invoice', { stars });
+      // тестовый режим на сервере (FREE_DEPOSIT): звёзды зачислены сразу, без оплаты
+      if (r.credited !== undefined) { state.balance.stars = r.balance; this.refresh().catch(() => {}); return { ok: true, status: 'paid', credited: r.credited }; }
+      const { link } = r;
       const status = await new Promise((resolve) => {
         if (tg?.openInvoice) tg.openInvoice(link, resolve); else { window.open(link, '_blank'); resolve('pending'); }
       });
@@ -516,7 +612,7 @@ const api = {
     const now = new Date();
     const end = new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime();
     return {
-      season: now.getMonth() + 1, end, players: 248,
+      season: now.getMonth() + 1, end, players: 248, prizes: ['gift-126', 'gift-128', 'gift-127'].map((id) => this.catalog.find((g) => g.id === id)),
       top: DEMO_PLAYERS.map((p, i) => ({ ...p, value: 12000 - i * 1150, nft: this.catalog[i % this.catalog.length] })),
     };
   },

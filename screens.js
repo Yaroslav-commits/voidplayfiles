@@ -238,6 +238,9 @@ async function copyRef() {
 // TODO: TON Connect (@tonconnect/ui) + проверка платежей через TON Center на бэке
 function connectWallet() { soonToast(); }
 
+// «← Назад» и «?» под шапкой (Figma: upgrader update)
+const topbar = (backId, helpId) => `<div class="topbar"><button class="back" id="${backId}"><span class="ico">${icon.arrowLeft}</span>${t('up.back')}</button><button class="qbtn" id="${helpId}" aria-label="help"><span class="ico">${icon.helpCircle}</span></button></div>`;
+
 // ======================= экран: home =======================
 const home = (() => {
   // Главная: LIVE-лента, карусель бонусов, промокод, сетка игр
@@ -255,7 +258,7 @@ const home = (() => {
   ];
 
   const GAMES = [
-    { id: 'mines', c: 'blue' }, { id: 'lottery', c: 'pink' },
+    { id: 'mines', c: 'blue', route: 'mines' }, { id: 'lottery', c: 'pink' },
     { id: 'cases', c: 'pink' }, { id: 'crash', c: 'blue' },
     { id: 'upgrade', c: 'blue', route: 'upgrader' }, { id: 'waterball', c: 'pink' },
     { id: 'ball', c: 'pink' }, { id: 'hockey', c: 'blue' },
@@ -415,25 +418,26 @@ const upgrader = (() => {
     if (S.gift && !st.inventory.some((g) => g.uid === S.gift.uid)) S.gift = null;
     root.innerHTML = `
       <div class="up">
-        <button class="up__help" id="upHelp" aria-label="help">${icon.question}</button>
+        ${topbar('upBack', 'upHelp')}
         <div class="up__stage">
           <div class="up__label up__label--l">${t('up.stake')}</div>
           <div class="up__label up__label--r">${t('up.win')}</div>
           <div class="choice choice--l" id="chL"></div>
           <div class="choice choice--r" id="chR"></div>
           <div class="ring" id="ring">
+            <div class="ring__glow"></div>
             <div class="ring__outer"></div>
             <div class="ring__dim" id="ringDim"></div>
             <div class="ring__inner"><span class="ring__pct" id="ringPct">0%</span><span class="ring__mul" id="ringMul">x0</span></div>
-            <div class="ring__spin" id="ringSpin"><svg class="ring__arrow" viewBox="0 0 24 22"><path fill="currentColor" d="M12 1.5c.6 0 1.1.3 1.4.8l9.4 16.4c.6 1.1-.2 2.3-1.4 2.3H2.6c-1.2 0-2-1.2-1.4-2.3L10.6 2.3c.3-.5.8-.8 1.4-.8z"/></svg></div>
+            <div class="ring__spin" id="ringSpin"><svg class="ring__arrow" viewBox="0 0 27 24"><path fill="currentColor" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" d="M13.5 2.2L24.6 21.6 13.5 15.6 2.4 21.6z"/></svg></div>
           </div>
-          <button class="up__go" id="upGo"><span class="ico">${icon.chevronUp}</span>${t('up.go')}</button>
         </div>
+        <button class="up__go" id="upGo"><span class="ico">${icon.chevronUp}</span>${t('up.go')}</button>
 
-        <section class="bet">
+        <section class="bet" id="bet">
           <div class="bet__tabs">
-            <button class="bet__tab" data-tab="stars">${starsBg()}<span style="position:relative">${t('up.tabStars')}</span></button>
-            <button class="bet__tab" data-tab="gifts">${starsBg()}<span style="position:relative">${t('up.tabGifts')}</span></button>
+            <button class="bet__tab" data-tab="stars">${starsBg()}<span>${t('up.tabStars')}</span></button>
+            <button class="bet__tab" data-tab="gifts">${starsBg()}<span>${t('up.tabGifts')}</span></button>
           </div>
           <div class="bet__body" id="betBody"></div>
         </section>
@@ -458,20 +462,20 @@ const upgrader = (() => {
       const L = $('#chL'), R = $('#chR');
       if (S.tab === 'gifts' && S.gift) {
         L.className = 'choice choice--l';
-        L.innerHTML = `${choiceShape('l')}<span class="choice__name">${esc(S.gift.name)}</span>${img(S.gift.img, 'choice__img')}<span class="choice__val">${fmt(S.gift.price)}${starIco()}</span>`;
+        L.innerHTML = `${choiceShape()}<span class="choice__name">${esc(S.gift.name)}</span>${img(S.gift.img, 'choice__img')}<span class="choice__val">${fmt(S.gift.price)}${starIco()}</span>`;
       } else if (S.tab === 'stars' && v > 0) {
         L.className = 'choice choice--l';
-        L.innerHTML = `${choiceShape('l')}<span class="choice__name">Stars</span><span class="choice__img" style="display:grid;place-items:center;color:#ffce00;font-size:44px">${icon.star}</span><span class="choice__val">${fmt(v)}${starIco()}</span>`;
+        L.innerHTML = `${choiceShape()}<span class="choice__name">Stars</span><span class="choice__star ico">${icon.star}</span><span class="choice__val">${fmt(v)}${starIco()}</span>`;
       } else {
         L.className = 'choice choice--l is-empty';
-        L.innerHTML = `${choiceShape('l')}<span></span><span class="choice__hint">${t('up.pickStake')}</span><span></span>`;
+        L.innerHTML = `${choiceShape()}<span></span><span class="choice__hint">${t('up.pickStake')}</span><span></span>`;
       }
       if (S.target) {
         R.className = 'choice choice--r';
-        R.innerHTML = `${choiceShape('r')}<span class="choice__name">${esc(S.target.name)}</span>${img(S.target.img, 'choice__img')}<span class="choice__val">${fmt(S.target.price)}${starIco()}</span>`;
+        R.innerHTML = `${choiceShape()}<span class="choice__name">${esc(S.target.name)}</span>${img(S.target.img, 'choice__img')}<span class="choice__val">${fmt(S.target.price)}${starIco()}</span>`;
       } else {
         R.className = 'choice choice--r is-empty';
-        R.innerHTML = `${choiceShape('r')}<span></span><span class="choice__hint">${t('up.pickTarget')}</span><span></span>`;
+        R.innerHTML = `${choiceShape()}<span></span><span class="choice__hint">${t('up.pickTarget')}</span><span></span>`;
       }
       const ch = api.chance(v, S.target?.price);
       $('#ringPct').textContent = `${(ch * 100).toFixed(ch < 0.1 ? 2 : 1).replace(/\.0+$/, '')}%`;
@@ -480,9 +484,11 @@ const upgrader = (() => {
       $('#upGo').disabled = !(v > 0 && S.target) || S.spinning;
     }
 
+    const fitBet = () => { const b = $('#bet'); if (b) b.style.setProperty('--bh', `${b.offsetHeight}px`); };
     function drawBet() {
       root.querySelectorAll('.bet__tab').forEach((b) => b.classList.toggle('is-active', b.dataset.tab === S.tab));
       const body = $('#betBody');
+      requestAnimationFrame(fitBet);
       if (S.tab === 'stars') {
         body.innerHTML = `${starsBg()}
           <div class="bet__title">${t('up.enterBet')}</div>
@@ -581,6 +587,7 @@ const upgrader = (() => {
     });
     $('#tTopUp').addEventListener('click', () => { sound(); openAddGift(); });
     $('#upHelp').addEventListener('click', () => { sound(); openAddGift(); });
+    $('#upBack').addEventListener('click', () => { sound(); go('home'); });
     $('#upGo').addEventListener('click', spin);
 
     drawBet(); drawTargets(); drawChoices();
@@ -648,7 +655,6 @@ const profile = (() => {
 
       <section class="invite">
         <div class="invite__clip"><img class="invite__bear" src="img/bear.png" alt="" onerror="this.remove()" /></div>
-        <div class="invite__head"><img src="img/bear.png" alt="" onerror="this.remove()" /></div>
         <div class="invite__text">${t('prof.invite')}</div>
         <button class="invite__btn" id="invBtn">${t('prof.inviteBtn')}<span class="ico">${icon.plusCircle}</span></button>
         <button class="invite__share" id="shareBtn" aria-label="share"><span class="ico">${icon.share}</span></button>
@@ -771,42 +777,60 @@ const tasks = (() => {
 
 // ======================= экран: leaders =======================
 const leaders = (() => {
-  // Лидеры: сезон (месяц), таймер до конца, пьедестал и таблица. Тап по игроку — его ЛС
+  // Лидеры (Figma: leaders): сезон, таймер, «Как это работает», пьедестал, таблица. Тап по игроку — его ЛС
+  const prizesOf = (L) => (L.prizes?.length ? L.prizes : api.state.prizes?.length ? api.state.prizes : [api.catalog[1], api.catalog[2], api.catalog[3]]);
+  const dateLong = (ms) => new Date(ms).toLocaleDateString(getLang() === 'en' ? 'en-GB' : 'ru-RU', { day: 'numeric', month: 'long' });
+
   function render(root) {
     let iv;
     const draw = (L) => {
       const top = L.top || [];
-      const nftOf = (p) => p.nft || api.catalog[0];
-      const pod = (p, n) => (p ? `
-        <div class="pod pod--${n}">
-          <div class="pod__n">${n}</div>${avatarHtml(p, api.avatarUrl(p), 'pod__ava')}
-          <div class="pod__u" ${tgAttr(p)}>${esc(p.username ? '@' + p.username : p.name)}</div>
-          <div class="pod__v">${fmt(p.value)}${starIco()}</div>${img(nftOf(p).img)}<div class="pod__nft">${esc(nftOf(p).name)}</div>
-        </div>` : `<div class="pod pod--${n} pod--empty"><div class="pod__n">${n}</div></div>`);
-      const showcase = top.length >= 3 ? [nftOf(top[1]), nftOf(top[0]), nftOf(top[2])] : [api.catalog[1], api.catalog[0], api.catalog[2]];
+      const prizes = prizesOf(L);
+      const name = (p) => esc(p.username ? p.username : p.name);
+      const pod = (p, n) => {
+        const prize = prizes[n - 1] || api.catalog[0];
+        return `
+        <div class="pod pod--${n} ${p ? '' : 'pod--empty'}">
+          <div class="pod__n">${n}</div>
+          <div class="pod__box" ${p ? tgAttr(p) : ''}>
+            ${p ? avatarHtml(p, api.avatarUrl(p), 'pod__ava') : '<span class="pod__ava"></span>'}
+            <div class="pod__u">${p ? name(p) : '—'}</div>
+            <div class="pod__v">${p ? fmt(p.value) : 0}${starIco()}</div>
+          </div>
+          ${img(prize.img)}
+          <div class="pod__nft">${esc(prize.name)}</div>
+        </div>`;
+      };
+      const days = Math.max(1, Math.ceil((L.end - Date.now()) / 864e5));
       root.innerHTML = `
         <section class="season">
-          <span class="season__glow"></span>
-          <div class="season__top"><span class="chip"><span class="ico">${icon.star}</span>${t('lead.season', { n: L.season || 1 })}</span><span class="chip"><i></i>${t('lead.active')}</span></div>
-          <div class="season__nfts">${showcase.map((g) => img(g.img)).join('')}</div>
-          <div class="season__row"><div><span class="ico">${icon.people}</span>${t('lead.members', { n: fmt(L.players || 0) })}</div><div><span class="ico">${icon.clock}</span>${t('lead.until', { d: new Date(L.end).toLocaleDateString('ru-RU') })}</div></div>
+          <div class="season__top">
+            <span class="chip"><span class="ico">${icon.swirl}</span>${t('lead.season', { n: L.season || 1 })}</span>
+            <span class="chip chip--live"><i></i>${t('lead.active')}</span>
+          </div>
+          <div class="season__nfts">${[prizes[1], prizes[0], prizes[2]].filter(Boolean).map((g) => img(g.img)).join('')}</div>
+          <div class="season__row">
+            <div><span class="ico">${icon.users}</span>${t('lead.members', { n: fmt(L.players || 0) })}</div>
+            <div><span class="ico">${icon.calendar}</span>${t('lead.until', { d: dateLong(L.end) })}</div>
+          </div>
           <div class="timer" id="timer"></div>
         </section>
-        <button class="how" id="how"><span class="how__ico">${icon.question}</span><span><b>${t('lead.how')}</b><span>${t('lead.howText')}</span></span><span class="ico">${icon.chevronRight}</span></button>
-        ${top.length ? `<section class="podium">${pod(top[1], 2)}${pod(top[0], 1)}${pod(top[2], 3)}</section>` : `<div class="lead-empty">${t('lead.empty')}</div>`}
-        <div class="lead-note"><span class="ico">${icon.clock}</span>${t('lead.update', { n: Math.max(1, Math.ceil((L.end - Date.now()) / 864e5)) })}</div>
-        <section class="lead-list">${top.slice(3).map((p, i) => `
-          <div class="lrow"><span class="lrow__n">${i + 4}</span>${avatarHtml(p, api.avatarUrl(p), 'lrow__ava')}
-            <span class="lrow__nick" ${tgAttr(p)}>${esc(p.username ? '@' + p.username : p.name)}</span>
-            <span class="lrow__v"><span class="ico">${icon.star}</span>${fmt(p.value)}${img(nftOf(p).img)}</span></div>`).join('')}</section>`;
+        <button class="how" id="how"><span class="how__ico"><span class="ico">${icon.helpCircle}</span></span><span class="how__t"><b>${t('lead.how')}</b><small>${t('lead.howText')}</small></span><span class="ico">${icon.chevronRight}</span></button>
+        <section class="podium">${pod(top[1], 2)}${pod(top[0], 1)}${pod(top[2], 3)}</section>
+        <div class="lead-note"><span class="ico">${icon.refresh}</span><span>${t('lead.update')} <b>${t('lead.updateIn', { n: days, d: plural(days, 'days') })}</b></span></div>
+        <section class="lead-list">${top.length ? top.map((p, i) => `
+          <div class="lrow ${i < 3 ? `lrow--${i + 1}` : ''}" ${tgAttr(p)}><span class="lrow__n">${i + 1}</span>${avatarHtml(p, api.avatarUrl(p), 'lrow__ava')}
+            <span class="lrow__nick">${name(p)}</span>
+            <span class="lrow__v">${starIco()}${fmt(p.value)}</span><span class="lrow__nft">${p.nft ? img(p.nft.img) : ''}</span></div>`).join('')
+          : `<div class="lead-empty">${t('lead.empty')}</div>`}</section>`;
       const tick = () => {
         const el = root.querySelector('#timer'); if (!el) return;
         const ms = Math.max(0, L.end - Date.now());
         const v = [Math.floor(ms / 864e5), Math.floor(ms / 36e5) % 24, Math.floor(ms / 6e4) % 60, Math.floor(ms / 1e3) % 60];
-        el.innerHTML = v.map((n, i) => `<div><b>${n}</b><span>${t(['lead.d', 'lead.h', 'lead.m', 'lead.s'][i])}</span></div>`).join('');
+        el.innerHTML = v.map((n, k) => `<div><b>${n}</b><span>${t(['lead.d', 'lead.h', 'lead.m', 'lead.s'][k])}</span></div>`).join('');
       };
       tick(); clearInterval(iv); iv = setInterval(tick, 1000);
-      root.querySelector('#how').addEventListener('click', () => { sound(); soonToast(); });
+      root.querySelector('#how').addEventListener('click', () => { sound(); openHowTo(L); });
     };
 
     root.innerHTML = `<div class="lead-empty">…</div>`;
@@ -814,6 +838,190 @@ const leaders = (() => {
       if (current() === 'leaders') draw({ top: [], end: Date.now() + 864e5 * 30, players: 0, season: 1 });
     });
     return () => clearInterval(iv);
+  }
+
+  // «Как это работает» (Figma: Frame 538)
+  function openHowTo(L) {
+    const prizes = prizesOf(L);
+    const s = sheet(`
+      <div class="howto">
+        <img class="howto__cup" src="img/trophy.png" alt="" onerror="this.outerHTML='<div class=&quot;howto__cup&quot;>'+TROPHY_SVG+'</div>'" />
+        <div class="howto__title">${t('how.title')}</div>
+        <div class="howto__sub">${t('how.sub')}</div>
+        <div class="hcard hcard--blue">
+          <div class="hcard__h">${t('how.turnH')}</div>
+          <div class="hcard__li hcard__li--star"><span class="ico">${icon.star}</span><span>${t('how.turn1')}</span></div>
+          <p>${t('how.turn2')}</p>
+        </div>
+        <div class="hcard hcard--gold">
+          <div class="hcard__h">${t('how.prizesH')}</div>
+          <div class="prizes">${prizes.slice(0, 3).map((g, i) => `<div class="prize prize--${i + 1}"><b>${i + 1}</b>${img(g.img)}<span>${esc(g.name)}</span></div>`).join('')}</div>
+          <small>${t('how.prizesNote')}</small>
+        </div>
+        <div class="hcard hcard--green">
+          <div class="hcard__h">${t('how.datesH')}</div>
+          <div class="hcard__li hcard__li--ok"><span class="ico">${icon.check}</span><span>${t('how.dur')} ${t('how.durV')}</span></div>
+          <div class="hcard__li hcard__li--ok"><span class="ico">${icon.check}</span><span>${t('how.end')} ${dateLong(L.end)}</span></div>
+          <div class="hcard__li hcard__li--info"><span class="ico">${icon.info}</span><span>${t('how.reset')}</span></div>
+        </div>
+        <div class="hcard hcard--red">
+          <div class="hcard__h">${t('how.warnH')}</div>
+          <p>${t('how.warn')}</p>
+        </div>
+        <button class="btn-ok" id="howOk">${t('how.ok')}</button>
+      </div>`);
+    s.el.querySelector('#howOk').addEventListener('click', () => { sound(); s.close(); });
+  }
+  return { render };
+})();
+
+// ======================= экран: mines =======================
+const mines = (() => {
+  // Мины: поле 5×5, под клетками звёзды и мины. Каждая звезда растит множитель, забрать можно в любой момент
+  const COUNTS = [1, 3, 5, 10, 24];
+  const S = { stake: 0, count: 3, busy: false, reveal: null };
+
+  function openHelp() {
+    sheet(`
+      <div class="gift-add">
+        <div class="gift-add__title">${t('mines.helpTitle')}</div>
+        <div class="gsteps">
+          ${['h1', 'h2', 'h3', 'h4'].map((k, i) => `<div class="gsteps__row"><span class="gsteps__n">${i + 1}</span><span>${t('mines.' + k)}</span></div>`).join('')}
+        </div>
+      </div>`, { cls: 'sheet--plain' });
+  }
+
+  function render(root) {
+    const st = api.state;
+    S.busy = false; S.reveal = null;
+    if (st.mines) { S.count = st.mines.mines; S.stake = st.mines.stake; }
+    root.innerHTML = `
+      ${topbar('mBack', 'mHelp')}
+      <section class="mines__info">
+        <div class="minfo"><small>${t('mines.mult')}</small><b id="mMult">x1.00</b></div>
+        <div class="minfo minfo--next"><small>${t('mines.next')}</small><b id="mNext">x1.00</b></div>
+        <div class="minfo minfo--win"><small>${t('mines.win')}</small><b id="mWin">0${starIco()}</b></div>
+      </section>
+      <section class="mines__board"><div class="mgrid" id="mGrid">${Array.from({ length: 25 }, (_, i) => `<button class="cell" data-c="${i}" aria-label="${i + 1}"></button>`).join('')}</div></section>
+      <button class="mines__go" id="mGo"></button>
+      <section class="mines__bet" id="mBet">${starsBg()}
+        <div class="bet__title">${t('up.enterBet')}</div>
+        <label class="bet__amount"><span class="ico">${icon.star}</span><input id="mIn" inputmode="numeric" placeholder="0" /></label>
+        <div class="bet__usd" id="mUsd"></div>
+        <div class="bet__btns"><button data-d="-10">-10</button><button data-d="50">+50</button><button data-d="max">MAX</button></div>
+      </section>
+      <section class="mcount" id="mCount">
+        <div class="mcount__h">${t('mines.count')}<span id="mOf"></span></div>
+        <div class="mcount__row">${COUNTS.map((n) => `<button data-n="${n}"><span class="ico">${icon.bomb}</span>${n}</button>`).join('')}</div>
+      </section>`;
+
+    const $ = (q) => root.querySelector(q);
+    const inp = $('#mIn');
+    const cells = [...root.querySelectorAll('.cell')];
+    const fit = () => { inp.style.width = `${Math.max(1, (inp.value || '0').length) + 0.6}ch`; };
+
+    function draw() {
+      const g = st.mines;
+      const live = !!g;
+      const opened = g ? g.opened : [];
+      cells.forEach((c, i) => {
+        const isStar = opened.includes(i);
+        let cls = 'cell';
+        let html = '';
+        if (isStar) { cls += ' is-star is-open'; html = icon.star; }
+        else if (S.reveal) {
+          if (S.reveal.board.includes(i)) { cls += ' is-bomb is-open' + (i === S.reveal.cell ? '' : ' is-ghost'); html = icon.bomb; }
+          else if (S.reveal.stars?.includes(i)) { cls += ' is-star is-open'; html = icon.star; }
+          else { cls += ' is-star is-open is-ghost'; html = icon.star; }
+        }
+        if (c.className !== cls) { c.className = cls; c.innerHTML = html ? `<span class="ico">${html}</span>` : ''; }
+        c.disabled = !live || isStar || S.busy;
+      });
+      $('#mGrid').classList.toggle('is-live', live);
+      const k = opened.length;
+      const mult = g ? g.mult : 1;
+      const next = g ? g.next : api.minesMult(S.count, 1);
+      $('#mMult').textContent = `x${mult.toFixed(2)}`;
+      $('#mNext').textContent = next ? `x${next.toFixed(2)}` : '—';
+      $('#mWin').innerHTML = `${fmt(g ? Math.floor(g.stake * mult) : 0)}${starIco()}`;
+      const go = $('#mGo');
+      if (live) {
+        go.className = 'mines__go is-cash';
+        go.innerHTML = `${t('mines.cash', { n: fmt(Math.floor(g.stake * mult)) })}<span class="ico">${icon.star}</span>`;
+        go.disabled = !k || S.busy;
+      } else {
+        go.className = 'mines__go';
+        go.innerHTML = `<span class="ico">${icon.play}</span>${t('mines.play')}`;
+        go.disabled = S.busy;
+      }
+      inp.disabled = live;
+      if (document.activeElement !== inp) { inp.value = S.stake || ''; fit(); }
+      $('#mUsd').textContent = `≈ $${(S.stake / st.rates.usdToStars).toFixed(2)}`;
+      $('#mCount').classList.toggle('is-locked', live);
+      $('#mBet').style.opacity = live ? '.6' : '';
+      $('#mBet').style.pointerEvents = live ? 'none' : '';
+      root.querySelectorAll('[data-n]').forEach((b) => b.classList.toggle('is-active', +b.dataset.n === S.count));
+      $('#mOf').textContent = t('mines.of', { n: 25 - S.count });
+    }
+
+    inp.addEventListener('input', () => {
+      S.stake = Math.max(0, parseInt(inp.value.replace(/\D/g, ''), 10) || 0);
+      inp.value = S.stake || ''; fit(); draw();
+    });
+    root.querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => {
+      sound('tick'); haptic();
+      const d = b.dataset.d;
+      S.stake = d === 'max' ? Math.floor(st.balance.stars) : Math.max(0, S.stake + +d);
+      draw();
+    }));
+    root.querySelectorAll('[data-n]').forEach((b) => b.addEventListener('click', () => { sound('tick'); haptic(); S.count = +b.dataset.n; S.reveal = null; draw(); }));
+
+    $('#mGo').addEventListener('click', async () => {
+      if (S.busy) return;
+      sound(); haptic('medium');
+      S.busy = true;
+      try {
+        if (st.mines) {
+          const r = await api.minesCashout();
+          document.dispatchEvent(new Event('balance'));
+          S.reveal = { board: r.board, cell: -1, stars: [] };
+          toast(t('mines.won', { n: fmt(r.win) }), 'win'); confetti({ y: 0.35, count: 110 });
+        } else {
+          if (!S.stake) { S.busy = false; return toast(t('toast.pickStake'), 'error'); }
+          if (S.stake > st.balance.stars) { S.busy = false; sound('lose'); return toast(t('toast.noStars'), 'error'); }
+          S.reveal = null;
+          await api.minesStart(S.stake, S.count);
+          document.dispatchEvent(new Event('balance'));
+        }
+      } catch (e) { errToast(e); }
+      S.busy = false; draw();
+    });
+
+    $('#mGrid').addEventListener('click', async (e) => {
+      const c = e.target.closest('.cell');
+      if (!c || c.disabled || S.busy || !st.mines) return;
+      S.busy = true; haptic();
+      const cell = +c.dataset.c;
+      const before = st.mines.opened.slice();
+      try {
+        const r = await api.minesOpen(cell);
+        if (r.boom) {
+          S.reveal = { board: r.board, cell, stars: before };
+          sound('lose'); haptic('error'); toast(t('mines.boom'), 'lose');
+        } else if (r.win !== undefined) {
+          S.reveal = { board: r.board, cell: -1, stars: [...before, cell] };
+          document.dispatchEvent(new Event('balance'));
+          toast(t('mines.won', { n: fmt(r.win) }), 'win'); confetti({ y: 0.35, count: 110 });
+        } else {
+          sound('tick');
+        }
+      } catch (err) { errToast(err); }
+      S.busy = false; draw();
+    });
+
+    $('#mBack').addEventListener('click', () => { sound(); go('home'); });
+    $('#mHelp').addEventListener('click', () => { sound(); openHelp(); });
+    draw();
   }
   return { render };
 })();

@@ -1,18 +1,3 @@
-r"""
-Выгрузка всех картинок Void Play из Figma в папку img/ сайта — одной командой.
-Положи этот файл в папку сайта (рядом с index.html), запусти, потом можешь удалить.
-
-1. Figma → аватарка → Settings → Security → Personal access tokens → Generate new token
-   (права: File content — Read only). Скопируй токен.
-2. Открой терминал в папке сайта (где лежит index.html) и запусти:
-       python figma_export.py figd_ТВОЙ_ТОКЕН
-   Windows:
-       py figma_export.py figd_ТВОЙ_ТОКЕН
-   Если интернет оборвётся — просто запусти ещё раз, скачанное не потеряется.
-3. Закоммить img/ и запушь.
-
-Нужен только Python 3.9+, без библиотек. Использует официальный Figma REST API.
-"""
 from __future__ import annotations
 
 import http.client

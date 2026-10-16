@@ -3,9 +3,9 @@
 
 // ======================= router.js =======================
 // Простой hash-роутер: #/home, #/upgrader, #/profile, #/referrals, #/tasks, #/leaders
-const ROUTES = { home, upgrader, profile, referrals, tasks, leaders, soon };
+const ROUTES = { home, upgrader, mines, profile, referrals, tasks, leaders, soon };
 // к какому пункту нижнего меню относится экран
-const NAV_OF = { home: 'home', upgrader: 'home', soon: 'home', leaders: 'leaders', profile: 'profile', referrals: 'profile', tasks: 'profile' };
+const NAV_OF = { home: 'home', upgrader: 'home', mines: 'home', soon: 'home', leaders: 'leaders', profile: 'profile', referrals: 'profile', tasks: 'profile' };
 
 let cleanup = null;
 let onChange = () => {};
