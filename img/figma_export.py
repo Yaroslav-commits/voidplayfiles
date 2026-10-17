@@ -97,16 +97,18 @@ def _load_cache() -> dict:
 def api(path: str, token: str) -> dict:
     """Запрос к Figma API. Ответ сохраняется в .figma_cache.json — повторный запуск
     не тратит лимит запросов (на бесплатном плане их ~20 в месяц)."""
+    use_cache = not path.startswith("/images/")
     cache = _load_cache()
-    if path in cache:
+    if use_cache and path in cache:
         return cache[path]
     for i in range(6):
         try:
             r = urllib.request.Request(f"{API}{path}", headers={"X-Figma-Token": token})
             with urllib.request.urlopen(r, timeout=300) as resp:
                 data = json.loads(resp.read())
-            cache[path] = data
-            CACHE.write_text(json.dumps(cache), encoding="utf-8")
+            if use_cache:
+                cache[path] = data
+                CACHE.write_text(json.dumps(cache), encoding="utf-8")
             return data
         except urllib.error.HTTPError as e:
             if e.code == 429:
@@ -119,7 +121,12 @@ def api(path: str, token: str) -> dict:
                 continue
             if e.code in (401, 403):
                 sys.exit("\n❌ Figma ответила 403: неверный токен или нет доступа к файлу.\n")
-            raise
+            try:
+                msg = json.loads(e.read()).get("err")
+            except Exception:  # noqa: BLE001
+                msg = ""
+            print(f"  Figma ответила {e.code}: {msg or e.reason}")
+            return {}
         except (urllib.error.URLError, http.client.HTTPException, OSError) as e:
             print(f"  связь с Figma оборвалась ({type(e).__name__}), пробую ещё раз…")
             time.sleep(5)
@@ -184,25 +191,99 @@ def done(rel: str) -> bool:
     return False
 
 
-def render(nodes: dict, token: str, fmt: str, scale: float = 2):
-    if all((OUT / rel).exists() or (OUT / rel).with_suffix(".webp").exists() for rel in nodes):
-        for rel in nodes:
-            done(rel)
-        return
-    ids = sorted(set(nodes.values()))
-    urls: dict = {}
-    for i in range(0, len(ids), 50):
-        chunk = ids[i:i + 50]
-        q = f"/images/{FILE_KEY}?ids={','.join(chunk)}&format={fmt}" + (f"&scale={scale}" if fmt == "png" else "")
-        urls.update(api(q, token).get("images", {}))
-    for rel, nid in nodes.items():
-        if done(rel):
-            continue
-        u = urls.get(nid)
-        if not u:
-            print(f"  ✗ {rel}: Figma не отрендерила {nid}")
-            continue
-        download(u, rel)
+def get_images(ids: list, token: str, scale: float = 3) -> dict:
+    """Ссылки на рендер слоёв. Пустые (null) — Figma не нашла/не смогла отрендерить слой."""
+    urls = {}
+    for k in range(0, len(ids), 20):
+        chunk = ids[k:k + 20]
+        r = api(f"/images/{FILE_KEY}?ids={','.join(chunk)}&format=png&scale={scale}", token)
+        if r.get("err"):
+            print(f"  Figma: {r['err']}")
+        urls.update({nid: u for nid, u in (r.get("images") or {}).items() if u})
+    return urls
+
+
+def render(nodes: dict, token: str, fmt: str = "png", scale: float = 3) -> list:
+    """Рендерит слои по id. Возвращает список того, что скачать не вышло."""
+    todo = {rel: nid for rel, nid in nodes.items() if not done(rel)}
+    if not todo:
+        return []
+    urls = get_images(sorted(set(todo.values())), token, scale)
+    missed = []
+    for rel, nid in todo.items():
+        if urls.get(nid):
+            download(urls[nid], rel)
+        else:
+            missed.append(rel)
+    return missed
+
+
+# ---------- поиск слоёв прямо в файле (если дизайнер пересобрал макет и id поменялись) ----------
+def _box(n):
+    b = n.get("absoluteBoundingBox") or {}
+    return b.get("x", 0), b.get("y", 0), b.get("width", 0), b.get("height", 0)
+
+
+def _walk(n, parents=()):
+    yield n, parents
+    for c in n.get("children", []) or []:
+        yield from _walk(c, parents + (n,))
+
+
+def find_layers(token: str, need: list) -> dict:
+    """Ищет нужные картинки по названиям слоёв и размерам. Возвращает {файл: id слоя}."""
+    print("  ищу слои в макете по названиям…")
+    doc = api(f"/files/{FILE_KEY}?depth=2", token).get("document") or {}
+    frames = {}
+    for page in doc.get("children", []):
+        for f in page.get("children", []):
+            frames.setdefault(f.get("name", "").strip().lower(), f["id"])
+    want = [frames[n] for n in ("main", "frame 538") if n in frames]
+    if not want:
+        print("  ✗ не нашёл фрейм «main» в файле")
+        return {}
+    nodes = api(f"/files/{FILE_KEY}/nodes?ids={','.join(want)}", token).get("nodes") or {}
+    found = {}
+
+    main = (nodes.get(frames.get("main", "")) or {}).get("document")
+    if main:
+        # карточки игр: 8 прямоугольников ~170×218, по порядку сверху вниз, слева направо
+        cards, taken = [], set()
+        for n, par in _walk(main):
+            x, y, w, h = _box(n)
+            if 150 <= w <= 190 and 195 <= h <= 240 and n.get("type") != "TEXT" and not (taken & {p["id"] for p in par}):
+                cards.append((round(y / 20), x, n["id"])); taken.add(n["id"])
+        cards.sort()
+        games = ["mines", "lottery", "cases", "crash", "upgrade", "waterball", "ball", "hockey"]
+        for g, c in zip(games, cards):
+            found[f"game-{g}.png"] = c[2]
+        # картинка в промокоде
+        for n, par in _walk(main):
+            if "promo" in n.get("name", "").lower():
+                art = next((c for c, _ in _walk(n) if c.get("name", "").lower() == "mask group"), None)
+                found["promo-art.png"] = (art or n)["id"]
+                break
+        # NFT: компоненты «Default 120», «Default 047» …
+        for n, _ in _walk(main):
+            name = n.get("name", "").strip().lower()
+            if name.startswith("default "):
+                num = name.split()[-1].zfill(3)
+                found.setdefault(f"gift-{num}.png", n["id"])
+
+    cup = (nodes.get(frames.get("frame 538", "")) or {}).get("document")
+    if cup:
+        # кубок: самая крупная картинка в верхней части окна «Как это работает»
+        fx, fy, fw, fh = _box(cup)
+        best = None
+        for n, _ in _walk(cup):
+            x, y, w, h = _box(n)
+            has_img = any(p.get("type") == "IMAGE" for p in n.get("fills", []) or [])
+            if n is not cup and (has_img or n.get("type") in ("INSTANCE", "GROUP")) and y - fy < fh * 0.2 and w < fw * 0.5 and h > 30:
+                if not best or w * h > best[0]:
+                    best = (w * h, n["id"])
+        if best:
+            found["trophy.png"] = best[1]
+    return {k: v for k, v in found.items() if k in need}
 
 
 def image_fills(token: str):
@@ -240,7 +321,7 @@ def sub_hero(token: str):
     walk(doc)
     if best:
         print(f"  картинка модалки: «{best[2]}»")
-        render({"sub-hero.png": best[1]}, token, "png")
+        render({"sub-hero.png": best[1]}, token, "png", 3)
     else:
         print("  ✗ картинку модалки подписки не нашёл — останется CSS-версия")
 
@@ -256,7 +337,16 @@ def main():
         print("⚠ Токен обычно начинается с figd_ — проверь, что скопировал его целиком.")
     OUT.mkdir(parents=True, exist_ok=True)
     print("Рендер слоёв (PNG 3x)…")
-    render(NODES_PNG, token, "png", 3)
+    missed = render(NODES_PNG, token, "png", 3)
+    if not done("trophy.png"):
+        missed.append("trophy.png")
+    if missed:
+        found = find_layers(token, missed)
+        if found:
+            print(f"  нашёл: {', '.join(sorted(found))}")
+            missed = [m for m in missed if m not in found] + render(found, token, "png", 3)
+        for m in missed:
+            print(f"  ✗ {m}: не нашёл в макете — выгрузи его из Figma вручную (Export → PNG → в папку img)")
     print("Исходные картинки…")
     image_fills(token)
     print("Модалка подписки…")
