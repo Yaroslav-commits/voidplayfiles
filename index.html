@@ -3,83 +3,76 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#171718" />
+  <meta name="theme-color" content="#06060b" />
+  <meta name="color-scheme" content="dark" />
   <title>Void Play</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Unbounded:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  
+  <script src="config.js"></script>
 </head>
 <body>
+  <!-- живой фон: туманность + звёздная пыль -->
+  <div class="bg" aria-hidden="true"><i class="bg__a"></i><i class="bg__b"></i><i class="bg__c"></i><i class="bg__dust"></i></div>
+
   <!-- ===== Экран загрузки ===== -->
-  <section id="loader" aria-label="Загрузка">
-    <div class="vpl-pattern" aria-hidden="true"></div>
-
-    <div class="vpl-stage">
-      <div class="vpl-brand">
-        <!-- логотип: «чёрная дыра» с кольцом (Figma: Group 1) -->
-        <svg class="vpl-logo" viewBox="0 0 120 120" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-          <defs><clipPath id="vpl-top"><rect x="0" y="0" width="120" height="61"/></clipPath></defs>
-          <!-- низ планеты под тарелкой -->
-          <path d="M41.5 69A18.5 12 0 0 0 78.5 69Z" fill="#000" stroke="#000" stroke-width="6.5" stroke-linejoin="round"/>
-          <path d="M43 69A17 10.5 0 0 0 77 69Z" fill="#000" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
-          <!-- силуэт тарелки: тонкая чёрная обводка вокруг белого -->
-          <g stroke="#000" stroke-width="4.5" fill="#000">
-            <ellipse cx="60" cy="61" rx="38" ry="10"/>
-            <circle cx="60" cy="59" r="21" clip-path="url(#vpl-top)"/>
-          </g>
-          <ellipse cx="60" cy="61" rx="38" ry="10" fill="#fff"/>
-          <circle cx="60" cy="59" r="21" fill="#fff" clip-path="url(#vpl-top)"/>
-          <!-- чёрный купол -->
-          <path d="M41.5 60A18.5 18.5 0 0 1 78.5 60Q60 66 41.5 60Z" fill="#000"/>
+  <section id="loader" class="loader" aria-label="Загрузка">
+    <div class="loader__mid">
+      <div class="logo">
+        <span class="logo__orbit logo__orbit--1"></span>
+        <span class="logo__orbit logo__orbit--2"></span>
+        <svg class="logo__mark" viewBox="0 0 120 120" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9db7ff"/><stop offset=".55" stop-color="#3d6bff"/><stop offset="1" stop-color="#ff3d7f"/></linearGradient>
+            <clipPath id="lgTop"><rect x="0" y="0" width="120" height="61"/></clipPath>
+          </defs>
+          <path d="M43 69A17 10.5 0 0 0 77 69Z" fill="#06060b" stroke="url(#lg1)" stroke-width="3" stroke-linejoin="round"/>
+          <ellipse cx="60" cy="61" rx="38" ry="10" fill="url(#lg1)"/>
+          <circle cx="60" cy="59" r="21" fill="url(#lg1)" clip-path="url(#lgTop)"/>
+          <path d="M41.5 60A18.5 18.5 0 0 1 78.5 60Q60 66 41.5 60Z" fill="#06060b"/>
         </svg>
-        <div class="vpl-title">VOID PLAY</div>
       </div>
-
-      <div class="vpl-bottom">
-        <div class="loader__welcome" data-i18n="loader.welcome">Welcome 2 Void Play</div>
-        <div class="vpl-bar"><div class="vpl-fill" id="loaderFill"></div></div>
-      </div>
+      <div class="loader__title" id="brand">VOID PLAY</div>
+      <div class="loader__bar"><i id="loaderFill"></i></div>
+      <div id="bootMsg"></div>
     </div>
   </section>
 
-  <!-- Приложение -->
+  <!-- ===== Приложение ===== -->
   <div id="app" class="app" hidden>
-    <header class="head" id="head"></header>
+    <header class="top" id="head"></header>
+    <div class="netbar" id="netbar"></div>
     <main id="screen" class="screen"></main>
     <nav class="nav" id="nav"></nav>
   </div>
 
-  <!-- Слои поверх -->
   <div id="toasts" class="toasts" aria-live="polite"></div>
-  <div id="overlay" class="overlay" hidden></div>
+  <div id="overlay" class="overlay"></div>
 
   <script>
-    // Если что-то сломалось и приложение не запустилось — показываем причину на экране загрузки
+    // название проекта из config.js
+    (function () {
+      var n = (window.VOIDPLAY_CONFIG && window.VOIDPLAY_CONFIG.APP_NAME) || 'Void Play';
+      document.title = n; document.getElementById('brand').textContent = n.toUpperCase();
+    })();
+    // если скрипты не загрузились — пишем причину на экране загрузки
     (function () {
       var errs = [];
       window.addEventListener('error', function (e) {
         var src = (e.filename || (e.target && (e.target.src || e.target.href)) || '').split('/').slice(-2).join('/');
-        errs.push((e.message || 'не загрузился файл') + (src ? ' (' + src + ')' : ''));
+        errs.push((e.message || 'файл не загрузился') + (src ? ' (' + src + ')' : ''));
       }, true);
-      window.addEventListener('unhandledrejection', function (e) { errs.push(String(e.reason && e.reason.message || e.reason)); });
       setTimeout(function () {
-        var l = document.getElementById('loader');
-        if (!l || l.classList.contains('is-done')) return;
-        var w = l.querySelector('.loader__welcome');
-        if (!w) return;
-        w.style.cssText = 'font-size:12px;line-height:1.4;color:#ff6b81;text-align:center;max-width:300px;white-space:normal';
-        w.textContent = window.__vpStarted
-          ? 'Сервер не отвечает. Проверь, что бот запущен.' + (errs.length ? ' ' + errs.join(' · ') : '')
-          : 'Ошибка запуска — не все файлы на месте (index.html, style.css, core.js, screens.js, app.js). ' + errs.join(' · ');
-      }, 12000);
+        if (window.__vpStarted) return;
+        var m = document.getElementById('bootMsg');
+        if (m) m.innerHTML = '<p class="bootfail">Ошибка запуска: ' + errs.join(' · ').replace(/</g, '&lt;') + '</p>';
+      }, 8000);
     })();
   </script>
-  <script src="core.js" defer></script>
-  <script src="screens.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="js/core.js" defer></script>
+  <script src="js/screens.js" defer></script>
+  <script src="js/app.js" defer></script>
 </body>
 </html>
