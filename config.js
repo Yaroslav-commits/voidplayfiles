@@ -14,10 +14,10 @@ window.VOIDPLAY_CONFIG = {
   BOT_USERNAME: 'voidplay_bot',
 
   // Ссылки по умолчанию (настоящие приходят с сервера)
-  CHANNEL_URL: 'https://t.me/voidplay',
-  SUPPORT_URL: 'https://t.me/voidplay_support',
+  CHANNEL_URL: 'https://t.me/testkanalbot',
+  SUPPORT_URL: 'https://t.me/nersew',
   TERMS_URL: 'https://telegra.ph/',
-  GIFTS_ACCOUNT: '@voidplay',
+  GIFTS_ACCOUNT: '@nersew',
 
   // Призы сезона на экране «Топ» (id подарков из каталога): 1, 2, 3 место
   SEASON_PRIZES: ['pepe', 'gift-126', 'gift-074'],
