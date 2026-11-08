@@ -132,7 +132,7 @@ function openSubscribe() {
       const r = await api.checkSubscription();
       balanceChanged();
       if (r.reward) { toast(t('toast.gotStars', { n: r.reward }), 'success'); confetti(); }
-      m.close();
+      m.close(); document.dispatchEvent(new Event('state'));
     } catch (e) {
       btn.disabled = false; btn.classList.remove('is-loading'); btn.textContent = t('sub.btn'); errToast(e);
     }
@@ -238,6 +238,74 @@ function wirePromo(root) {
   });
 }
 
+// ---------- Первый заработок без вложений ----------
+// Шаги, которые дают звёзды без пополнения: стартовый бонус, подписка, ежедневный бонус, 5 ставок, друг
+function freeSteps() {
+  const st = api.state;
+  const bets = st.tasks.find((x) => x.id === 'bets5');
+  const wb = api.cfg('welcomeBonus', 0);
+  const steps = [];
+  if (wb > 0) steps.push({ id: 'welcome', ic: icon.gift, reward: wb, done: true, title: t('free.welcome'), text: t('free.welcomeT') });
+  steps.push({ id: 'sub', ic: icon.bolt, reward: api.cfg('subscribeReward', CONFIG.SUBSCRIBE_REWARD), done: !!st.subscribed, title: t('free.sub1'), text: t('free.sub1T') });
+  steps.push({ id: 'daily', ic: icon.calendar, reward: st.daily?.reward || api.cfg('dailyReward', 5), done: st.daily?.ready === false, title: t('free.daily'), text: st.daily?.ready === false ? t('free.dailyDone') : t('free.dailyT'), repeat: true });
+  if (bets) steps.push({ id: 'bets', ic: icon.play, reward: bets.reward, done: !!bets.claimed, ready: bets.progress >= bets.goal, title: t('free.bets'), text: `${t('free.betsT')} · ${Math.min(bets.progress, bets.goal)}/${bets.goal}` });
+  steps.push({ id: 'ref', ic: icon.people, reward: st.referrals.perFriend || 10, done: st.referrals.count > 0, title: t('free.ref'), text: t('free.refT', { n: st.referrals.perFriend || 10 }), repeat: true });
+  const total = steps.reduce((a, x) => a + x.reward, 0);
+  const done = steps.filter((x) => x.done).length;
+  return { steps, total, done, left: steps.length - done };
+}
+// карточка на главной
+function freeCard() {
+  const f = freeSteps();
+  if (!f.left) return '';
+  return `<button class="freecard" id="freeCard">
+    ${deco('star-char', 'freecard__art')}
+    <span class="freecard__txt"><b>${t('free.title')}</b><span>${t('free.sub', { n: f.total })}</span>
+      <span class="freecard__prog"><span class="bar"><i style="width:${(f.done / f.steps.length) * 100}%"></i></span><em>${f.done}/${f.steps.length}</em></span></span>
+    <span class="freecard__go">${icon.arrowRight}</span>
+  </button>`;
+}
+// полный список шагов (вкладка «Бонусы»)
+function freeBlock() {
+  const f = freeSteps();
+  return `<section class="free">
+    <div class="free__head">
+      ${deco('star-char', 'free__art')}
+      <b>${t('free.title')}</b><span>${t('free.sub', { n: f.total })}</span>
+      <span class="freecard__prog"><span class="bar"><i style="width:${(f.done / f.steps.length) * 100}%"></i></span><em>${f.done}/${f.steps.length}</em></span>
+    </div>
+    <div class="free__list">${f.steps.map((x) => `
+      <button class="fstep ${x.done ? 'is-done' : ''} ${x.ready && !x.done ? 'is-ready' : ''}" data-free="${x.id}" ${x.done && !(x.id === 'ref') ? 'disabled' : ''}>
+        <span class="fstep__ico">${x.done ? icon.check : x.ic}</span>
+        <span class="fstep__txt"><b>${x.title}</b><span>${x.text}</span></span>
+        <span class="fstep__r">${star()}+${fmt(x.reward)}${x.repeat ? `<small>${t('free.repeat')}</small>` : ''}</span>
+      </button>`).join('')}</div>
+    ${f.left ? '' : `<p class="free__all">${icon.check}${t('free.all')}</p>`}
+  </section>`;
+}
+function wireFree(root, redraw) {
+  root.querySelector('#freeCard')?.addEventListener('click', () => { sound(); haptic(); go('bonus'); });
+  root.querySelectorAll('[data-free]').forEach((b) => b.addEventListener('click', async () => {
+    sound(); haptic();
+    const id = b.dataset.free;
+    if (id === 'sub') openSubscribe();
+    else if (id === 'ref') shareRef();
+    else if (id === 'bets') {
+      const bets = api.state.tasks.find((x) => x.id === 'bets5');
+      if (bets && bets.progress >= bets.goal && !bets.claimed) {
+        b.classList.add('is-loading');
+        try { const r = await api.claimTask('bets5'); balanceChanged(); toast(t('toast.gotStars', { n: r }), 'success'); confetti({ count: 80 }); } catch (e) { errToast(e); }
+        redraw && redraw();
+      } else go('mines');
+    } else if (id === 'daily') {
+      b.classList.add('is-loading');
+      try { const r = await api.claimDaily(); balanceChanged(); toast(t('toast.gotStars', { n: r }), 'success'); confetti({ y: 0.3, count: 80 }); }
+      catch (e) { if (e.code === 'already') toast(t('bonus.daily.taken'), 'error'); else errToast(e); }
+      redraw && redraw();
+    }
+  }));
+}
+
 // ---------- Рефералка ----------
 function shareRef() {
   openLink(`https://t.me/share/url?url=${encodeURIComponent(api.refLink())}&text=${encodeURIComponent(t('prof.shareText'))}`);
@@ -287,6 +355,8 @@ const home = (() => {
         <div class="sec-h"><h2><span class="live-dot"></span>${t('home.live')}</h2></div>
         <div class="ticker__list hscroll" id="feed"></div>
       </section>
+
+      <div id="freeSlot">${freeCard()}</div>
 
       <section class="hero" id="hero">
         <span class="hero__orb hero__orb--1"></span><span class="hero__orb hero__orb--2"></span>
@@ -375,20 +445,23 @@ const home = (() => {
           const reward = await api.claimDaily();
           balanceChanged(); toast(t('toast.gotStars', { n: reward }), 'success'); confetti({ y: 0.3, count: 90 });
         } catch (err) { if (err.code === 'already') toast(t('bonus.daily.taken'), 'error'); else errToast(err); }
-        b.classList.remove('is-loading');
+        b.classList.remove('is-loading'); drawFree();
       } else if (act === 'invite') shareRef();
       else if (act === 'deposit') openPay('dep');
       else if (act === 'tasks') go('bonus');
     });
 
     root.querySelector('#hero').addEventListener('click', () => { sound(); haptic('medium'); go('upgrader'); });
+    const drawFree = () => { const slot = root.querySelector('#freeSlot'); if (slot) { slot.innerHTML = freeCard(); wireFree(slot); } };
+    wireFree(root);
+    document.addEventListener('state', drawFree); document.addEventListener('balance', drawFree);
     root.querySelectorAll('.game').forEach((el) => el.addEventListener('click', () => {
       const g = GAMES.find((x) => x.id === el.dataset.game);
       if (g.route) { sound(); haptic('medium'); go(g.route); return; }
       sound('lose'); haptic('warning'); el.classList.remove('is-shake'); void el.offsetWidth; el.classList.add('is-shake'); soonToast();
     }));
 
-    return () => { alive = false; clearInterval(auto); clearTimeout(liveTimer); };
+    return () => { alive = false; clearInterval(auto); clearTimeout(liveTimer); document.removeEventListener('state', drawFree); document.removeEventListener('balance', drawFree); };
   }
   return { render, GAMES };
 })();
@@ -641,7 +714,7 @@ const mines = (() => {
       $r('#mWin').innerHTML = `${star()}${fmt(g ? Math.floor(g.stake * mult) : 0)}`;
       const goBtn = $r('#mGo');
       if (live) {
-        goBtn.className = 'btn btn--xl btn--block btn--gold';
+        goBtn.className = 'btn btn--xl btn--block btn--green';
         goBtn.innerHTML = `${t('mines.cash', { n: fmt(Math.floor(g.stake * mult)) })}${icon.star}`;
         goBtn.disabled = !k || S.busy;
       } else {
@@ -804,20 +877,9 @@ const bonus = (() => {
   function render(root) {
     const draw = () => {
       const st = api.state;
-      const n = api.cfg('subscribeReward', CONFIG.SUBSCRIBE_REWARD);
       root.innerHTML = `
         <div class="page-title"><h1>${t('task.title')}</h1><p>${t('task.text')}</p></div>
-        <section class="bigcard bigcard--blue">
-          ${deco('calendar', 'bigcard__art')}
-          <div class="bigcard__txt"><b>${t('bonus.daily.title')}</b><span>${t('bonus.daily.text')}</span></div>
-          <button class="btn btn--white" id="daily">${icon.gift}${t('bonus.daily.btn')}</button>
-        </section>
-        ${st.subscribed ? '' : `
-        <section class="bigcard bigcard--pink">
-          ${deco('star-char', 'bigcard__art')}
-          <div class="bigcard__txt"><b>${t('sub.title', { n })}</b><span>${t('sub.text')}</span></div>
-          <button class="btn btn--white" id="subGo">${t('sub.btn')}</button>
-        </section>`}
+        ${freeBlock()}
         <div class="sec-h"><h2>${t('task.list')}</h2></div>
         <section class="tasks">${st.tasks.map((x) => {
           const done = x.progress >= x.goal;
@@ -834,15 +896,7 @@ const bonus = (() => {
         ${promoBlock()}
         ${refBanner()}`;
 
-      root.querySelector('#daily').addEventListener('click', async (e) => {
-        sound(); haptic('medium'); const b = e.currentTarget; b.classList.add('is-loading');
-        try {
-          const reward = await api.claimDaily();
-          balanceChanged(); toast(t('toast.gotStars', { n: reward }), 'success'); confetti({ y: 0.25, count: 90 });
-        } catch (err) { if (err.code === 'already') toast(t('bonus.daily.taken'), 'error'); else errToast(err); }
-        b.classList.remove('is-loading');
-      });
-      root.querySelector('#subGo')?.addEventListener('click', () => { sound(); openSubscribe(); });
+      wireFree(root, draw);
       root.querySelectorAll('[data-claim]').forEach((b) => b.addEventListener('click', async () => {
         b.disabled = true; b.classList.add('is-loading');
         try {

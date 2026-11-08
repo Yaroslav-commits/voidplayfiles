@@ -32,6 +32,11 @@ const CONFIG = {
   MODAL_CLOSE_DELAY: 3000,
 };
 
+// Слабый телефон → «лёгкий режим» (без постоянных анимаций). Telegram Android пишет класс устройства в User-Agent
+const LITE = /\b(LOW|AVERAGE)\)?$/i.test(navigator.userAgent) || /Telegram-Android.*\b(LOW|AVERAGE)\b/i.test(navigator.userAgent)
+  || (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 3 || qs.get('lite') === '1';
+if (LITE) document.documentElement.classList.add('is-lite');
+
 // ======================= тексты RU / EN =======================
 const dict = {
   ru: {
@@ -125,6 +130,13 @@ const dict = {
     'how.warnH': 'Честная игра', 'how.warn': 'Мультиаккаунты, накрутки и использование багов наказываются: место аннулируется, приз не выдаётся.',
     'how.ok': 'Понятно',
     'win.title': 'Поздравляем!', 'win.btn': 'Забрать',
+    'free.title': 'Первый заработок без вложений', 'free.sub': 'Собери до {n} ⭐ бесплатно — пополнять не нужно',
+    'free.go': 'Начать', 'free.done': 'Готово', 'free.left': 'Осталось шагов: {n}', 'free.all': 'Все бесплатные шаги пройдены — так держать!',
+    'free.welcome': 'Стартовый бонус', 'free.welcomeT': 'Уже на балансе — можно играть сразу',
+    'free.sub1': 'Подпишись на канал', 'free.sub1T': 'Один раз — звёзды сразу на баланс',
+    'free.daily': 'Ежедневный бонус', 'free.dailyT': 'Забирай каждый день', 'free.dailyDone': 'Получено — приходи завтра',
+    'free.bets': 'Сделай 5 ставок', 'free.betsT': 'Хоть по 1 ⭐ в Минах', 'free.betsClaim': 'Забрать награду',
+    'free.ref': 'Пригласи друга', 'free.refT': '+{n} ⭐ за каждого, кто пополнит', 'free.repeat': 'повторяется',
   },
   en: {
     'nav.home': 'Games', 'nav.leaders': 'Top', 'nav.bonus': 'Bonuses', 'nav.profile': 'Profile',
@@ -217,6 +229,13 @@ const dict = {
     'how.warnH': 'Fair play', 'how.warn': 'Multi-accounts, boosting and bug abuse are punished: the place is cancelled and the prize withheld.',
     'how.ok': 'Got it',
     'win.title': 'Congrats!', 'win.btn': 'Claim',
+    'free.title': 'First earnings, no deposit', 'free.sub': 'Collect up to {n} ⭐ for free — no top-up needed',
+    'free.go': 'Start', 'free.done': 'Done', 'free.left': 'Steps left: {n}', 'free.all': 'All free steps completed — keep it up!',
+    'free.welcome': 'Welcome bonus', 'free.welcomeT': 'Already on your balance — play right away',
+    'free.sub1': 'Subscribe to the channel', 'free.sub1T': 'Once — stars go straight to your balance',
+    'free.daily': 'Daily bonus', 'free.dailyT': 'Claim it every day', 'free.dailyDone': 'Claimed — come back tomorrow',
+    'free.bets': 'Place 5 bets', 'free.betsT': 'Even 1 ⭐ each in Mines', 'free.betsClaim': 'Claim reward',
+    'free.ref': 'Invite a friend', 'free.refT': '+{n} ⭐ for each who tops up', 'free.repeat': 'repeats',
   },
 };
 
@@ -233,7 +252,8 @@ function t(key, vars = {}) {
 const svg = (body, vb = '0 0 24 24') => `<svg viewBox="${vb}" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${body}</svg>`;
 const SW = 'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
 const icon = {
-  star: svg('<path fill="currentColor" d="M12 2.2l2.95 6.2 6.8.82-5.02 4.68 1.3 6.73L12 17.3l-6.03 3.33 1.3-6.73L2.25 9.22l6.8-.82L12 2.2z"/>'),
+  // звезда как в Telegram Stars (рисунок — в index.html, #tg-star)
+  star: '<svg viewBox="-0.5 -0.5 18 17" aria-hidden="true"><use href="#tg-star"/></svg>',
   games: svg(`<rect x="3" y="3" width="8" height="8" rx="2.5" fill="currentColor"/><rect x="13" y="3" width="8" height="8" rx="2.5" ${SW}/><rect x="3" y="13" width="8" height="8" rx="2.5" ${SW}/><rect x="13" y="13" width="8" height="8" rx="2.5" fill="currentColor"/>`),
   trophy: svg(`<path ${SW} d="M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4v1.5A3.5 3.5 0 0 0 7.5 11M17 6h3v1.5a3.5 3.5 0 0 1-3.5 3.5M12 14v3M8 21h8M9.5 17h5l.5 4h-6z"/>`),
   gift: svg(`<rect x="3.5" y="8" width="17" height="4.5" rx="1.2" ${SW}/><path ${SW} d="M5 12.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7.5M12 8v13M12 8c-1.5-3.5-6-4.5-6-1.8C6 8 9 8 12 8zm0 0c1.5-3.5 6-4.5 6-1.8C18 8 15 8 12 8z"/>`),
@@ -270,6 +290,29 @@ const icon = {
   fire: svg('<path fill="currentColor" d="M12 2.5c.5 3-1.3 4.6-2.8 6.2C7.6 10.4 6 12.2 6 15a6 6 0 0 0 12 0c0-2.6-1.3-4.3-2.3-5.4-.2 1.6-.9 2.6-1.9 3.1.4-3.8-.7-7.6-1.8-10.2z"/>'),
 };
 const star = (cls = '') => `<span class="star ${cls}">${icon.star}</span>`;
+
+// Любой эмодзи ⭐ в интерфейсе (в т.ч. в текстах с сервера) заменяем на звезду Telegram
+function starifyNode(root) {
+  if (!root || !(root.nodeType === 1 || root.nodeType === 3) || !String(root.textContent).includes('⭐')) return;
+  const nodes = [];
+  if (root.nodeType === 3) nodes.push(root);
+  else { const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (n.nodeValue.includes('⭐')) nodes.push(n); }
+  for (const n of nodes) {
+    const p = n.parentNode; if (!p || p.closest?.('input,textarea,script,style')) continue;
+    const frag = document.createDocumentFragment();
+    n.nodeValue.split('⭐').forEach((part, i) => {
+      if (i) { const sp = document.createElement('span'); sp.className = 'star'; sp.innerHTML = icon.star; frag.appendChild(sp); }
+      if (part) frag.appendChild(document.createTextNode(part.replace(/\uFE0F/g, '')));
+    });
+    p.replaceChild(frag, n);
+  }
+}
+new MutationObserver((list) => {
+  for (const m of list) {
+    if (m.type === 'characterData') starifyNode(m.target);
+    else m.addedNodes.forEach(starifyNode);
+  }
+}).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
 
 // ======================= картинки =======================
 // Какие картинки подарков реально лежат на сайте (img/gifts/<id>.webp)
@@ -329,7 +372,7 @@ const state = {
   user: { id: 0, name: 'Игрок', username: '', photo: '', avatar: '' },
   balance: { stars: 0 },
   rates: { tonToStars: 120, usdToStars: 50 },
-  subscribed: false, wallet: null, inventory: [], transactions: [],
+  subscribed: false, wallet: null, daily: { ready: true, reward: 5 }, inventory: [], transactions: [],
   referrals: { count: 0, earned: 0, list: [], level: 1, perFriend: 10, percent: 5, refDeposits: 0 },
   tasks: [], packs: [{ stars: 100, bonus: 0 }, { stars: 500, bonus: 0 }, { stars: 1000, bonus: 0 }],
   levels: null, mines: null, config: {},
@@ -337,7 +380,7 @@ const state = {
 
 function applyState(st) {
   Object.assign(state, {
-    user: st.user, balance: st.balance, subscribed: st.subscribed, wallet: st.wallet,
+    user: st.user, balance: st.balance, subscribed: st.subscribed, wallet: st.wallet, daily: st.daily || state.daily,
     inventory: st.inventory || [], transactions: st.transactions || [], referrals: st.referrals || state.referrals, tasks: st.tasks || [],
     packs: st.packs?.length ? st.packs : state.packs, levels: st.levels, rates: st.rates || state.rates, config: st.config || {},
     mines: st.mines || null,
@@ -421,7 +464,11 @@ const api = {
     state.user = u ? { id: u.id, name: [u.first_name, u.last_name].filter(Boolean).join(' '), username: u.username || '', photo: u.photo_url || '' }
       : { id: 7, name: 'Гость', username: 'guest', photo: '' };
     state.balance.stars = 250;
-    try { state.subscribed = localStorage.getItem('vp_subscribed') === '1'; } catch (e) { /* ignore */ }
+    try {
+      state.subscribed = localStorage.getItem('vp_subscribed') === '1';
+      state.daily = { ready: localStorage.getItem('vp_daily') !== new Date().toDateString(), reward: 5 };
+    } catch (e) { /* ignore */ }
+    state.config = { welcomeBonus: 10, dailyReward: 5 };
     state.inventory = [DEMO_CATALOG[9], DEMO_CATALOG[10], DEMO_CATALOG[7]].map((g, i) => ({ ...g, uid: 'd' + i }));
     state.transactions = [
       { type: 'fee', game: 'Апгрейдер', item: 'nft', amount: 390, nft: DEMO_CATALOG[10].img, date: Date.now() - 3600e3 },
@@ -430,7 +477,7 @@ const api = {
     ];
     state.referrals = { ...state.referrals, list: DEMO_PLAYERS.slice(0, 2).map((p, i) => ({ ...p, earned: [25, 10][i] })), count: 2, earned: 35 };
     state.tasks = [
-      { id: 'bets5', title: 'Сделай 5 ставок', text: 'Сыграй 5 раз в любой игре', reward: 10, progress: 2, goal: 5, endsIn: 864e5 * 5 },
+      { id: 'bets5', title: 'Сделай 5 ставок', text: 'Сыграй 5 раз в любой игре — хоть по 1 ⭐', reward: 10, progress: 2, goal: 5, endsIn: 864e5 * 5 },
       { id: 'sub', title: 'Подписка', text: 'Подпишись на канал', reward: 5, progress: 1, goal: 1, endsIn: 864e5 * 5 },
       { id: 'dep1', title: 'Первое пополнение', text: 'Пополни баланс на любую сумму', reward: 20, progress: 1, goal: 1, claimed: true, endsIn: 864e5 * 5 },
       { id: 'ref3', title: 'Пригласи друзей', text: 'Пригласи 3 друзей по своей ссылке', reward: 50, progress: 2, goal: 3, endsIn: 864e5 * 5 },
@@ -460,9 +507,13 @@ const api = {
 
   // ---------- бонусы ----------
   async claimDaily() {
-    if (this.live) { const r = await request('/api/daily', {}); state.balance.stars = r.balance; return r.reward; }
+    if (this.live) {
+      try { const r = await request('/api/daily', {}); state.balance.stars = r.balance; state.daily = { ...state.daily, ready: false }; return r.reward; }
+      catch (e) { if (e.code === 'already') state.daily = { ...state.daily, ready: false }; throw e; }
+    }
     const today = new Date().toDateString();
     let last = ''; try { last = localStorage.getItem('vp_daily'); } catch (e) { /* ignore */ }
+    state.daily = { ...state.daily, ready: false };
     if (last === today) throw new ApiError('already');
     try { localStorage.setItem('vp_daily', today); } catch (e) { /* ignore */ }
     state.balance.stars += 5; demoTx('bonus', 5); return 5;
@@ -784,7 +835,7 @@ const fitAmounts = (root = document) => root.querySelectorAll('.amount__in input
 // ======================= эффекты =======================
 const reduce = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-function confetti({ x = 0.5, y = 0.45, count = 140, colors = ['#3d6bff', '#7aa2ff', '#ffc94a', '#ff3d7f', '#ffffff', '#a855f7'] } = {}) {
+function confetti({ x = 0.5, y = 0.45, count = LITE ? 60 : 120, colors = ['#3d6bff', '#7aa2ff', '#ffc94a', '#ff3d7f', '#ffffff', '#a855f7'] } = {}) {
   if (reduce()) return;
   const c = document.createElement('canvas');
   c.className = 'fx-confetti';
@@ -799,7 +850,8 @@ function confetti({ x = 0.5, y = 0.45, count = 140, colors = ['#3d6bff', '#7aa2f
       c: colors[Math.floor(Math.random() * colors.length)], star: Math.random() < 0.3, life: 0 };
   });
   let raf;
-  const drawStar = (s) => { ctx.beginPath(); for (let i = 0; i < 10; i++) { const rr = i % 2 ? s / 2.4 : s; const a = (i * Math.PI) / 5 - Math.PI / 2; ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); };
+  const starPath = new Path2D('M16.1994 6.84093L12.8931 9.6843C12.7782 9.78289 12.6927 9.91121 12.646 10.0552C12.5992 10.1991 12.593 10.3532 12.628 10.5005L13.632 14.7441C13.8004 15.4578 13.0254 16.021 12.3989 15.6401L8.67336 13.3738C8.40955 13.2132 8.07848 13.2132 7.8151 13.3738L4.08917 15.6401C3.46304 16.021 2.68766 15.4574 2.85645 14.7441L3.4049 12.427C3.46313 12.1792 3.57387 11.9467 3.72965 11.7454C3.88542 11.544 4.0826 11.3784 4.30785 11.2598L8.34359 9.12934C8.67249 8.95578 8.51933 8.45548 8.14964 8.49584L3.65353 8.98832C3.41062 9.01519 3.16477 8.99173 2.93133 8.91939C2.69789 8.84705 2.48186 8.72739 2.29671 8.56787L0.288603 6.84093C-0.267228 6.3632 0.0286942 5.45157 0.759388 5.39169L5.1058 5.03545C5.2567 5.02319 5.40131 4.96962 5.52377 4.88061C5.64624 4.79159 5.74182 4.67057 5.80005 4.53082L7.4823 0.507667C7.7652 -0.169222 8.72326 -0.169222 9.00617 0.507667L10.6884 4.53082C10.7466 4.67057 10.8422 4.79159 10.9647 4.88061C11.0871 4.96962 11.2318 5.02319 11.3827 5.03545L15.7286 5.39169C16.4598 5.45157 16.7557 6.3632 16.1994 6.84093Z');
+  const drawStar = (s) => { const k = (s * 2) / 17; ctx.scale(k, k); ctx.translate(-8.5, -8); ctx.fillStyle = '#FFC226'; ctx.fill(starPath); };
   const frame = () => {
     ctx.clearRect(0, 0, innerWidth, innerHeight);
     let alive = 0;

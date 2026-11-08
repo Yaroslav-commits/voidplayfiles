@@ -6,16 +6,26 @@
   <meta name="theme-color" content="#06060b" />
   <meta name="color-scheme" content="dark" />
   <title>Void Play</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preload" href="fonts/inter-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/unbounded-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/app.css" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="config.js"></script>
 </head>
 <body>
-  <!-- живой фон: туманность + звёздная пыль -->
-  <div class="bg" aria-hidden="true"><i class="bg__a"></i><i class="bg__b"></i><i class="bg__c"></i><i class="bg__dust"></i></div>
+  <!-- Звезда Telegram Stars: один рисунок на всё приложение (<use href="#tg-star">) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="tgStarFill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FFE57A"/><stop offset=".5" stop-color="#FFC226"/><stop offset="1" stop-color="#F59A0B"/>
+      </linearGradient>
+      <symbol id="tg-star" viewBox="-0.5 -0.5 18 17">
+        <path d="M16.1994 6.84093L12.8931 9.6843C12.7782 9.78289 12.6927 9.91121 12.646 10.0552C12.5992 10.1991 12.593 10.3532 12.628 10.5005L13.632 14.7441C13.8004 15.4578 13.0254 16.021 12.3989 15.6401L8.67336 13.3738C8.40955 13.2132 8.07848 13.2132 7.8151 13.3738L4.08917 15.6401C3.46304 16.021 2.68766 15.4574 2.85645 14.7441L3.4049 12.427C3.46313 12.1792 3.57387 11.9467 3.72965 11.7454C3.88542 11.544 4.0826 11.3784 4.30785 11.2598L8.34359 9.12934C8.67249 8.95578 8.51933 8.45548 8.14964 8.49584L3.65353 8.98832C3.41062 9.01519 3.16477 8.99173 2.93133 8.91939C2.69789 8.84705 2.48186 8.72739 2.29671 8.56787L0.288603 6.84093C-0.267228 6.3632 0.0286942 5.45157 0.759388 5.39169L5.1058 5.03545C5.2567 5.02319 5.40131 4.96962 5.52377 4.88061C5.64624 4.79159 5.74182 4.67057 5.80005 4.53082L7.4823 0.507667C7.7652 -0.169222 8.72326 -0.169222 9.00617 0.507667L10.6884 4.53082C10.7466 4.67057 10.8422 4.79159 10.9647 4.88061C11.0871 4.96962 11.2318 5.02319 11.3827 5.03545L15.7286 5.39169C16.4598 5.45157 16.7557 6.3632 16.1994 6.84093Z" fill="url(#tgStarFill)" stroke="#E8890C" stroke-width=".55" stroke-linejoin="round"/>
+      </symbol>
+    </defs>
+  </svg>
+  <!-- фон: туманность + звёздная пыль (статичный, лёгкий) -->
+  <div class="bg" aria-hidden="true"></div>
 
   <!-- ===== Экран загрузки ===== -->
   <section id="loader" class="loader" aria-label="Загрузка">
