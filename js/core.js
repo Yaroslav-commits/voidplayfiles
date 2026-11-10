@@ -130,6 +130,21 @@ const dict = {
     'how.warnH': 'Честная игра', 'how.warn': 'Мультиаккаунты, накрутки и использование багов наказываются: место аннулируется, приз не выдаётся.',
     'how.ok': 'Понятно',
     'win.title': 'Поздравляем!', 'win.btn': 'Забрать',
+    'nav.pvp': 'PvP',
+    'pvp.title': 'PvP арена', 'pvp.sub': 'Игроки против игроков — проект не играет против тебя',
+    'pvp.roulette': 'Рулетка', 'pvp.fireice': 'Огонь и лёд', 'pvp.rouletteD': 'Больше ставка — выше шанс забрать банк', 'pvp.fireiceD': 'Выбери сторону и раздели банк соперников',
+    'pvp.pot': 'Банк', 'pvp.players': 'Игроки', 'pvp.yourChance': 'Твой шанс', 'pvp.fee': 'Комиссия', 'pvp.feeNote': 'только с выигрыша',
+    'pvp.waiting': 'Ждём игроков', 'pvp.waitOne': 'Нужен ещё игрок', 'pvp.waitSide': 'Ждём соперников', 'pvp.rolling': 'Разыгрываем…', 'pvp.next': 'Новый раунд через {n}',
+    'pvp.bet': 'Поставить', 'pvp.betMore': 'Добавить к ставке', 'pvp.betOn': 'Поставить на {s}', 'pvp.cancel': 'Забрать ставку', 'pvp.yourBet': 'Твоя ставка',
+    'pvp.empty': 'Пока никого — сделай первую ставку', 'pvp.history': 'Последние раунды', 'pvp.fair': 'Честная игра', 'pvp.fairT': 'Хэш раунда известен заранее, после розыгрыша раскрывается ключ — результат нельзя подменить.',
+    'pvp.won': '{u} забирает банк', 'pvp.youWon': 'Ты забрал банк!', 'pvp.youLost': 'В этот раз не повезло', 'pvp.sideWon': 'Победил {s}',
+    'pvp.fire': 'Огонь', 'pvp.ice': 'Лёд', 'pvp.pickSide': 'Выбери сторону', 'pvp.sideLocked': 'В этом раунде ты уже за другую сторону', 'pvp.ifWin': 'при победе',
+    'pvp.closed': 'Игра временно закрыта', 'pvp.closedT': 'Загляни чуть позже', 'pvp.full': 'Раунд заполнен — дождись следующего', 'pvp.wait': 'Раунд разыгрывается — подожди пару секунд',
+    'game.closed': 'Закрыто', 'game.closedToast': 'Игра временно закрыта',
+    'up.maxStake': 'Макс. ставка для этой цели: {n}', 'up.tooBig': 'Ставка слишком большая для этой цели', 'up.needBigger': 'Для этого подарка нужна цель дороже',
+    'ton.pay': 'Оплатить ≈ {n} TON', 'ton.title': 'Оплата в TON', 'ton.send': 'Переведи ровно', 'ton.addr': 'Адрес', 'ton.comment': 'Комментарий',
+    'ton.warn': 'Обязательно укажи комментарий — по нему мы найдём твой перевод', 'ton.open': 'Открыть кошелёк', 'ton.wait': 'Ждём перевод… Зачислим автоматически, обычно за минуту',
+    'ton.off': 'Оплата в TON сейчас недоступна', 'ton.min': 'Минимум для TON: {n}', 'ton.rate': '1 TON ≈ {n}', 'ton.later': 'Можно закрыть это окно — звёзды придут, как только дойдёт перевод',
     'free.title': 'Первый заработок без вложений', 'free.sub': 'Собери до {n} ⭐ бесплатно — пополнять не нужно',
     'free.go': 'Начать', 'free.done': 'Готово', 'free.left': 'Осталось шагов: {n}', 'free.all': 'Все бесплатные шаги пройдены — так держать!',
     'free.welcome': 'Стартовый бонус', 'free.welcomeT': 'Уже на балансе — можно играть сразу',
@@ -229,6 +244,21 @@ const dict = {
     'how.warnH': 'Fair play', 'how.warn': 'Multi-accounts, boosting and bug abuse are punished: the place is cancelled and the prize withheld.',
     'how.ok': 'Got it',
     'win.title': 'Congrats!', 'win.btn': 'Claim',
+    'nav.pvp': 'PvP',
+    'pvp.title': 'PvP arena', 'pvp.sub': 'Players vs players — the house never plays against you',
+    'pvp.roulette': 'Roulette', 'pvp.fireice': 'Fire & Ice', 'pvp.rouletteD': 'Bigger bet — higher chance to take the pot', 'pvp.fireiceD': 'Pick a side and split the rivals\' pot',
+    'pvp.pot': 'Pot', 'pvp.players': 'Players', 'pvp.yourChance': 'Your chance', 'pvp.fee': 'Fee', 'pvp.feeNote': 'on winnings only',
+    'pvp.waiting': 'Waiting for players', 'pvp.waitOne': 'One more player needed', 'pvp.waitSide': 'Waiting for rivals', 'pvp.rolling': 'Drawing…', 'pvp.next': 'Next round in {n}',
+    'pvp.bet': 'Place bet', 'pvp.betMore': 'Add to bet', 'pvp.betOn': 'Bet on {s}', 'pvp.cancel': 'Take bet back', 'pvp.yourBet': 'Your bet',
+    'pvp.empty': 'Nobody yet — place the first bet', 'pvp.history': 'Recent rounds', 'pvp.fair': 'Provably fair', 'pvp.fairT': 'The round hash is known in advance and the key is revealed after the draw — the result cannot be changed.',
+    'pvp.won': '{u} takes the pot', 'pvp.youWon': 'You took the pot!', 'pvp.youLost': 'No luck this time', 'pvp.sideWon': '{s} wins',
+    'pvp.fire': 'Fire', 'pvp.ice': 'Ice', 'pvp.pickSide': 'Pick a side', 'pvp.sideLocked': 'You already picked the other side this round', 'pvp.ifWin': 'if it wins',
+    'pvp.closed': 'Game is temporarily closed', 'pvp.closedT': 'Check back a bit later', 'pvp.full': 'Round is full — wait for the next one', 'pvp.wait': 'Round is being drawn — wait a few seconds',
+    'game.closed': 'Closed', 'game.closedToast': 'This game is temporarily closed',
+    'up.maxStake': 'Max bet for this target: {n}', 'up.tooBig': 'Bet is too big for this target', 'up.needBigger': 'This gift needs a pricier target',
+    'ton.pay': 'Pay ≈ {n} TON', 'ton.title': 'Pay with TON', 'ton.send': 'Send exactly', 'ton.addr': 'Address', 'ton.comment': 'Comment',
+    'ton.warn': 'The comment is required — it is how we find your transfer', 'ton.open': 'Open wallet', 'ton.wait': 'Waiting for the transfer… It is credited automatically, usually within a minute',
+    'ton.off': 'TON payments are unavailable right now', 'ton.min': 'Minimum for TON: {n}', 'ton.rate': '1 TON ≈ {n}', 'ton.later': 'You can close this window — stars arrive as soon as the transfer lands',
     'free.title': 'First earnings, no deposit', 'free.sub': 'Collect up to {n} ⭐ for free — no top-up needed',
     'free.go': 'Start', 'free.done': 'Done', 'free.left': 'Steps left: {n}', 'free.all': 'All free steps completed — keep it up!',
     'free.welcome': 'Welcome bonus', 'free.welcomeT': 'Already on your balance — play right away',
@@ -287,6 +317,9 @@ const icon = {
   bomb: svg('<circle cx="11" cy="14" r="7.2" fill="currentColor"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M15.6 9.4l2.2-2.2"/><path stroke="#ffc94a" stroke-width="1.8" stroke-linecap="round" d="M18.6 4.2l.6-1.4M20.6 6.2l1.4-.6M19.9 4.9l1-1"/><circle cx="8.6" cy="11.6" r="1.6" fill="#fff" opacity=".55"/>'),
   ticket: svg(`<path ${SW} d="M4 7.5A1.5 1.5 0 0 1 5.5 6h13A1.5 1.5 0 0 1 20 7.5V10a2 2 0 0 0 0 4v2.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 16.5V14a2 2 0 0 0 0-4z"/><path stroke="currentColor" stroke-width="2" stroke-dasharray="2 2.5" d="M14.5 6.5v11"/>`),
   wifiOff: svg(`<path ${SW} d="M3 3l18 18M8.5 16.5a5 5 0 0 1 7 0M5 12.5a10 10 0 0 1 4.2-2.4M19 12.5a10 10 0 0 0-3-2M2 8.8A15 15 0 0 1 7 6M22 8.8a15 15 0 0 0-10-3.8"/><circle cx="12" cy="20" r="1.2" fill="currentColor"/>`),
+  swords: svg(`<path ${SW} d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M14.5 6.5L18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/>`),
+  snow: svg(`<path ${SW} d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 3.5l3 2.5 3-2.5M9 20.5l3-2.5 3 2.5M2.6 11l3.7.7-1.2 3.6M21.4 13l-3.7-.7 1.2-3.6M5.1 8.7l1.2 3.6M18.9 15.3l-1.2-3.6"/>`),
+  ton: svg('<path fill="currentColor" d="M5.6 4h12.8c1.7 0 2.8 1.9 1.9 3.4l-7.2 12.3a1.3 1.3 0 0 1-2.2 0L3.7 7.4C2.8 5.9 3.9 4 5.6 4zm5.5 2.2H6.3c-.4 0-.6.4-.4.8l5.2 9.1V6.2zm1.8 0v9.9l5.2-9.1c.2-.4 0-.8-.4-.8h-4.8z"/>'),
   fire: svg('<path fill="currentColor" d="M12 2.5c.5 3-1.3 4.6-2.8 6.2C7.6 10.4 6 12.2 6 15a6 6 0 0 0 12 0c0-2.6-1.3-4.3-2.3-5.4-.2 1.6-.9 2.6-1.9 3.1.4-3.8-.7-7.6-1.8-10.2z"/>'),
 };
 const star = (cls = '') => `<span class="star ${cls}">${icon.star}</span>`;
@@ -326,6 +359,9 @@ function giftPlaceholder(id = '') {
 }
 const giftSrc = (g) => {
   if (!g) return giftPlaceholder('?');
+  // подарки из Telegram: картинку отдаёт сервер бота
+  const path = typeof g === 'string' ? g : g.img;
+  if (path && path.startsWith('/api/')) return CONFIG.API_BASE + path;
   if (GIFT_FILES.has(g.id)) return `img/gifts/${g.id}.webp`;
   if (typeof g === 'string') { const m = g.match(/([\w-]+)\.(png|webp)$/); return m && GIFT_FILES.has(m[1]) ? `img/gifts/${m[1]}.webp` : giftPlaceholder(g); }
   return giftPlaceholder(g.id);
@@ -376,6 +412,7 @@ const state = {
   referrals: { count: 0, earned: 0, list: [], level: 1, perFriend: 10, percent: 5, refDeposits: 0 },
   tasks: [], packs: [{ stars: 100, bonus: 0 }, { stars: 500, bonus: 0 }, { stars: 1000, bonus: 0 }],
   levels: null, mines: null, config: {},
+  games: { upgrade: true, mines: true, roulette: true, fireice: true },
 };
 
 function applyState(st) {
@@ -383,7 +420,7 @@ function applyState(st) {
     user: st.user, balance: st.balance, subscribed: st.subscribed, wallet: st.wallet, daily: st.daily || state.daily,
     inventory: st.inventory || [], transactions: st.transactions || [], referrals: st.referrals || state.referrals, tasks: st.tasks || [],
     packs: st.packs?.length ? st.packs : state.packs, levels: st.levels, rates: st.rates || state.rates, config: st.config || {},
-    mines: st.mines || null,
+    mines: st.mines || null, games: st.games || state.games,
   });
   if (st.catalog?.length) api.catalog = st.catalog;
   if (st.config?.appName) CONFIG.APP_NAME = st.config.appName;
@@ -468,7 +505,7 @@ const api = {
       state.subscribed = localStorage.getItem('vp_subscribed') === '1';
       state.daily = { ready: localStorage.getItem('vp_daily') !== new Date().toDateString(), reward: 5 };
     } catch (e) { /* ignore */ }
-    state.config = { welcomeBonus: 10, dailyReward: 5 };
+    state.config = { welcomeBonus: 10, dailyReward: 5, ton: { enabled: true, minStars: 50 } };
     state.inventory = [DEMO_CATALOG[9], DEMO_CATALOG[10], DEMO_CATALOG[7]].map((g, i) => ({ ...g, uid: 'd' + i }));
     state.transactions = [
       { type: 'fee', game: 'Апгрейдер', item: 'nft', amount: 390, nft: DEMO_CATALOG[10].img, date: Date.now() - 3600e3 },
@@ -543,7 +580,11 @@ const api = {
     x.claimed = true; state.balance.stars += x.reward; demoTx('bonus', x.reward); return x.reward;
   },
 
+  gameOpen(id) { return state.games?.[id] !== false; },
+
   // ---------- апгрейдер ----------
+  // максимальная ставка для цели: не больше 80% её цены — апгрейд всегда даёт больше, чем поставил
+  maxStake(price) { return Math.floor((price || 0) * this.cfg('upgradeMaxRatio', 0.8)); },
   chance(stake, price) {
     if (!stake || !price) return 0;
     const edge = this.cfg('houseEdge', 0.1), max = this.cfg('maxChance', 0.75);
@@ -556,6 +597,7 @@ const api = {
       return { ok: true, win: r.win, chance: r.chance };
     }
     const value = stakeGift ? stakeGift.price : stakeStars;
+    if (value > this.maxStake(target.price)) throw new ApiError('stake_too_big');
     if (!stakeGift && value > state.balance.stars) throw new ApiError('no_stars');
     const chance = this.chance(value, target.price);
     const win = Math.random() < chance;
@@ -639,6 +681,35 @@ const api = {
     return { ok: true };
   },
 
+  // ---------- PvP ----------
+  async pvpState(game) {
+    if (this.live) return request(`/api/pvp?game=${game}`, undefined, { timeout: 8000 });
+    return demoPvp.state(game);
+  },
+  async pvpBet(game, amount, side) {
+    if (this.live) { const r = await request('/api/pvp/bet', { game, amount, side }); state.balance.stars = r.balance; return r; }
+    return demoPvp.bet(game, amount, side);
+  },
+  async pvpCancel(game) {
+    if (this.live) { const r = await request('/api/pvp/cancel', { game }); state.balance.stars = r.balance; return r; }
+    return demoPvp.cancel(game);
+  },
+
+  // ---------- пополнение в TON ----------
+  async tonInvoice(stars) {
+    if (this.live) return request('/api/ton/invoice', { stars });
+    await wait(400);
+    const per = state.rates.tonToStars || 120;
+    this._demoTon = { stars, at: Date.now() };
+    return { id: 1, stars, ton: (stars / per).toFixed(3), comment: 'VP1', address: 'UQDemo...Wallet', link: 'https://ton.org', rate: per };
+  },
+  async tonCheck(id) {
+    if (this.live) { const r = await request('/api/ton/check', { id }); if (r.status === 'paid') state.balance.stars = r.balance; return r; }
+    const d = this._demoTon;
+    if (d && Date.now() - d.at > 6000) { this._demoTon = null; state.balance.stars += d.stars; demoTx('dep', d.stars, { currency: 'TON' }); return { status: 'paid', credited: d.stars }; }
+    return { status: 'pending', credited: 0 };
+  },
+
   // ---------- лента и лидеры ----------
   async feed() {
     if (this.live) return (await request('/api/feed', undefined, { retries: 1 })).items;
@@ -658,6 +729,87 @@ const api = {
       season: now.getMonth() + 1, end, players: 248,
       top: DEMO_PLAYERS.map((p, i) => ({ ...p, value: 12000 - i * 1150, nft: this.catalog[i % this.catalog.length] })),
     };
+  },
+};
+
+// ---------- Демо-PvP (только без сервера): раунды с ботами, логика как на сервере ----------
+const demoPvp = {
+  R: {}, n: 1, ROUND: 12000, SHOW: 9000, FEE: 0.1,
+  round(game) {
+    let r = this.R[game];
+    if (!r || (r.done && Date.now() > r.at + this.SHOW)) r = this.R[game] = { id: this.n++, game, bets: [], endsAt: null, done: false, hist: r?.hist || [] };
+    return r;
+  },
+  add(r, u, amount, side) {
+    const b = r.bets.find((x) => x.id === u.id);
+    if (b) b.amount += amount; else r.bets.push({ ...u, amount, side: r.game === 'fireice' ? side : null, payout: 0 });
+    const ready = r.game === 'roulette' ? r.bets.length >= 2 : new Set(r.bets.map((x) => x.side)).size === 2;
+    if (!r.endsAt && ready) r.endsAt = Date.now() + this.ROUND;
+  },
+  tick(game) {
+    const r = this.round(game);
+    if (r.done) return r;
+    // боты подтягиваются в раунд
+    const bots = DEMO_PLAYERS.filter((p) => !r.bets.some((b) => b.id === p.id));
+    if (r.bets.length < 6 && bots.length && Math.random() < (r.bets.length ? 0.3 : 0.5) && (!r.endsAt || r.endsAt - Date.now() > 1500)) {
+      this.add(r, bots[Math.floor(Math.random() * bots.length)], [10, 25, 50, 80, 150][Math.floor(Math.random() * 5)], Math.random() < 0.5 ? 'fire' : 'ice');
+    }
+    if (r.endsAt && Date.now() >= r.endsAt) this.resolve(r);
+    return r;
+  },
+  resolve(r) {
+    const pot = r.bets.reduce((a, b) => a + b.amount, 0), roll = Math.random();
+    let winner;
+    if (r.game === 'roulette') {
+      let acc = 0; const w = r.bets.find((b) => (acc += b.amount) > roll * pot) || r.bets[r.bets.length - 1];
+      w.payout = pot - Math.floor((pot - w.amount) * this.FEE); winner = w;
+      r.hist.unshift({ id: r.id, pot, winner: w, chance: w.amount / pot });
+    } else {
+      const fire = r.bets.filter((b) => b.side === 'fire').reduce((a, b) => a + b.amount, 0);
+      winner = roll < fire / pot ? 'fire' : 'ice';
+      const wp = winner === 'fire' ? fire : pot - fire, lp = pot - wp, share = lp - Math.floor(lp * this.FEE);
+      r.bets.forEach((b) => { if (b.side === winner) b.payout = b.amount + Math.floor(share * b.amount / wp); });
+      r.hist.unshift({ id: r.id, pot, winner, chance: wp / pot });
+    }
+    r.hist = r.hist.slice(0, 8);
+    Object.assign(r, { done: true, at: Date.now(), roll, winner, pot });
+    const me = r.bets.find((b) => b.id === state.user.id);
+    if (me?.payout) { state.balance.stars += me.payout; demoTx('win', me.payout, { game: r.game === 'roulette' ? 'Рулетка' : 'Огонь и лёд', item: 'stars' }); }
+  },
+  view(r) {
+    const pot = r.bets.reduce((a, b) => a + b.amount, 0);
+    const players = r.bets.map((b) => ({ ...b, chance: pot ? b.amount / pot : 0, payout: r.done ? b.payout : 0 }));
+    const mine = players.find((p) => p.id === state.user.id);
+    const out = {
+      game: r.game, id: r.id, open: true, phase: r.done ? 'result' : r.endsAt ? 'countdown' : 'waiting', now: Date.now(), endsAt: r.endsAt,
+      roundSeconds: this.ROUND / 1000, pot, hash: 'demo', fee: this.FEE, minBet: 1, maxBet: 50000, players,
+      my: mine ? { amount: mine.amount, side: mine.side, chance: mine.chance } : null, canCancel: !!mine && !r.done && !r.endsAt, history: r.hist,
+    };
+    if (r.game === 'fireice') {
+      out.sides = {};
+      for (const s of ['fire', 'ice']) { const pool = r.bets.filter((b) => b.side === s).reduce((a, b) => a + b.amount, 0); out.sides[s] = { pool, count: r.bets.filter((b) => b.side === s).length, chance: pot ? pool / pot : 0.5 }; }
+    }
+    if (r.done) out.result = { winner: r.winner, roll: r.roll, seed: 'demo', pot: r.pot, fee: 0, at: r.at, nextAt: r.at + this.SHOW, myPayout: mine?.payout || 0 };
+    return out;
+  },
+  state(game) { return this.view(this.tick(game)); },
+  bet(game, amount, side) {
+    const r = this.round(game);
+    if (r.done || (r.endsAt && Date.now() >= r.endsAt)) throw new ApiError('wait');
+    if (amount < 1) throw new ApiError('bad_amount');
+    if (game === 'fireice' && !['fire', 'ice'].includes(side)) throw new ApiError('bad_side');
+    const mine = r.bets.find((b) => b.id === state.user.id);
+    if (mine && game === 'fireice' && mine.side !== side) throw new ApiError('side_locked');
+    if (amount > state.balance.stars) throw new ApiError('no_stars');
+    state.balance.stars -= amount; demoTx('fee', amount, { game: game === 'roulette' ? 'Рулетка' : 'Огонь и лёд', item: 'stars' });
+    this.add(r, state.user, amount, side);
+    return this.view(r);
+  },
+  cancel(game) {
+    const r = this.round(game); const i = r.bets.findIndex((b) => b.id === state.user.id);
+    if (r.done || r.endsAt || i < 0) throw new ApiError('not_ready');
+    state.balance.stars += r.bets[i].amount; r.bets.splice(i, 1);
+    return this.view(r);
   },
 };
 
@@ -737,8 +889,11 @@ function errToast(e) {
     no_stars: 'toast.noStars', already: 'err.already', not_found: 'err.notFound', not_ready: 'err.notReady',
     bad_amount: 'err.badAmount', not_subscribed: 'sub.notYet', check_failed: 'err.checkFailed', auth: 'err.auth', banned: 'err.banned',
     network: 'err.network', timeout: 'err.timeout',
+    closed: 'game.closedToast', wait: 'pvp.wait', full: 'pvp.full', side_locked: 'pvp.sideLocked', bad_side: 'pvp.pickSide',
+    stake_too_big: 'up.tooBig', ton_off: 'ton.off',
   };
   toast(t(map[e?.code] || 'common.error'), 'error');
+  if (e?.code === 'closed') api.refresh().catch(() => {});   // игру закрыли — подтянем свежие статусы
 }
 const soonToast = () => toast(t('common.soonToast'));
 

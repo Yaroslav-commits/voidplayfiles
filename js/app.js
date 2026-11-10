@@ -2,9 +2,11 @@
 // Роутер, шапка, нижнее меню, загрузка и связь с сервером
 
 // ======================= роутер =======================
-const ROUTES = { home, upgrader, mines, leaders, bonus, profile, referrals };
+const ROUTES = { home, upgrader, mines, pvp, leaders, bonus, profile, referrals };
 const ALIAS = { tasks: 'bonus' };
-const NAV_OF = { home: 'home', upgrader: 'home', mines: 'home', leaders: 'leaders', bonus: 'bonus', profile: 'profile', referrals: 'profile' };
+const NAV_OF = { home: 'home', upgrader: 'home', mines: 'home', pvp: 'pvp', leaders: 'leaders', bonus: 'bonus', profile: 'profile', referrals: 'profile' };
+// экран → игра, которую админ может закрыть из бота
+const GAME_OF = { upgrader: 'upgrade', mines: 'mines' };
 
 let cleanup = null;
 const current = () => { const n = (location.hash.replace(/^#\/?/, '') || 'home').split('?')[0]; return ALIAS[n] || n; };
@@ -13,6 +15,10 @@ const go = (name) => { if (current() === name) render(); else location.hash = `#
 function render() {
   let name = current();
   if (!ROUTES[name]) name = 'home';
+  if (GAME_OF[name] && !api.gameOpen(GAME_OF[name]) && !(name === 'mines' && api.state.mines)) {
+    toast(t('game.closedToast')); name = 'home';
+    if (current() !== 'home') { history.replaceState(null, '', '#/home'); }
+  }
   if (typeof cleanup === 'function') cleanup();
   closeAll();
   const root = $('#screen');
@@ -54,13 +60,13 @@ function drawHead() {
 document.addEventListener('balance', () => countUp($('#balVal'), api.state.balance.stars));
 
 // ======================= нижнее меню =======================
-const NAV = [['home', 'nav.home', icon.games], ['leaders', 'nav.leaders', icon.trophy], ['bonus', 'nav.bonus', icon.gift], ['profile', 'nav.profile', icon.user]];
+const NAV = [['home', 'nav.home', icon.games], ['leaders', 'nav.leaders', icon.trophy], ['pvp', 'nav.pvp', icon.swords], ['bonus', 'nav.bonus', icon.gift], ['profile', 'nav.profile', icon.user]];
 let navActive = '';
 function drawNav(active = 'home') {
   if (navActive === active && $('#nav').children.length) return;
   navActive = active;
   $('#nav').innerHTML = `<div class="dock">${NAV.map(([id, key, ic]) =>
-    `<button class="dock__i ${id === active ? 'is-active' : ''}" data-go="${id}"><span class="dock__ico">${ic}</span><span class="dock__t">${t(key)}</span></button>`).join('')}</div>`;
+    `<button class="dock__i ${id === 'pvp' ? 'dock__i--pvp' : ''} ${id === active ? 'is-active' : ''}" data-go="${id}"><span class="dock__ico">${ic}</span><span class="dock__t">${t(key)}</span></button>`).join('')}</div>`;
   $$('#nav [data-go]').forEach((b) => b.addEventListener('click', () => { sound(); haptic('select'); go(b.dataset.go); }));
 }
 function relocalize() { navActive = ''; drawHead(); render(); }
@@ -82,6 +88,13 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && api.live) api.refresh().catch(() => {});
 });
 window.addEventListener('online', () => api.live && api.refresh().catch(() => {}));
+// раз в минуту подтягиваем свежие данные: цены подарков, открытые/закрытые игры, баланс
+setInterval(() => { if (api.live && !document.hidden && conn.status === 'online') api.refresh().catch(() => {}); }, 60000);
+// игру закрыли, пока игрок в ней — возвращаем на главную
+document.addEventListener('state', () => {
+  const g = GAME_OF[current()];
+  if (g && !api.gameOpen(g) && !(g === 'mines' && api.state.mines)) go('home');
+});
 
 // Экран «нет связи» вместо приложения (только в Telegram, когда сервер не ответил при входе)
 function showOffline(err) {
