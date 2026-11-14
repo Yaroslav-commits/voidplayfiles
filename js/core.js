@@ -79,7 +79,10 @@ const dict = {
 
     'gift.title': 'Как добавить подарок', 'gift.warnTitle': 'Не отправляйте подарки с маркетплейсов',
     'gift.warnText': 'Зачисляются только подарки, отправленные напрямую с вашего аккаунта.',
-    'gift.s1': 'Открой чат с {acc}', 'gift.s2': 'Напиши любое сообщение', 'gift.s3': 'Отправь подарок', 'gift.s4': 'Он появится в инвентаре',
+    'gift.s1': 'Открой чат с {acc}', 'gift.s2': 'Напиши любое сообщение', 'gift.s3': 'Передай свой NFT-подарок', 'gift.s4': 'Через пару секунд он появится в инвентаре',
+    'nft.pvp': 'Играть в PvP', 'nft.wd': 'Вывести в Telegram', 'nft.fee': 'Комиссия за вывод', 'nft.done': 'Подарок отправлен тебе в Telegram', 'nft.noPrice': 'Подарок ещё оценивается — попробуй чуть позже',
+    'nft.failed': 'Не получилось передать подарок — попробуй позже', 'nft.upg': 'В апгрейдер', 'nft.bet': 'Поставить подарок', 'nft.pick': 'Выбери подарок для ставки', 'nft.pricing': 'оценка',
+    'nft.none': 'Подарков пока нет — добавь свой NFT', 'pay.wdFee': 'Комиссия {p}% · получишь {n}',
 
     'pay.title': 'Кошелёк', 'pay.dep': 'Пополнить', 'pay.wd': 'Вывести', 'pay.balance': 'Баланс',
     'pay.amount': 'Сумма', 'pay.packs': 'Быстрый выбор', 'pay.min': 'Введи сумму', 'pay.payStars': 'Оплатить {n} ⭐',
@@ -193,7 +196,10 @@ const dict = {
 
     'gift.title': 'How to add a gift', 'gift.warnTitle': "Don't send gifts from marketplaces",
     'gift.warnText': 'Only gifts sent directly from your account are credited.',
-    'gift.s1': 'Open a chat with {acc}', 'gift.s2': 'Send any message', 'gift.s3': 'Send the gift', 'gift.s4': 'It appears in your inventory',
+    'gift.s1': 'Open a chat with {acc}', 'gift.s2': 'Send any message', 'gift.s3': 'Transfer your NFT gift', 'gift.s4': 'It appears in your inventory within seconds',
+    'nft.pvp': 'Play PvP', 'nft.wd': 'Withdraw to Telegram', 'nft.fee': 'Withdrawal fee', 'nft.done': 'The gift was sent to your Telegram', 'nft.noPrice': 'This gift is still being priced — try again soon',
+    'nft.failed': 'Could not transfer the gift — try later', 'nft.upg': 'To upgrader', 'nft.bet': 'Bet a gift', 'nft.pick': 'Pick a gift to bet', 'nft.pricing': 'pricing',
+    'nft.none': 'No gifts yet — add your NFT', 'pay.wdFee': 'Fee {p}% · you get {n}',
 
     'pay.title': 'Wallet', 'pay.dep': 'Top up', 'pay.wd': 'Withdraw', 'pay.balance': 'Balance',
     'pay.amount': 'Amount', 'pay.packs': 'Quick pick', 'pay.min': 'Enter an amount', 'pay.payStars': 'Pay {n} ⭐',
@@ -361,6 +367,7 @@ const giftSrc = (g) => {
   if (!g) return giftPlaceholder('?');
   // подарки из Telegram: картинку отдаёт сервер бота
   const path = typeof g === 'string' ? g : g.img;
+  if (path && /^https:\/\//.test(path)) return path;   // NFT-подарки: картинка с Fragment
   if (path && path.startsWith('/api/')) return CONFIG.API_BASE + path;
   if (GIFT_FILES.has(g.id)) return `img/gifts/${g.id}.webp`;
   if (typeof g === 'string') { const m = g.match(/([\w-]+)\.(png|webp)$/); return m && GIFT_FILES.has(m[1]) ? `img/gifts/${m[1]}.webp` : giftPlaceholder(g); }
@@ -686,12 +693,17 @@ const api = {
     if (this.live) return request(`/api/pvp?game=${game}`, undefined, { timeout: 8000 });
     return demoPvp.state(game);
   },
-  async pvpBet(game, amount, side) {
-    if (this.live) { const r = await request('/api/pvp/bet', { game, amount, side }); state.balance.stars = r.balance; return r; }
+  async pvpBet(game, amount, side, gift) {
+    if (this.live) { const r = await request('/api/pvp/bet', { game, amount, side, gift }); state.balance.stars = r.balance; if (gift) await this.refresh().catch(() => {}); return r; }
+    if (gift) throw new ApiError('not_found');
     return demoPvp.bet(game, amount, side);
   },
+  async nftWithdraw(uid) {
+    if (!this.live) throw new ApiError('not_found');
+    const r = await request('/api/nft/withdraw', { uid }, { timeout: 20000 }); state.balance.stars = r.balance; state.inventory = r.inventory; return r;
+  },
   async pvpCancel(game) {
-    if (this.live) { const r = await request('/api/pvp/cancel', { game }); state.balance.stars = r.balance; return r; }
+    if (this.live) { const r = await request('/api/pvp/cancel', { game }); state.balance.stars = r.balance; this.refresh().catch(() => {}); return r; }
     return demoPvp.cancel(game);
   },
 
@@ -890,7 +902,7 @@ function errToast(e) {
     bad_amount: 'err.badAmount', not_subscribed: 'sub.notYet', check_failed: 'err.checkFailed', auth: 'err.auth', banned: 'err.banned',
     network: 'err.network', timeout: 'err.timeout',
     closed: 'game.closedToast', wait: 'pvp.wait', full: 'pvp.full', side_locked: 'pvp.sideLocked', bad_side: 'pvp.pickSide',
-    stake_too_big: 'up.tooBig', ton_off: 'ton.off',
+    stake_too_big: 'up.tooBig', ton_off: 'ton.off', no_price: 'nft.noPrice', transfer_failed: 'nft.failed',
   };
   toast(t(map[e?.code] || 'common.error'), 'error');
   if (e?.code === 'closed') api.refresh().catch(() => {});   // игру закрыли — подтянем свежие статусы

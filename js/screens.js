@@ -11,9 +11,10 @@ const pageHead = (title, helpId) => `
 const wireBack = (root) => root.querySelector('[data-back]')?.addEventListener('click', () => { sound(); history.length > 1 ? history.back() : go('home'); });
 const giftCard = (g, { sel = false, key = 'id', cls = '' } = {}) => `
   <button class="gcard rar-${rarity(g.price)} ${sel ? 'is-sel' : ''} ${cls}" data-k="${esc(g[key])}">
-    <span class="gcard__img">${giftImg(g)}</span>
+    <span class="gcard__img ${g.nft ? 'gcard__img--nft' : ''}">${giftImg(g)}</span>
+    ${g.nft ? '<i class="gcard__tag">NFT</i>' : ''}
     <span class="gcard__name">${esc(g.name)}</span>
-    <span class="gcard__val">${star()}${fmt(g.price)}</span>
+    <span class="gcard__val">${g.nft && !g.price ? t('nft.pricing') : star() + fmt(g.price)}</span>
   </button>`;
 const emptyBox = (text, ic = icon.gift) => `<div class="empty"><span class="empty__ico">${ic}</span><span>${text}</span></div>`;
 
@@ -81,7 +82,7 @@ function openPay(mode = 'dep') {
       <div class="chips">${packs.map((p) => `<button class="chip ${amount === p ? 'is-active' : ''}" data-p="${p}">${star()}${fmt(p)}${dep && st.packs.find((x) => x.stars === p)?.bonus ? `<em>+${st.packs.find((x) => x.stars === p).bonus}</em>` : ''}</button>`).join('')}</div>
       ${dep && tonOn() ? `<div class="seg seg--2 seg--pay"><button data-pm="stars" class="${method === 'stars' ? 'is-active' : ''}">${icon.star}Telegram Stars</button><button data-pm="ton" class="${method === 'ton' ? 'is-active' : ''}">${icon.ton}TON</button></div>` : ''}
       <button class="btn btn--${!dep ? 'pink' : method === 'ton' ? 'ton' : 'primary'} btn--lg btn--block" id="payGo" ${amount ? '' : 'disabled'}>${goLabel()}</button>
-      <p class="note" id="payNote">${!dep ? t('pay.wdNote') : method === 'ton' ? `${t('ton.rate', { n: fmt(st.rates.tonToStars) })} ⭐` : t('pay.via')}</p>`);
+      <p class="note" id="payNote">${!dep ? `${t('pay.wdFee', { p: +(api.cfg('withdrawFee', 0) * 100).toFixed(1), n: fmt(Math.floor(amount * (1 - api.cfg('withdrawFee', 0)))) })} ⭐ · ${t('pay.wdNote')}` : method === 'ton' ? `${t('ton.rate', { n: fmt(st.rates.tonToStars) })} ⭐` : t('pay.via')}</p>`);
     const el = s.el;
     el.querySelectorAll('[data-m]').forEach((b) => b.addEventListener('click', () => { sound('tick'); haptic('select'); mode = b.dataset.m; amount = 0; draw(); }));
     const inp = el.querySelector('#payIn');
@@ -219,7 +220,38 @@ function openInventory() {
   const s = sheet(inv.length ? `<div class="ggrid">${inv.map((g) => giftCard(g, { key: 'uid' })).join('')}</div>`
     : `${emptyBox(t('common.empty'))}<button class="btn btn--primary btn--lg btn--block" id="invAdd">${t('up.topUpGifts')}</button>`, { title: t('prof.inventory') });
   s.el.querySelector('#invAdd')?.addEventListener('click', () => { sound(); s.close(); openAddGift(); });
-  s.el.querySelectorAll('[data-k]').forEach((b) => b.addEventListener('click', () => { sound(); s.close(); go('upgrader'); }));
+  s.el.querySelectorAll('[data-k]').forEach((b) => b.addEventListener('click', () => {
+    sound(); s.close();
+    const g = inv.find((x) => x.uid === b.dataset.k);
+    g?.nft ? openNft(g) : go('upgrader');
+  }));
+}
+
+// ---------- Карточка NFT-подарка: играть или вывести ----------
+function openNft(g) {
+  let busy = false;
+  const s = sheet(`
+    <div class="nftv rar-${rarity(g.price)}">
+      <div class="nftv__art"><span class="nftv__glow"></span>${giftImg(g)}<i class="gcard__tag">NFT</i></div>
+      <h3 class="nftv__name">${esc(g.name)}</h3>
+      <div class="nftv__meta">${[g.model, g.backdrop].filter(Boolean).map((x) => `<span>${esc(x)}</span>`).join('')}</div>
+      <div class="nftv__price">${g.price ? star() + fmt(g.price) : t('nft.pricing')}</div>
+      <div class="nftv__btns">
+        <button class="btn btn--primary btn--lg" id="nftPvp">${icon.swords}${t('nft.pvp')}</button>
+        <button class="btn btn--ghost btn--lg" id="nftUp">${t('nft.upg')}</button>
+      </div>
+      <button class="btn btn--pink btn--lg btn--block" id="nftWd">${icon.up}${t('nft.wd')}</button>
+      <p class="note">${t('nft.fee')}: ${star()}${fmt(g.fee || 0)}</p>
+    </div>`, { title: '' });
+  s.el.querySelector('#nftPvp').addEventListener('click', () => { sound(); s.close(); go('pvp'); });
+  s.el.querySelector('#nftUp').addEventListener('click', () => { sound(); s.close(); go('upgrader'); });
+  s.el.querySelector('#nftWd').addEventListener('click', async (e) => {
+    if (busy) return;
+    if ((g.fee || 0) > api.state.balance.stars) { s.close(); openPay('dep'); return toast(t('toast.noStars'), 'error'); }
+    busy = true; e.currentTarget.disabled = true; sound(); haptic('medium');
+    try { await api.nftWithdraw(g.uid); balanceChanged(); s.close(); haptic('success'); confetti(); toast(t('nft.done'), 'success'); }
+    catch (err) { busy = false; e.currentTarget.disabled = false; errToast(err); }
+  });
 }
 
 // ---------- Игрок из ленты ----------
@@ -1167,6 +1199,7 @@ const pvp = (() => {
       </label>
       <div class="chips chips--4"><button class="chip" data-d="-10">−10</button><button class="chip" data-d="50">+50</button><button class="chip" data-d="x2">x2</button><button class="chip" data-d="max">MAX</button></div>
       <button class="btn btn--xl btn--block btn--primary" id="pGo"></button>
+      ${S.tab === 'roulette' ? `<button class="btn btn--gift btn--block" id="pGift">${icon.gift}${t('nft.bet')}</button>` : ''}
       <button class="btn btn--ghost btn--block" id="pCancel" hidden>${t('pvp.cancel')}</button>
     </section>`;
   const tail = () => `
@@ -1247,6 +1280,7 @@ const pvp = (() => {
       }));
       $r('#pGo').addEventListener('click', bet);
       $r('#pCancel').addEventListener('click', cancel);
+      $r('#pGift')?.addEventListener('click', betGift);
       $r('#fair').addEventListener('click', openFair);
       root.querySelectorAll('[data-side]').forEach((b) => b.addEventListener('click', () => {
         if (st?.my?.side && st.my.side !== b.dataset.side) return toast(t('pvp.sideLocked'), 'error');
@@ -1267,6 +1301,7 @@ const pvp = (() => {
         : `${icon.play}${t(st?.my ? 'pvp.betMore' : 'pvp.bet')}`;
       go.disabled = locked || busy;
       $r('#pCancel').hidden = !st?.canCancel;
+      if ($r('#pGift')) $r('#pGift').disabled = locked || busy;
       $r('#pMy').innerHTML = st?.my ? `${t('pvp.yourBet')}: ${star()}${fmt(st.my.amount)}` : `≈ $${(S.amount / api.state.rates.usdToStars).toFixed(2)}`;
     }
     async function bet() {
@@ -1278,6 +1313,17 @@ const pvp = (() => {
       busy = true; drawBet(); sound(); haptic('medium');
       try { const r = await api.pvpBet(S.tab, S.amount, side); balanceChanged(); busy = false; apply(r); }
       catch (e) { busy = false; errToast(e); drawBet(); }
+    }
+    function betGift() {
+      if (busy || !st) return;
+      sound();
+      const items = api.state.inventory.filter((g) => g.price > 0);
+      if (!items.length) { toast(t('nft.none')); return openAddGift(); }
+      openNftPicker({ title: t('nft.pick'), items, key: 'uid', onPick: async (g) => {
+        busy = true; drawBet(); haptic('medium');
+        try { const r = await api.pvpBet(S.tab, 0, null, g.uid); balanceChanged(); busy = false; apply(r); }
+        catch (e) { busy = false; errToast(e); drawBet(); }
+      } });
     }
     async function cancel() {
       if (busy) return;
@@ -1297,6 +1343,7 @@ const pvp = (() => {
           ${S.tab === 'roulette' ? `<i class="prow__dot" style="background:${COLORS[i % COLORS.length]}"></i>` : sideIco(p.side)}
           ${avatarHtml(p, 'prow__ava')}
           <span class="prow__nick">${uname(p)}</span>
+          ${(p.gifts || []).length ? `<span class="prow__gifts">${p.gifts.slice(0, 3).map((x) => giftImg(x)).join('')}${p.gifts.length > 3 ? `<em>+${p.gifts.length - 3}</em>` : ''}</span>` : ''}
           ${isWin && p.payout ? `<span class="prow__win">+${fmt(p.payout)}</span>` : S.tab === 'roulette' ? `<span class="prow__pct">${pct(p.chance)}</span>` : ''}
           <span class="prow__v">${star()}${fmt(p.amount)}</span>
         </div>`;
