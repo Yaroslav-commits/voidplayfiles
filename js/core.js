@@ -80,6 +80,7 @@ const dict = {
     'gift.title': 'Как добавить подарок', 'gift.warnTitle': 'Не отправляйте подарки с маркетплейсов',
     'gift.warnText': 'Зачисляются только подарки, отправленные напрямую с вашего аккаунта.',
     'gift.s1': 'Открой чат с {acc}', 'gift.s2': 'Напиши любое сообщение', 'gift.s3': 'Передай свой NFT-подарок', 'gift.s4': 'Через пару секунд он появится в инвентаре',
+    'shop.title': 'Магазин подарков', 'shop.sub': 'Настоящие NFT — покупай за звёзды и забирай в Telegram', 'shop.empty': 'Подарки скоро появятся', 'shop.buy': 'Купить за {n}', 'shop.done': 'Подарок твой! Он в инвентаре', 'shop.open': 'Забрать подарком',
     'nft.pvp': 'Играть в PvP', 'nft.wd': 'Вывести в Telegram', 'nft.fee': 'Комиссия за вывод', 'nft.done': 'Подарок отправлен тебе в Telegram', 'nft.noPrice': 'Подарок ещё оценивается — попробуй чуть позже',
     'nft.failed': 'Не получилось передать подарок — попробуй позже', 'nft.upg': 'В апгрейдер', 'nft.bet': 'Поставить подарок', 'nft.pick': 'Выбери подарок для ставки', 'nft.pricing': 'оценка',
     'nft.none': 'Подарков пока нет — добавь свой NFT', 'pay.wdFee': 'Комиссия {p}% · получишь {n}',
@@ -197,6 +198,7 @@ const dict = {
     'gift.title': 'How to add a gift', 'gift.warnTitle': "Don't send gifts from marketplaces",
     'gift.warnText': 'Only gifts sent directly from your account are credited.',
     'gift.s1': 'Open a chat with {acc}', 'gift.s2': 'Send any message', 'gift.s3': 'Transfer your NFT gift', 'gift.s4': 'It appears in your inventory within seconds',
+    'shop.title': 'Gift shop', 'shop.sub': 'Real NFTs — buy with stars and take them to Telegram', 'shop.empty': 'Gifts are coming soon', 'shop.buy': 'Buy for {n}', 'shop.done': 'The gift is yours! Check your inventory', 'shop.open': 'Withdraw as a gift',
     'nft.pvp': 'Play PvP', 'nft.wd': 'Withdraw to Telegram', 'nft.fee': 'Withdrawal fee', 'nft.done': 'The gift was sent to your Telegram', 'nft.noPrice': 'This gift is still being priced — try again soon',
     'nft.failed': 'Could not transfer the gift — try later', 'nft.upg': 'To upgrader', 'nft.bet': 'Bet a gift', 'nft.pick': 'Pick a gift to bet', 'nft.pricing': 'pricing',
     'nft.none': 'No gifts yet — add your NFT', 'pay.wdFee': 'Fee {p}% · you get {n}',
@@ -429,7 +431,8 @@ function applyState(st) {
     packs: st.packs?.length ? st.packs : state.packs, levels: st.levels, rates: st.rates || state.rates, config: st.config || {},
     mines: st.mines || null, games: st.games || state.games,
   });
-  if (st.catalog?.length) api.catalog = st.catalog;
+  if (st.catalog) api.catalog = st.catalog;   // настоящий склад бота (может быть пустым)
+  state.shop = st.shop || [];
   if (st.config?.appName) CONFIG.APP_NAME = st.config.appName;
 }
 
@@ -698,6 +701,11 @@ const api = {
     if (gift) throw new ApiError('not_found');
     return demoPvp.bet(game, amount, side);
   },
+  async shopBuy(id) {
+    if (!this.live) throw new ApiError('not_found');
+    const r = await request('/api/shop/buy', { id }); state.balance.stars = r.balance; state.inventory = r.inventory; state.shop = r.shop; return r;
+  },
+  admin(action, data) { return action ? request('/api/admin/act', { action, ...data }, { timeout: 30000 }) : request('/api/admin'); },
   async nftWithdraw(uid) {
     if (!this.live) throw new ApiError('not_found');
     const r = await request('/api/nft/withdraw', { uid }, { timeout: 20000 }); state.balance.stars = r.balance; state.inventory = r.inventory; return r;

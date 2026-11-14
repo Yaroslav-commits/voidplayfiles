@@ -82,6 +82,7 @@ function openPay(mode = 'dep') {
       <div class="chips">${packs.map((p) => `<button class="chip ${amount === p ? 'is-active' : ''}" data-p="${p}">${star()}${fmt(p)}${dep && st.packs.find((x) => x.stars === p)?.bonus ? `<em>+${st.packs.find((x) => x.stars === p).bonus}</em>` : ''}</button>`).join('')}</div>
       ${dep && tonOn() ? `<div class="seg seg--2 seg--pay"><button data-pm="stars" class="${method === 'stars' ? 'is-active' : ''}">${icon.star}Telegram Stars</button><button data-pm="ton" class="${method === 'ton' ? 'is-active' : ''}">${icon.ton}TON</button></div>` : ''}
       <button class="btn btn--${!dep ? 'pink' : method === 'ton' ? 'ton' : 'primary'} btn--lg btn--block" id="payGo" ${amount ? '' : 'disabled'}>${goLabel()}</button>
+      ${!dep ? `<button class="btn btn--gift btn--block" id="payShop">${icon.gift}${t('shop.open')}</button>` : ''}
       <p class="note" id="payNote">${!dep ? `${t('pay.wdFee', { p: +(api.cfg('withdrawFee', 0) * 100).toFixed(1), n: fmt(Math.floor(amount * (1 - api.cfg('withdrawFee', 0)))) })} ⭐ · ${t('pay.wdNote')}` : method === 'ton' ? `${t('ton.rate', { n: fmt(st.rates.tonToStars) })} ⭐` : t('pay.via')}</p>`);
     const el = s.el;
     el.querySelectorAll('[data-m]').forEach((b) => b.addEventListener('click', () => { sound('tick'); haptic('select'); mode = b.dataset.m; amount = 0; draw(); }));
@@ -98,6 +99,7 @@ function openPay(mode = 'dep') {
     if (focus) inp.focus();
     el.querySelectorAll('[data-p]').forEach((b) => b.addEventListener('click', () => { sound('tick'); haptic('select'); amount = +b.dataset.p; draw(); }));
     el.querySelectorAll('[data-pm]').forEach((b) => b.addEventListener('click', () => { sound('tick'); haptic('select'); method = b.dataset.pm; draw(); }));
+    el.querySelector('#payShop')?.addEventListener('click', () => { sound(); s.close(); openShop(); });
     el.querySelector('#payGo').addEventListener('click', async (e) => {
       if (busy || !amount) return;
       sound(); haptic('medium');
@@ -138,6 +140,7 @@ function openSettings({ onLang } = {}) {
         <div class="seg seg--mini"><button data-l="ru" class="${l === 'ru' ? 'is-active' : ''}">RU</button><button data-l="en" class="${l === 'en' ? 'is-active' : ''}">EN</button></div></div>
       <button class="list__row" id="terms"><span class="list__ico">${icon.doc}</span><span class="grow">${t('set.terms')}</span><span class="list__chev">${icon.chevron}</span></button>
       <button class="list__row" id="support"><span class="list__ico">${icon.support}</span><span class="grow">${t('set.support')}</span><span class="list__chev">${icon.chevron}</span></button>
+      ${api.cfg('admin', false) ? `<button class="list__row list__row--adm" id="admBtn"><span class="list__ico">${icon.bolt}</span><span class="grow">Админ-панель</span><span class="list__chev">${icon.chevron}</span></button>` : ''}
       <div class="list__row"><span class="list__ico">${icon.server}</span><span class="grow">${t('set.server')}</span><span class="netpill is-${conn.status}"><i></i>${conn.status === 'demo' ? 'demo' : conn.status}</span></div>
     </div>
     <p class="note">${esc(CONFIG.APP_NAME)} · v2.0</p>`, { title: t('set.title') });
@@ -146,6 +149,7 @@ function openSettings({ onLang } = {}) {
   el.querySelector('#vol').addEventListener('input', (e) => prefs.set('volume', +e.target.value));
   el.querySelector('#vol').addEventListener('change', () => sound('tick'));
   el.querySelectorAll('[data-l]').forEach((b) => b.addEventListener('click', () => { sound('tick'); prefs.set('lang', b.dataset.l); setLang(b.dataset.l); s.close(); onLang && onLang(); }));
+  el.querySelector('#admBtn')?.addEventListener('click', () => { sound(); s.close(); openAdmin(); });
   el.querySelector('#terms').addEventListener('click', () => { sound(); openLink(CONFIG.TERMS_URL); });
   el.querySelector('#support').addEventListener('click', () => { sound(); openLink(api.cfg('supportUrl', CONFIG.SUPPORT_URL)); });
 }
@@ -217,14 +221,116 @@ function openNftPicker({ title, items, selected, key = 'id', onPick }) {
 
 function openInventory() {
   const inv = api.state.inventory;
-  const s = sheet(inv.length ? `<div class="ggrid">${inv.map((g) => giftCard(g, { key: 'uid' })).join('')}</div>`
-    : `${emptyBox(t('common.empty'))}<button class="btn btn--primary btn--lg btn--block" id="invAdd">${t('up.topUpGifts')}</button>`, { title: t('prof.inventory') });
+  const s = sheet(`<button class="btn btn--gift btn--block" id="invShop" style="margin:0 0 12px">${icon.gift}${t('shop.title')}</button>` + (inv.length ? `<div class="ggrid">${inv.map((g) => giftCard(g, { key: 'uid' })).join('')}</div>`
+    : `${emptyBox(t('common.empty'))}<button class="btn btn--primary btn--lg btn--block" id="invAdd">${t('up.topUpGifts')}</button>`), { title: t('prof.inventory') });
+  s.el.querySelector('#invShop').addEventListener('click', () => { sound(); s.close(); openShop(); });
   s.el.querySelector('#invAdd')?.addEventListener('click', () => { sound(); s.close(); openAddGift(); });
   s.el.querySelectorAll('[data-k]').forEach((b) => b.addEventListener('click', () => {
     sound(); s.close();
     const g = inv.find((x) => x.uid === b.dataset.k);
     g?.nft ? openNft(g) : go('upgrader');
   }));
+}
+
+// ---------- Магазин: настоящие NFT со склада бота ----------
+function openShop() {
+  const items = api.state.shop || [];
+  const s = sheet(`<p class="note" style="margin:0 0 12px">${t('shop.sub')}</p>` + (items.length
+    ? `<div class="ggrid">${items.map((g) => giftCard({ ...g, price: g.buy })).join('')}</div>` : emptyBox(t('shop.empty'))), { title: t('shop.title') });
+  s.el.querySelectorAll('[data-k]').forEach((b) => b.addEventListener('click', () => {
+    const g = items.find((x) => x.id === b.dataset.k); sound(); s.close();
+    let busy = false;
+    const c = sheet(`
+      <div class="nftv rar-${rarity(g.buy)}">
+        <div class="nftv__art"><span class="nftv__glow"></span>${giftImg(g)}<i class="gcard__tag">NFT</i></div>
+        <h3 class="nftv__name">${esc(g.name)}</h3>
+        <div class="nftv__meta">${[g.model, g.backdrop].filter(Boolean).map((x) => `<span>${esc(x)}</span>`).join('')}</div>
+        <button class="btn btn--primary btn--xl btn--block" id="shopGo">${t('shop.buy', { n: `${star()}${fmt(g.buy)}` })}</button>
+      </div>`, { title: '' });
+    c.el.querySelector('#shopGo').addEventListener('click', async (e) => {
+      if (busy) return;
+      if (g.buy > api.state.balance.stars) { c.close(); openPay('dep'); return toast(t('toast.noStars'), 'error'); }
+      busy = true; e.currentTarget.disabled = true; sound(); haptic('medium');
+      try {
+        await api.shopBuy(g.id); balanceChanged(); c.close(); haptic('success'); confetti(); toast(t('shop.done'), 'success');
+        const mine = api.state.inventory.find((x) => x.id === g.id); if (mine) openNft(mine);
+      } catch (err) { busy = false; e.currentTarget.disabled = false; errToast(err); if (err?.code === 'not_found') api.refresh().catch(() => {}); }
+    });
+  }));
+}
+
+// ---------- Админ-панель (видна только админам, сервер проверяет id) ----------
+function openAdmin() {
+  let d = null, found = null, busy = false;
+  const s = sheet('<div class="adm" id="adm"><div class="adm__load">Загрузка…</div></div>', { title: 'Админ-панель', cls: 'sheet--adm' });
+  const root = s.el.querySelector('#adm');
+  const sum = (o) => Object.values(o || {}).reduce((a, b) => a + b, 0);
+  const SRC = { roulette: 'Рулетка', fireice: 'Огонь и лёд', withdraw: 'Выводы', shop: 'Магазин' };
+  const act = async (action, data = {}, okText = 'Готово') => {
+    if (busy) return; busy = true; root.classList.add('is-busy');
+    try { const r = await api.admin(action, data); d = r; if ('found' in r) found = r.found; if (action === 'sync') okText = `Добавлено на склад: ${r.added}`; haptic('success'); toast(okText, 'success'); api.refresh().catch(() => {}); }
+    catch (e) { errToast(e); }
+    busy = false; root.classList.remove('is-busy'); draw();
+  };
+  function draw() {
+    if (!d) return;
+    const inc = d.income;
+    root.innerHTML = `
+      <div class="adm__tiles">
+        <div class="adm__tile adm__tile--hero"><small>Заработок сегодня</small><b>${star()}${fmt(sum(inc.day))}</b></div>
+        <div class="adm__tile"><small>7 дней</small><b>${star()}${fmt(sum(inc.week))}</b></div>
+        <div class="adm__tile"><small>Всё время</small><b>${star()}${fmt(sum(inc.all))}</b></div>
+      </div>
+      <div class="adm__chips">${Object.entries(inc.all).map(([k, v]) => `<span>${SRC[k] || esc(k)} <b>${fmt(v)}</b></span>`).join('') || '<span>Комиссий пока нет</span>'}</div>
+      <div class="adm__tiles adm__tiles--4">
+        <div class="adm__tile"><small>Игроков</small><b>${fmt(d.users)}</b><em>+${fmt(d.usersDay)} за сутки</em></div>
+        <div class="adm__tile"><small>Пополнено</small><b>${star()}${fmt(d.deposits)}</b></div>
+        <div class="adm__tile"><small>На балансах</small><b>${star()}${fmt(d.balances)}</b><em>твой долг игрокам</em></div>
+        <div class="adm__tile"><small>Склад NFT</small><b>${fmt(d.stock.length)}</b><em>у игроков: ${fmt(d.nfts.in || 0)}</em></div>
+      </div>
+
+      <h4 class="adm__h">Заявки на вывод <small>${d.withdrawals.length}</small></h4>
+      ${d.withdrawals.length ? d.withdrawals.map((w) => `
+        <div class="adm__row">
+          ${avatarHtml(w.user, 'prow__ava')}
+          <div class="grow"><b>${esc(w.user.username ? '@' + w.user.username : w.user.name)}</b><small>id ${w.user.id} · списано ${fmt(w.amount)} · комиссия ${fmt(w.fee)}</small></div>
+          <span class="adm__pay">${star()}${fmt(w.amount - w.fee)}</span>
+          <button class="adm__ok" data-wd="wd_done" data-id="${w.id}" aria-label="paid">${icon.check}</button>
+          <button class="adm__no" data-wd="wd_reject" data-id="${w.id}" aria-label="reject">${icon.close}</button>
+        </div>`).join('') : '<div class="adm__empty">Заявок нет</div>'}
+
+      <h4 class="adm__h">Игры</h4>
+      <div class="list">${Object.entries(d.titles).map(([g, title]) => `<div class="list__row"><span class="grow">${esc(title)}</span><button class="switch ${d.games[g] ? 'is-on' : ''}" data-game="${g}"></button></div>`).join('')}</div>
+
+      <h4 class="adm__h">Склад и цены <small>${d.connected ? 'аккаунт подключён' : 'аккаунт не подключён'}</small></h4>
+      <button class="btn btn--ghost btn--block" id="admSync">${icon.gift}Загрузить подарки с аккаунта</button>
+      ${d.stock.length ? `<div class="ggrid">${d.stock.map((g) => giftCard(g)).join('')}</div>` : '<div class="adm__empty">Склад пуст: сюда попадают подарки с твоего аккаунта и проигранные в апгрейдере</div>'}
+      <form class="adm__form" id="admFloor"><input class="adm__in" name="name" placeholder="Коллекция (PlushPepe)" required /><input class="adm__in" name="price" inputmode="numeric" placeholder="Цена ⭐" required /><button class="btn btn--primary btn--sm">OK</button></form>
+      <div class="adm__chips">${Object.entries(d.floors).sort().map(([k, v]) => `<span data-fl="${esc(k)}">${esc(k)} <b>${fmt(v)}</b></span>`).join('')}</div>
+
+      <h4 class="adm__h">Игрок</h4>
+      <form class="adm__form" id="admFind"><input class="adm__in" name="q" placeholder="id или @username" required /><button class="btn btn--primary btn--sm">Найти</button></form>
+      ${found ? `
+        <div class="adm__user">
+          <div class="adm__row">${avatarHtml(found, 'prow__ava')}<div class="grow"><b>${esc(found.name)} ${found.username ? '@' + esc(found.username) : ''}</b><small>id ${found.id} · пополнил ${fmt(found.deposits)} · подарков ${found.gifts}</small></div><span class="adm__pay">${star()}${fmt(found.balance)}</span></div>
+          <form class="adm__form" id="admStars"><input class="adm__in" name="amount" inputmode="text" placeholder="+100 или -50" required /><button class="btn btn--primary btn--sm">Начислить</button>
+            <button type="button" class="btn btn--sm ${found.banned ? 'btn--ghost' : 'btn--pink'}" id="admBan">${found.banned ? 'Разбанить' : 'Бан'}</button></form>
+        </div>` : ''}`;
+    starifyNode(root);
+    root.querySelectorAll('[data-wd]').forEach((b) => b.addEventListener('click', () => act(b.dataset.wd, { id: +b.dataset.id }, b.dataset.wd === 'wd_done' ? 'Отмечено: выплачено' : 'Отклонено, звёзды возвращены')));
+    root.querySelectorAll('[data-game]').forEach((b) => b.addEventListener('click', () => act('game', { game: b.dataset.game, open: !d.games[b.dataset.game] })));
+    root.querySelector('#admSync').addEventListener('click', () => act('sync'));
+    const ff = root.querySelector('#admFloor');
+    ff.addEventListener('submit', (e) => { e.preventDefault(); act('floor', { name: ff.name.value, price: parseInt(ff.price.value.replace(/\D/g, ''), 10) || 0 }); });
+    root.querySelectorAll('[data-fl]').forEach((c) => c.addEventListener('click', () => { ff.name.value = c.dataset.fl; ff.price.focus(); }));
+    root.querySelectorAll('.ggrid [data-k]').forEach((c) => c.addEventListener('click', () => { ff.name.value = c.dataset.k.slice(4).split('-')[0]; ff.price.focus(); ff.scrollIntoView({ block: 'center', behavior: 'smooth' }); }));
+    const fq = root.querySelector('#admFind');
+    fq.addEventListener('submit', (e) => { e.preventDefault(); act('user', { q: fq.q.value }, 'Найден'); });
+    const fs = root.querySelector('#admStars');
+    fs?.addEventListener('submit', (e) => { e.preventDefault(); const n = parseInt(fs.amount.value.replace(/[^\d-]/g, ''), 10); if (n) act('stars', { id: found.id, amount: n }); });
+    root.querySelector('#admBan')?.addEventListener('click', () => act('ban', { id: found.id, banned: !found.banned }));
+  }
+  api.admin().then((r) => { d = r; draw(); }).catch((e) => { errToast(e); s.close(); });
 }
 
 // ---------- Карточка NFT-подарка: играть или вывести ----------
