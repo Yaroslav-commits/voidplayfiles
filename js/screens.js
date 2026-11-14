@@ -304,7 +304,7 @@ function openAdmin() {
 
       <h4 class="adm__h">Склад и цены <small>${d.connected ? 'аккаунт подключён' : 'аккаунт не подключён'}</small></h4>
       <button class="btn btn--ghost btn--block" id="admSync">${icon.gift}Загрузить подарки с аккаунта</button>
-      ${d.stock.length ? `<div class="ggrid">${d.stock.map((g) => giftCard(g)).join('')}</div>` : '<div class="adm__empty">Склад пуст: сюда попадают подарки с твоего аккаунта и проигранные в апгрейдере</div>'}
+      ${d.stock.length ? `<p class="note" style="margin:0">Замок — подарок скрыт из магазина и апгрейдера</p><div class="ggrid">${d.stock.map((g) => `<div class="adm__g ${g.locked ? 'is-locked' : ''}">${giftCard(g)}<button class="adm__lock" data-lock="${esc(g.id)}" aria-label="lock">${g.locked ? icon.lock : icon.check}</button></div>`).join('')}</div>` : '<div class="adm__empty">Склад пуст: сюда попадают подарки с твоего аккаунта и проигранные в апгрейдере</div>'}
       <form class="adm__form" id="admFloor"><input class="adm__in" name="name" placeholder="Коллекция (PlushPepe)" required /><input class="adm__in" name="price" inputmode="numeric" placeholder="Цена ⭐" required /><button class="btn btn--primary btn--sm">OK</button></form>
       <div class="adm__chips">${Object.entries(d.floors).sort().map(([k, v]) => `<span data-fl="${esc(k)}">${esc(k)} <b>${fmt(v)}</b></span>`).join('')}</div>
 
@@ -319,6 +319,10 @@ function openAdmin() {
     starifyNode(root);
     root.querySelectorAll('[data-wd]').forEach((b) => b.addEventListener('click', () => act(b.dataset.wd, { id: +b.dataset.id }, b.dataset.wd === 'wd_done' ? 'Отмечено: выплачено' : 'Отклонено, звёзды возвращены')));
     root.querySelectorAll('[data-game]').forEach((b) => b.addEventListener('click', () => act('game', { game: b.dataset.game, open: !d.games[b.dataset.game] })));
+    root.querySelectorAll('[data-lock]').forEach((b) => b.addEventListener('click', () => {
+      const g = d.stock.find((x) => x.id === b.dataset.lock);
+      act('lock', { id: g.id, locked: !g.locked }, g.locked ? 'Подарок снова доступен игрокам' : 'Подарок заблокирован');
+    }));
     root.querySelector('#admSync').addEventListener('click', () => act('sync'));
     const ff = root.querySelector('#admFloor');
     ff.addEventListener('submit', (e) => { e.preventDefault(); act('floor', { name: ff.name.value, price: parseInt(ff.price.value.replace(/\D/g, ''), 10) || 0 }); });

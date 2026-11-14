@@ -1126,3 +1126,10 @@ h1, h2, h3, p { margin: 0; }
 .adm__in { flex: 1; min-width: 0; height: 40px; padding: 0 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); color: var(--text); font: 600 14px/1 inherit; outline: none; }
 .adm__in:focus { border-color: var(--blue-l); }
 .adm__user { display: flex; flex-direction: column; gap: 8px; }
+
+.adm__g { position: relative; min-width: 0; }
+.adm__g .gcard { width: 100%; }
+.adm__g.is-locked .gcard { opacity: .45; filter: grayscale(.7); }
+.adm__lock { position: absolute; right: 6px; top: 6px; z-index: 2; width: 28px; height: 28px; border-radius: 10px; display: grid; place-items: center; color: #fff; background: #1fbf6b; box-shadow: 0 2px 10px rgba(0, 0, 0, .4); }
+.adm__g.is-locked .adm__lock { background: #ff3d7f; }
+.adm__lock svg { width: 14px; height: 14px; }
