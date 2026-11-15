@@ -117,11 +117,22 @@ function showOffline(err) {
 
 // ======================= загрузка =======================
 const PRELOAD = [
-  'img/gifts/pepe.webp', 'img/gifts/gift-126.webp', 'img/gifts/gift-074.webp', 'img/deco/calendar.webp', 'img/deco/bear.webp',
+  'img/deco/calendar.webp', 'img/deco/bear.webp',
   'img/deco/0259.webp', 'img/deco/0543.webp', ...home.GAMES.map((g) => `img/games/${g.id}.webp`),
 ];
 let started = false;
+function showTgOnly() {
+  $('#bootMsg').innerHTML = `
+    <div class="bootoff">
+      <span class="bootoff__ico">${icon.play}</span>
+      <b>${t('boot.tgTitle')}</b>
+      <p>${t('boot.tgText')}</p>
+      <a class="btn btn--primary btn--lg" href="https://t.me/${esc(CONFIG.BOT_USERNAME)}">${t('boot.tgBtn')}</a>
+    </div>`;
+  $('#loader').classList.add('is-error');
+}
 function boot() {
+  if (!api.canGoLive() && !/[?&]demo=1\b/.test(location.search)) return showTgOnly();
   const fill = $('#loaderFill');
   let done = 0; let shown = 0;
   const loads = PRELOAD.map((src) => new Promise((res) => { const im = new Image(); im.onload = im.onerror = () => { done++; res(); }; im.src = src; }));

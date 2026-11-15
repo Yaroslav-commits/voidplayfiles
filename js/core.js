@@ -87,6 +87,7 @@ const dict = {
 
     'pay.title': 'Кошелёк', 'pay.dep': 'Пополнить', 'pay.wd': 'Вывести', 'pay.balance': 'Баланс',
     'pay.amount': 'Сумма', 'pay.packs': 'Быстрый выбор', 'pay.min': 'Введи сумму', 'pay.payStars': 'Оплатить {n} ⭐',
+    'err.needDeposit': 'Доступно после первого пополнения от 50 ⭐', 'boot.tgTitle': 'Игра открывается в Telegram', 'boot.tgText': 'Запусти бота и нажми «Играть»', 'boot.tgBtn': 'Открыть бота',
     'pay.wdStars': 'Вывести ≈ {n} TON', 'pay.wdWallet': 'Твой TON-кошелёк', 'pay.wdWalletPh': 'Адрес UQ… или EQ…', 'pay.wdGet': 'Получишь', 'pay.wdRate': 'Вывод только в TON · комиссия {p}% · обычно до 24 часов', 'pay.wdNeedDep': 'Вывод откроется после пополнения от {n}', 'pay.badWallet': 'Проверь адрес TON-кошелька', 'pay.cash': 'Вывод временно недоступен — попробуй позже или забери подарком', 'pvp.noFee': 'Без комиссии — весь банк победителю', 'pvp.mult': 'Множитель', 'pvp.chanceIf': 'Шанс с этой ставкой', 'pvp.winIf': 'Заберёшь при победе', 'pvp.last': 'Успей!', 'pvp.lucky': 'Удача!', 'pvp.chance': 'шанс', 'pay.via': 'Оплата через Telegram Stars', 'pay.wdNote': 'Заявка уходит администратору, вывод — подарком или звёздами',
     'pay.paid': 'Оплата прошла!', 'pay.wdSent': 'Заявка на вывод отправлена', 'pay.minWd': 'Минимум для вывода: {n}',
 
@@ -205,6 +206,7 @@ const dict = {
 
     'pay.title': 'Wallet', 'pay.dep': 'Top up', 'pay.wd': 'Withdraw', 'pay.balance': 'Balance',
     'pay.amount': 'Amount', 'pay.packs': 'Quick pick', 'pay.min': 'Enter an amount', 'pay.payStars': 'Pay {n} ⭐',
+    'err.needDeposit': 'Available after your first deposit of 50 ⭐ or more', 'boot.tgTitle': 'The game opens in Telegram', 'boot.tgText': 'Start the bot and tap Play', 'boot.tgBtn': 'Open the bot',
     'pay.wdStars': 'Withdraw ≈ {n} TON', 'pay.wdWallet': 'Your TON wallet', 'pay.wdWalletPh': 'Address UQ… or EQ…', 'pay.wdGet': 'You get', 'pay.wdRate': 'TON only · fee {p}% · usually within 24 hours', 'pay.wdNeedDep': 'Withdrawals unlock after a deposit of {n} or more', 'pay.badWallet': 'Check the TON wallet address', 'pay.cash': 'Withdrawals are temporarily unavailable — try later or take a gift', 'pvp.noFee': 'No fee — the winner takes the whole pot', 'pvp.mult': 'Multiplier', 'pvp.chanceIf': 'Chance with this bet', 'pvp.winIf': 'You get if you win', 'pvp.last': 'Hurry!', 'pvp.lucky': 'Lucky!', 'pvp.chance': 'chance', 'pay.via': 'Paid with Telegram Stars', 'pay.wdNote': 'The request goes to an admin; payout as a gift or stars',
     'pay.paid': 'Payment received!', 'pay.wdSent': 'Withdrawal request sent', 'pay.minWd': 'Minimum withdrawal: {n}',
 
@@ -841,9 +843,12 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const fmt = (n) => Math.round(n).toLocaleString('ru-RU').replace(/\s/g, ' ');
 
 // Картинка подарка с запасным вариантом
-const giftImg = (g, cls = '') => {
-  const ph = giftPlaceholder(g?.id || g);
-  return `<img class="${cls}" src="${esc(giftSrc(g))}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${ph}'" />`;
+// big — крупный показ NFT: сначала картинка в полном качестве, если её нет — обычная, потом заглушка
+const giftImg = (g, cls = '', big = false) => {
+  const ph = giftPlaceholder(g?.id || g), src = giftSrc(g);
+  const hi = big && g?.nft && /\.medium\.jpg$/.test(src);
+  const chain = hi ? [src.replace(/\.medium\.jpg$/, '.large.jpg'), src] : [];
+  return `<img class="${cls}" src="${esc(hi ? src.replace(/\.medium\.jpg$/, '.webp') : src)}" data-fb="${esc(chain.join('|'))}" alt="" loading="lazy" decoding="async" onerror="var f=(this.dataset.fb||'').split('|').filter(Boolean),n=f.shift();this.dataset.fb=f.join('|');if(n){this.src=n}else{this.onerror=null;this.src='${ph}'}" />`;
 };
 const deco = (name, cls = '', style = '') => `<img class="${cls}" src="img/deco/${name}.webp" alt="" loading="lazy" decoding="async" style="${style}" onerror="this.remove()" />`;
 
@@ -911,7 +916,7 @@ function errToast(e) {
     bad_amount: 'err.badAmount', not_subscribed: 'sub.notYet', check_failed: 'err.checkFailed', auth: 'err.auth', banned: 'err.banned',
     network: 'err.network', timeout: 'err.timeout',
     closed: 'game.closedToast', wait: 'pvp.wait', full: 'pvp.full', side_locked: 'pvp.sideLocked', bad_side: 'pvp.pickSide',
-    stake_too_big: 'up.tooBig', ton_off: 'ton.off', no_price: 'nft.noPrice', bad_wallet: 'pay.badWallet', cash: 'pay.cash', transfer_failed: 'nft.failed',
+    stake_too_big: 'up.tooBig', ton_off: 'ton.off', no_price: 'nft.noPrice', need_deposit: 'err.needDeposit', bad_wallet: 'pay.badWallet', cash: 'pay.cash', transfer_failed: 'nft.failed',
   };
   toast(t(map[e?.code] || 'common.error'), 'error');
   if (e?.code === 'closed') api.refresh().catch(() => {});   // игру закрыли — подтянем свежие статусы
