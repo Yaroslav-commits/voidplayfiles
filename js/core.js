@@ -54,7 +54,7 @@ const dict = {
     'home.online': 'Работает', 'feed.empty': 'Здесь появятся выигрыши игроков',
 
     'bonus.daily.title': 'Ежедневный бонус', 'bonus.daily.text': 'Заходи каждый день и забирай звёзды бесплатно', 'bonus.daily.btn': 'Забрать', 'bonus.daily.taken': 'Уже получено — приходи завтра',
-    'bonus.invite.title': 'Пригласи друга', 'bonus.invite.text': 'Получай процент с каждого пополнения друзей', 'bonus.invite.btn': 'Пригласить',
+    'bonus.invite.title': 'Пригласи друга', 'bonus.invite.text': 'Получай долю с комиссии проекта за каждого друга', 'bonus.invite.btn': 'Пригласить',
     'bonus.deposit.title': 'Пополни баланс', 'bonus.deposit.text': 'Пополняй через Telegram Stars — моментально', 'bonus.deposit.btn': 'Пополнить',
     'bonus.tasks.title': 'Задания', 'bonus.tasks.text': 'Выполняй задания и получай награды звёздами', 'bonus.tasks.btn': 'Открыть',
 
@@ -87,13 +87,13 @@ const dict = {
 
     'pay.title': 'Кошелёк', 'pay.dep': 'Пополнить', 'pay.wd': 'Вывести', 'pay.balance': 'Баланс',
     'pay.amount': 'Сумма', 'pay.packs': 'Быстрый выбор', 'pay.min': 'Введи сумму', 'pay.payStars': 'Оплатить {n} ⭐',
-    'pay.wdStars': 'Вывести {n} ⭐', 'pay.via': 'Оплата через Telegram Stars', 'pay.wdNote': 'Заявка уходит администратору, вывод — подарком или звёздами',
+    'pay.wdStars': 'Вывести ≈ {n} TON', 'pay.wdWallet': 'Твой TON-кошелёк', 'pay.wdWalletPh': 'Адрес UQ… или EQ…', 'pay.wdGet': 'Получишь', 'pay.wdRate': 'Вывод только в TON · комиссия {p}% · обычно до 24 часов', 'pay.wdNeedDep': 'Вывод откроется после пополнения от {n}', 'pay.badWallet': 'Проверь адрес TON-кошелька', 'pay.cash': 'Вывод временно недоступен — попробуй позже или забери подарком', 'pvp.noFee': 'Без комиссии — весь банк победителю', 'pay.via': 'Оплата через Telegram Stars', 'pay.wdNote': 'Заявка уходит администратору, вывод — подарком или звёздами',
     'pay.paid': 'Оплата прошла!', 'pay.wdSent': 'Заявка на вывод отправлена', 'pay.minWd': 'Минимум для вывода: {n}',
 
     'set.title': 'Настройки', 'set.sounds': 'Звуки', 'set.volume': 'Громкость', 'set.lang': 'Язык',
     'set.terms': 'Пользовательское соглашение', 'set.support': 'Поддержка', 'set.server': 'Сервер',
 
-    'prof.inventory': 'Инвентарь', 'prof.invite': 'Приглашай друзей — получай % с их пополнений',
+    'prof.inventory': 'Инвентарь', 'prof.invite': 'Приглашай друзей — получай долю комиссии с их выводов',
     'prof.inviteBtn': 'Пригласить', 'prof.more': 'Реферальная программа', 'prof.history': 'История',
     'prof.historyEmpty': 'Транзакций пока нет', 'prof.shareText': 'Залетай — играй и забирай подарки!',
     'prof.balance': 'Баланс', 'prof.items': 'Подарков', 'prof.friends': 'Друзей', 'prof.settings': 'Настройки',
@@ -101,9 +101,9 @@ const dict = {
     'tx.fee': 'Ставка', 'tx.win': 'Выигрыш', 'tx.dep': 'Пополнение', 'tx.wd': 'Вывод', 'tx.bonus': 'Бонус', 'tx.ref': 'Реферальный бонус',
 
     'ref.title': 'Друзья', 'ref.systemText': 'Зови друзей и зарабатывай вместе с ними',
-    'ref.perFriend': '+{n} ⭐ за друга', 'ref.perDeposit': '{n}% с пополнений',
+    'ref.perFriend': '+{n} ⭐ за друга', 'ref.perDeposit': '{n}% с комиссии',
     'ref.count': 'Друзей', 'ref.earned': 'Заработано', 'ref.link': 'Твоя ссылка', 'ref.copy': 'Копировать', 'ref.share': 'Поделиться',
-    'ref.level': 'Твой уровень', 'ref.levelN': 'Уровень {n}', 'ref.percent': '{n}% с депозитов',
+    'ref.level': 'Твой уровень', 'ref.levelN': 'Уровень {n}', 'ref.percent': '{n}% с комиссии друзей',
     'ref.from': 'от {n} ⭐ депозитов друзей', 'ref.moreLevels': 'Все уровни',
     'ref.all': 'Приглашённые', 'ref.none': 'Пока никого — отправь ссылку другу', 'ref.levels': 'Реферальные уровни',
 
@@ -172,7 +172,7 @@ const dict = {
     'home.online': 'Live', 'feed.empty': 'Players\' wins will appear here',
 
     'bonus.daily.title': 'Daily bonus', 'bonus.daily.text': 'Come back every day and grab free stars', 'bonus.daily.btn': 'Claim', 'bonus.daily.taken': 'Already claimed — come back tomorrow',
-    'bonus.invite.title': 'Invite a friend', 'bonus.invite.text': 'Earn a share of every deposit your friends make', 'bonus.invite.btn': 'Invite',
+    'bonus.invite.title': 'Invite a friend', 'bonus.invite.text': 'Earn a share of the project fee from every friend', 'bonus.invite.btn': 'Invite',
     'bonus.deposit.title': 'Top up', 'bonus.deposit.text': 'Top up instantly with Telegram Stars', 'bonus.deposit.btn': 'Top up',
     'bonus.tasks.title': 'Tasks', 'bonus.tasks.text': 'Complete tasks and earn stars', 'bonus.tasks.btn': 'Open',
 
@@ -205,13 +205,13 @@ const dict = {
 
     'pay.title': 'Wallet', 'pay.dep': 'Top up', 'pay.wd': 'Withdraw', 'pay.balance': 'Balance',
     'pay.amount': 'Amount', 'pay.packs': 'Quick pick', 'pay.min': 'Enter an amount', 'pay.payStars': 'Pay {n} ⭐',
-    'pay.wdStars': 'Withdraw {n} ⭐', 'pay.via': 'Paid with Telegram Stars', 'pay.wdNote': 'The request goes to an admin; payout as a gift or stars',
+    'pay.wdStars': 'Withdraw ≈ {n} TON', 'pay.wdWallet': 'Your TON wallet', 'pay.wdWalletPh': 'Address UQ… or EQ…', 'pay.wdGet': 'You get', 'pay.wdRate': 'TON only · fee {p}% · usually within 24 hours', 'pay.wdNeedDep': 'Withdrawals unlock after a deposit of {n} or more', 'pay.badWallet': 'Check the TON wallet address', 'pay.cash': 'Withdrawals are temporarily unavailable — try later or take a gift', 'pvp.noFee': 'No fee — the winner takes the whole pot', 'pay.via': 'Paid with Telegram Stars', 'pay.wdNote': 'The request goes to an admin; payout as a gift or stars',
     'pay.paid': 'Payment received!', 'pay.wdSent': 'Withdrawal request sent', 'pay.minWd': 'Minimum withdrawal: {n}',
 
     'set.title': 'Settings', 'set.sounds': 'Sounds', 'set.volume': 'Volume', 'set.lang': 'Language',
     'set.terms': 'Terms of use', 'set.support': 'Support', 'set.server': 'Server',
 
-    'prof.inventory': 'Inventory', 'prof.invite': 'Invite friends — earn % of their deposits',
+    'prof.inventory': 'Inventory', 'prof.invite': 'Invite friends — earn a share of the fee on their withdrawals',
     'prof.inviteBtn': 'Invite', 'prof.more': 'Referral program', 'prof.history': 'History',
     'prof.historyEmpty': 'No transactions yet', 'prof.shareText': 'Join in — play and win gifts!',
     'prof.balance': 'Balance', 'prof.items': 'Gifts', 'prof.friends': 'Friends', 'prof.settings': 'Settings',
@@ -219,9 +219,9 @@ const dict = {
     'tx.fee': 'Bet', 'tx.win': 'Win', 'tx.dep': 'Deposit', 'tx.wd': 'Withdrawal', 'tx.bonus': 'Bonus', 'tx.ref': 'Referral bonus',
 
     'ref.title': 'Friends', 'ref.systemText': 'Invite friends and earn together',
-    'ref.perFriend': '+{n} ⭐ per friend', 'ref.perDeposit': '{n}% of deposits',
+    'ref.perFriend': '+{n} ⭐ per friend', 'ref.perDeposit': '{n}% of the fee',
     'ref.count': 'Friends', 'ref.earned': 'Earned', 'ref.link': 'Your link', 'ref.copy': 'Copy', 'ref.share': 'Share',
-    'ref.level': 'Your level', 'ref.levelN': 'Level {n}', 'ref.percent': '{n}% of deposits',
+    'ref.level': 'Your level', 'ref.levelN': 'Level {n}', 'ref.percent': '{n}% of friends\' fees',
     'ref.from': 'from {n} ⭐ of friends\' deposits', 'ref.moreLevels': 'All levels',
     'ref.all': 'Invited', 'ref.none': 'Nobody yet — send your link to a friend', 'ref.levels': 'Referral levels',
 
@@ -416,7 +416,7 @@ const DEMO_PLAYERS = ['durov', 'pepe_hunter', 'void_king', 'starboy', 'nft_lady'
 const state = {
   user: { id: 0, name: 'Игрок', username: '', photo: '', avatar: '' },
   balance: { stars: 0 },
-  rates: { tonToStars: 120, usdToStars: 50 },
+  rates: { tonToStars: 120, usdToStars: 50, tonOut: 150 },
   subscribed: false, wallet: null, daily: { ready: true, reward: 5 }, inventory: [], transactions: [],
   referrals: { count: 0, earned: 0, list: [], level: 1, perFriend: 10, percent: 5, refDeposits: 0 },
   tasks: [], packs: [{ stars: 100, bonus: 0 }, { stars: 500, bonus: 0 }, { stars: 1000, bonus: 0 }],
@@ -683,8 +683,9 @@ const api = {
     state.balance.stars += total; demoTx('dep', total);
     return { ok: true, status: 'paid', credited: total };
   },
-  async withdraw(stars, method = 'stars') {
-    if (this.live) { const r = await request('/api/withdraw', { stars, method }); state.balance.stars = r.balance; this.refresh().catch(() => {}); return r; }
+  async withdraw(stars, wallet) {
+    const method = 'ton';
+    if (this.live) { const r = await request('/api/withdraw', { stars, wallet }); state.balance.stars = r.balance; this.refresh().catch(() => {}); return r; }
     if (stars < this.cfg('minWithdraw', 100)) throw new ApiError('bad_amount');
     if (stars > state.balance.stars) throw new ApiError('no_stars');
     state.balance.stars -= stars; demoTx('wd', stars, { status: 'pending', currency: method.toUpperCase() });
@@ -754,7 +755,7 @@ const api = {
 
 // ---------- Демо-PvP (только без сервера): раунды с ботами, логика как на сервере ----------
 const demoPvp = {
-  R: {}, n: 1, ROUND: 12000, SHOW: 9000, FEE: 0.1,
+  R: {}, n: 1, ROUND: 12000, SHOW: 9000, FEE: 0,
   round(game) {
     let r = this.R[game];
     if (!r || (r.done && Date.now() > r.at + this.SHOW)) r = this.R[game] = { id: this.n++, game, bets: [], endsAt: null, done: false, hist: r?.hist || [] };
@@ -910,7 +911,7 @@ function errToast(e) {
     bad_amount: 'err.badAmount', not_subscribed: 'sub.notYet', check_failed: 'err.checkFailed', auth: 'err.auth', banned: 'err.banned',
     network: 'err.network', timeout: 'err.timeout',
     closed: 'game.closedToast', wait: 'pvp.wait', full: 'pvp.full', side_locked: 'pvp.sideLocked', bad_side: 'pvp.pickSide',
-    stake_too_big: 'up.tooBig', ton_off: 'ton.off', no_price: 'nft.noPrice', transfer_failed: 'nft.failed',
+    stake_too_big: 'up.tooBig', ton_off: 'ton.off', no_price: 'nft.noPrice', bad_wallet: 'pay.badWallet', cash: 'pay.cash', transfer_failed: 'nft.failed',
   };
   toast(t(map[e?.code] || 'common.error'), 'error');
   if (e?.code === 'closed') api.refresh().catch(() => {});   // игру закрыли — подтянем свежие статусы
@@ -1003,9 +1004,23 @@ document.addEventListener('click', (e) => {
 }, true);
 
 // Поле суммы растёт вместе с числом (звезда стоит рядом с цифрами)
-function fitAmount(inp) { if (inp) inp.style.width = `${Math.max(1, (inp.value || inp.placeholder || '0').length) + 0.6}ch`; }
+const _fitCtx = document.createElement('canvas').getContext('2d');
+function fitAmount(inp) {
+  if (!inp) return;
+  const cs = getComputedStyle(inp);
+  if (!inp.dataset.fs) inp.dataset.fs = parseFloat(cs.fontSize) || 34;
+  const base = +inp.dataset.fs, txt = inp.value || inp.placeholder || '0';
+  _fitCtx.font = `${cs.fontWeight} ${base}px ${cs.fontFamily}`;
+  let w = _fitCtx.measureText(txt).width, size = base;
+  const box = inp.closest('.amount__in'), max = box && box.clientWidth ? box.clientWidth - 48 : 0;   // место под звезду и отступ
+  if (max > 60 && w > max) { size = Math.max(16, Math.floor(base * max / w)); w = w * size / base; }
+  inp.style.fontSize = `${size}px`;
+  inp.style.width = `${Math.ceil(w + size * 0.4)}px`;
+}
 document.addEventListener('input', (e) => { if (e.target.matches?.('.amount__in input')) fitAmount(e.target); }, true);
 const fitAmounts = (root = document) => root.querySelectorAll('.amount__in input').forEach(fitAmount);
+document.fonts?.ready?.then(() => fitAmounts());
+window.addEventListener('resize', () => fitAmounts());
 
 // ======================= эффекты =======================
 const reduce = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;

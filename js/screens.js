@@ -27,7 +27,11 @@ function openPay(mode = 'dep') {
   const s = sheet('', { title: t('pay.title'), cls: 'sheet--pay', onClose: () => { closed = true; } });
   const tonOn = () => !!api.cfg('ton', {}).enabled && st.rates.tonToStars > 0;
   const tonAmount = () => (amount / st.rates.tonToStars).toFixed(3);
-  const goLabel = () => (!amount ? t('pay.min') : mode === 'wd' ? t('pay.wdStars', { n: fmt(amount) })
+  let wallet = st.wallet || '';
+  const wdFee = () => api.cfg('withdrawFee', 0);
+  const wdTon = () => (st.rates.tonOut > 0 ? Math.floor(amount * (1 - wdFee()) / st.rates.tonOut * 1000) / 1000 : 0).toFixed(3);
+  const wdLocked = () => api.live && api.cfg('deposited', 0) < api.cfg('wdMinDeposit', 0);
+  const goLabel = () => (!amount ? t('pay.min') : mode === 'wd' ? t('pay.wdStars', { n: wdTon() })
     : method === 'ton' ? t('ton.pay', { n: tonAmount() }) : t('pay.payStars', { n: fmt(amount) }));
 
   // Шаг 2 для TON: адрес, сумма, комментарий — и ждём перевод
@@ -81,9 +85,11 @@ function openPay(mode = 'dep') {
       </label>
       <div class="chips">${packs.map((p) => `<button class="chip ${amount === p ? 'is-active' : ''}" data-p="${p}">${star()}${fmt(p)}${dep && st.packs.find((x) => x.stars === p)?.bonus ? `<em>+${st.packs.find((x) => x.stars === p).bonus}</em>` : ''}</button>`).join('')}</div>
       ${dep && tonOn() ? `<div class="seg seg--2 seg--pay"><button data-pm="stars" class="${method === 'stars' ? 'is-active' : ''}">${icon.star}Telegram Stars</button><button data-pm="ton" class="${method === 'ton' ? 'is-active' : ''}">${icon.ton}TON</button></div>` : ''}
+      ${!dep ? `<label class="wdw"><small>${icon.ton}${t('pay.wdWallet')}</small><input id="payWal" class="adm__in" placeholder="${t('pay.wdWalletPh')}" value="${esc(wallet)}" autocomplete="off" spellcheck="false" /></label>
+        <div class="wdget"><span>${t('pay.wdGet')}</span><b><i>${icon.ton}</i><em id="wdTon">${wdTon()}</em> TON</b></div>` : ''}
       <button class="btn btn--${!dep ? 'pink' : method === 'ton' ? 'ton' : 'primary'} btn--lg btn--block" id="payGo" ${amount ? '' : 'disabled'}>${goLabel()}</button>
       ${!dep ? `<button class="btn btn--gift btn--block" id="payShop">${icon.gift}${t('shop.open')}</button>` : ''}
-      <p class="note" id="payNote">${!dep ? `${t('pay.wdFee', { p: +(api.cfg('withdrawFee', 0) * 100).toFixed(1), n: fmt(Math.floor(amount * (1 - api.cfg('withdrawFee', 0)))) })} ⭐ · ${t('pay.wdNote')}` : method === 'ton' ? `${t('ton.rate', { n: fmt(st.rates.tonToStars) })} ⭐` : t('pay.via')}</p>`);
+      <p class="note" id="payNote">${!dep ? (wdLocked() ? `${t('pay.wdNeedDep', { n: api.cfg('wdMinDeposit', 0) })} ⭐` : t('pay.wdRate', { p: +(wdFee() * 100).toFixed(1) })) : method === 'ton' ? `${t('ton.rate', { n: fmt(st.rates.tonToStars) })} ⭐` : t('pay.via')}</p>`);
     const el = s.el;
     el.querySelectorAll('[data-m]').forEach((b) => b.addEventListener('click', () => { sound('tick'); haptic('select'); mode = b.dataset.m; amount = 0; draw(); }));
     const inp = el.querySelector('#payIn');
@@ -93,12 +99,14 @@ function openPay(mode = 'dep') {
       el.querySelector('.amount__usd').textContent = `≈ $${(amount / st.rates.usdToStars).toFixed(2)}`;
       const go = el.querySelector('#payGo'); go.disabled = !amount;
       go.textContent = goLabel();
+      const wt = el.querySelector('#wdTon'); if (wt) wt.textContent = wdTon();
       el.querySelectorAll('[data-p]').forEach((c) => c.classList.toggle('is-active', +c.dataset.p === amount));
     });
     fitAmounts(el);
     if (focus) inp.focus();
     el.querySelectorAll('[data-p]').forEach((b) => b.addEventListener('click', () => { sound('tick'); haptic('select'); amount = +b.dataset.p; draw(); }));
     el.querySelectorAll('[data-pm]').forEach((b) => b.addEventListener('click', () => { sound('tick'); haptic('select'); method = b.dataset.pm; draw(); }));
+    el.querySelector('#payWal')?.addEventListener('input', (e) => { wallet = e.target.value.trim(); });
     el.querySelector('#payShop')?.addEventListener('click', () => { sound(); s.close(); openShop(); });
     el.querySelector('#payGo').addEventListener('click', async (e) => {
       if (busy || !amount) return;
@@ -108,6 +116,8 @@ function openPay(mode = 'dep') {
         const min = api.cfg('minWithdraw', 100);
         if (amount < min) return toast(t('pay.minWd', { n: min }), 'error');
         if (amount > st.balance.stars) return toast(t('toast.noStars'), 'error');
+        if (wdLocked()) { toast(`${t('pay.wdNeedDep', { n: api.cfg('wdMinDeposit', 0) })} ⭐`, 'error'); mode = 'dep'; amount = 0; return draw(); }
+        if (!/^([A-Za-z0-9_\-+/]{48}|-?\d:[0-9a-fA-F]{64})$/.test(wallet)) { el.querySelector('#payWal').focus(); return toast(t('pay.badWallet'), 'error'); }
       }
       busy = true; btn.classList.add('is-loading');
       try {
@@ -119,7 +129,7 @@ function openPay(mode = 'dep') {
           const r = await api.deposit(amount);
           if (r.ok) { balanceChanged(); toast(r.credited ? t('toast.gotStars', { n: fmt(r.credited) }) : t('pay.paid'), 'success'); s.close(); confetti(); }
         } else {
-          await api.withdraw(amount);
+          await api.withdraw(amount, wallet);
           balanceChanged(); toast(t('pay.wdSent'), 'success'); s.close();
         }
       } catch (err) { errToast(err); }
@@ -285,7 +295,7 @@ function openAdmin() {
       <div class="adm__tiles adm__tiles--4">
         <div class="adm__tile"><small>Игроков</small><b>${fmt(d.users)}</b><em>+${fmt(d.usersDay)} за сутки</em></div>
         <div class="adm__tile"><small>Пополнено</small><b>${star()}${fmt(d.deposits)}</b></div>
-        <div class="adm__tile"><small>На балансах</small><b>${star()}${fmt(d.balances)}</b><em>твой долг игрокам</em></div>
+        <div class="adm__tile"><small>На балансах</small><b>${star()}${fmt(d.balances)}</b><em>касса: ${fmt(d.cash ? d.cash.left : 0)} из ${fmt(d.cash ? d.cash.in : 0)}</em></div>
         <div class="adm__tile"><small>Склад NFT</small><b>${fmt(d.stock.length)}</b><em>у игроков: ${fmt(d.nfts.in || 0)}</em></div>
       </div>
 
@@ -294,7 +304,7 @@ function openAdmin() {
         <div class="adm__row">
           ${avatarHtml(w.user, 'prow__ava')}
           <div class="grow"><b>${esc(w.user.username ? '@' + w.user.username : w.user.name)}</b><small>id ${w.user.id} · списано ${fmt(w.amount)} · комиссия ${fmt(w.fee)}</small></div>
-          <span class="adm__pay">${star()}${fmt(w.amount - w.fee)}</span>
+          ${w.ton ? `<button class="adm__ton" data-copy="${esc(w.wallet)}" data-pay="ton://transfer/${esc(w.wallet)}?amount=${Math.round(w.ton * 1e9)}">${icon.ton}${w.ton}</button>` : `<span class="adm__pay">${star()}${fmt(w.amount - w.fee)}</span>`}
           <button class="adm__ok" data-wd="wd_done" data-id="${w.id}" aria-label="paid">${icon.check}</button>
           <button class="adm__no" data-wd="wd_reject" data-id="${w.id}" aria-label="reject">${icon.close}</button>
         </div>`).join('') : '<div class="adm__empty">Заявок нет</div>'}
@@ -319,6 +329,10 @@ function openAdmin() {
     starifyNode(root);
     root.querySelectorAll('[data-wd]').forEach((b) => b.addEventListener('click', () => act(b.dataset.wd, { id: +b.dataset.id }, b.dataset.wd === 'wd_done' ? 'Отмечено: выплачено' : 'Отклонено, звёзды возвращены')));
     root.querySelectorAll('[data-game]').forEach((b) => b.addEventListener('click', () => act('game', { game: b.dataset.game, open: !d.games[b.dataset.game] })));
+    root.querySelectorAll('.adm__ton').forEach((b) => b.addEventListener('click', () => {
+      copyText(b.dataset.copy); toast('Адрес скопирован — открываю кошелёк', 'success');
+      try { window.open(b.dataset.pay, '_blank'); } catch (e) { /* нет кошелька на устройстве */ }
+    }));
     root.querySelector('#admSync').addEventListener('click', () => act('sync'));
     const ff = root.querySelector('#admFloor');
     ff.addEventListener('submit', (e) => { e.preventDefault(); act('floor', { name: ff.name.value, price: parseInt(ff.price.value.replace(/\D/g, ''), 10) || 0 }); });
@@ -1463,7 +1477,7 @@ const pvp = (() => {
     function drawPlayers() {
       const win = revealed && st.result;
       $r('#pCount').textContent = st.players.length;
-      $r('#pFee').textContent = pct(st.fee);
+      if (st.fee > 0) { if ($r('#pFee')) $r('#pFee').textContent = pct(st.fee); } else if (root.querySelector('.pvp-fee')) root.querySelector('.pvp-fee').textContent = t('pvp.noFee');
       $r('#pList').innerHTML = st.players.length ? st.players.map((p, i) => {
         const isWin = win && (S.tab === 'roulette' ? st.result.winner?.id === p.id : st.result.winner === p.side);
         return `<div class="prow ${p.id === api.state.user.id ? 'is-me' : ''} ${isWin ? 'is-win' : win ? 'is-lose' : ''}">
