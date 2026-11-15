@@ -9,7 +9,16 @@ const pageHead = (title, helpId) => `
     ${helpId ? `<button class="icon-btn" id="${helpId}" aria-label="help">${icon.help}</button>` : '<span class="icon-btn is-ghost"></span>'}
   </div>`;
 const wireBack = (root) => root.querySelector('[data-back]')?.addEventListener('click', () => { sound(); history.length > 1 ? history.back() : go('home'); });
-const giftCard = (g, { sel = false, key = 'id', cls = '' } = {}) => `
+const nftCard = (g, { sel, key, cls }) => {
+  const [name, num] = String(g.name).split(' #');
+  return `
+  <button class="gcard gcard--nft ${sel ? 'is-sel' : ''} ${cls}" data-k="${esc(g[key])}">
+    <span class="gcard__pic">${giftImg(g)}${num ? `<i class="gcard__num">#${esc(num)}</i>` : ''}</span>
+    <span class="gcard__name">${esc(name)}</span>
+    <span class="gcard__val">${g.price ? star() + fmt(g.price) : t('nft.pricing')}</span>
+  </button>`;
+};
+const giftCard = (g, { sel = false, key = 'id', cls = '' } = {}) => g.nft ? nftCard(g, { sel, key, cls }) : `
   <button class="gcard rar-${rarity(g.price)} ${sel ? 'is-sel' : ''} ${cls}" data-k="${esc(g[key])}">
     <span class="gcard__img ${g.nft ? 'gcard__img--nft' : ''}">${giftImg(g)}</span>
     ${g.nft ? '<i class="gcard__tag">NFT</i>' : ''}
@@ -252,7 +261,7 @@ function openShop() {
     let busy = false;
     const c = sheet(`
       <div class="nftv rar-${rarity(g.buy)}">
-        <div class="nftv__art"><span class="nftv__glow"></span>${giftImg(g)}<i class="gcard__tag">NFT</i></div>
+        <div class="nftv__art"><span class="nftv__glow"></span>${giftImg(g, '', true)}<i class="gcard__tag">NFT</i></div>
         <h3 class="nftv__name">${esc(g.name)}</h3>
         <div class="nftv__meta">${[g.model, g.backdrop].filter(Boolean).map((x) => `<span>${esc(x)}</span>`).join('')}</div>
         <button class="btn btn--primary btn--xl btn--block" id="shopGo">${t('shop.buy', { n: `${star()}${fmt(g.buy)}` })}</button>
@@ -373,7 +382,7 @@ function openNft(g) {
   let busy = false;
   const s = sheet(`
     <div class="nftv rar-${rarity(g.price)}">
-      <div class="nftv__art"><span class="nftv__glow"></span>${giftImg(g)}<i class="gcard__tag">NFT</i></div>
+      <div class="nftv__art"><span class="nftv__glow"></span>${giftImg(g, '', true)}<i class="gcard__tag">NFT</i></div>
       <h3 class="nftv__name">${esc(g.name)}</h3>
       <div class="nftv__meta">${[g.model, g.backdrop].filter(Boolean).map((x) => `<span>${esc(x)}</span>`).join('')}</div>
       <div class="nftv__price">${g.price ? star() + fmt(g.price) : t('nft.pricing')}</div>
@@ -600,7 +609,7 @@ const home = (() => {
         <span class="hero__orb hero__orb--1"></span><span class="hero__orb hero__orb--2"></span>
         <div class="hero__art">
           <span class="hero__ring"></span>
-          ${giftImg({ id: 'pepe' }, 'hero__g hero__g--1')}${giftImg({ id: 'gift-126' }, 'hero__g hero__g--2')}${giftImg({ id: 'gift-074' }, 'hero__g hero__g--3')}
+          ${(() => { const real = api.live ? (api.state.shop || []).slice(0, 3) : [{ id: 'pepe' }, { id: 'gift-126' }, { id: 'gift-074' }]; const fb = ['bear', 'calendar', '0259']; return [0, 1, 2].map((i) => real[i] ? giftImg(real[i], `hero__g hero__g--${i + 1} ${real[i].nft ? 'hero__g--nft' : ''}`) : deco(fb[i], `hero__g hero__g--${i + 1}`)).join(''); })()}
         </div>
         <div class="hero__txt">
           <span class="tag tag--fire">${icon.fire}${t('home.heroTag')}</span>
@@ -1071,7 +1080,7 @@ const leaders = (() => {
   const dateLong = (ms) => new Date(ms).toLocaleDateString(getLang() === 'en' ? 'en-GB' : 'ru-RU', { day: 'numeric', month: 'long' });
   // призы сезона: с сервера (prizes) или из config.js (SEASON_PRIZES)
   const prizesOf = (L) => {
-    if (L.prizes?.length) return L.prizes;
+    if (L.prizes?.length || api.live) return L.prizes || [];
     const ids = USER_CFG.SEASON_PRIZES || ['pepe', 'gift-126', 'gift-074'];
     const found = ids.map((id) => api.catalog.find((g) => g.id === id)).filter(Boolean);
     return found.length ? found : [...api.catalog].sort((a, b) => b.price - a.price).slice(0, 3);
