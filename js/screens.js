@@ -1325,11 +1325,47 @@ const pvp = (() => {
   const S = { tab: 'roulette', amount: 0, side: null };
   const COLORS = ['#3d6bff', '#ff3d7f', '#ffc226', '#34d399', '#a855f7', '#ff8a3d', '#22d3ee', '#f472b6', '#a3e635', '#f87171', '#60a5fa', '#fbbf24'];
   const R = 72, C = 2 * Math.PI * R;
-  const SPIN_MS = 5200, DUEL_MS = 4400;
+  const TURNS = 7;
   const pct = (x) => `${(x * 100).toFixed(x > 0 && x < 0.1 ? 1 : 0)}%`;
+  const mult = (x) => `x${x >= 100 ? Math.round(x) : x.toFixed(x >= 10 ? 1 : 2)}`;
   const uname = (u) => esc(u?.username ? '@' + u.username : u?.name || '—');
   const sideName = (s) => t(s === 'fire' ? 'pvp.fire' : 'pvp.ice');
   const sideIco = (s) => `<i class="fi-ico fi-ico--${s}">${s === 'fire' ? icon.fire : icon.snow}</i>`;
+
+  // Объёмные иконки сторон: пламя и ледяной кристалл
+  const ART = {
+    fire: `<svg viewBox="0 0 64 72" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="pvF1" x1="32" y1="2" x2="32" y2="68" gradientUnits="userSpaceOnUse"><stop stop-color="#ffd76a"/><stop offset=".42" stop-color="#ff6a1a"/><stop offset="1" stop-color="#b80f08"/></linearGradient>
+        <linearGradient id="pvF2" x1="32" y1="22" x2="32" y2="64" gradientUnits="userSpaceOnUse"><stop stop-color="#fff6b8"/><stop offset=".6" stop-color="#ffb21f"/><stop offset="1" stop-color="#ff7412"/></linearGradient>
+        <radialGradient id="pvF3" cx="32" cy="56" r="13" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#ffe680"/></radialGradient>
+      </defs>
+      <ellipse cx="32" cy="67" rx="19" ry="4" fill="#000" opacity=".3"/>
+      <path class="fl fl--1" d="M32 2C36 14 50 22 52 40C54 56 44 68 32 68C20 68 10 56 12 42C13 34 18 30 20 22C23 28 26 30 27 30C26 20 28 10 32 2Z" fill="url(#pvF1)"/>
+      <path class="fl fl--1" d="M22 27C19 33 15.5 37 15 44C14.6 50 17 56 21 60C17 53 18 44 22 38C23.5 35.5 23 31 22 27Z" fill="#fff" opacity=".22"/>
+      <path class="fl fl--2" d="M33 22C36 30 44 36 44 47C44 58 38 64 32 64C25 64 20 58 20 49C20 43 24 40 26 35C28 39 30 40 31 40C30 34 31 28 33 22Z" fill="url(#pvF2)"/>
+      <path class="fl fl--3" d="M32 40C34 45 38 48 38 54C38 59 35 62 32 62C29 62 26 59 26 55C26 51 29 49 30 46C31 48 31.5 48 32 48C31.5 45 31.5 42 32 40Z" fill="url(#pvF3)"/>
+    </svg>`,
+    ice: `<svg viewBox="0 0 64 72" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="pvI1" x1="18" y1="4" x2="46" y2="66" gradientUnits="userSpaceOnUse"><stop stop-color="#f4fdff"/><stop offset=".5" stop-color="#7fdcff"/><stop offset="1" stop-color="#2a6bff"/></linearGradient>
+        <linearGradient id="pvI2" x1="32" y1="24" x2="32" y2="64" gradientUnits="userSpaceOnUse"><stop stop-color="#c4f2ff"/><stop offset="1" stop-color="#1650d8"/></linearGradient>
+      </defs>
+      <ellipse cx="32" cy="67.5" rx="23" ry="4" fill="#000" opacity=".28"/>
+      <path d="M13 30L22 38L20 60L9 62L5 46Z" fill="url(#pvI2)"/><path d="M13 30L22 38L14 48L5 46Z" fill="#fff" opacity=".4"/>
+      <path d="M51 26L60 42L57 61L45 60L44 38Z" fill="url(#pvI2)"/><path d="M51 26L60 42L50 46L44 38Z" fill="#fff" opacity=".45"/>
+      <path d="M32 3L46 20V50L32 67L18 50V20Z" fill="url(#pvI1)"/>
+      <path d="M32 3L46 20L32 26Z" fill="#fff" opacity=".55"/><path d="M32 3L18 20L32 26Z" fill="#fff" opacity=".9"/>
+      <path d="M32 26L46 20V50L32 67Z" fill="#0b3fc4" opacity=".3"/><path d="M18 20L32 26V67L18 50Z" fill="#fff" opacity=".12"/>
+      <path d="M22 25L26 27V45L22 47Z" fill="#fff" opacity=".6"/>
+      <path class="sp sp--1" d="M52 8l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z" fill="#fff"/>
+      <path class="sp sp--2" d="M9 14l1.1 3 3 1.1-3 1.1-1.1 3-1.1-3-3-1.1 3-1.1z" fill="#fff"/>
+    </svg>`,
+  };
+  const bulbs = Array.from({ length: 24 }, (_, i) => {
+    const a = (i * 15 * Math.PI) / 180;
+    return `<i style="left:${(50 + 47.6 * Math.sin(a)).toFixed(2)}%;top:${(50 - 47.6 * Math.cos(a)).toFixed(2)}%"></i>`;
+  }).join('');
 
   const betPanel = () => `
     <section class="panel" id="betPanel">
@@ -1350,21 +1386,28 @@ const pvp = (() => {
 
   const BODY = {
     roulette: () => `
-      <section class="arena">
+      <section class="arena" id="arena">
+        <span class="arena__rays"></span>
         <div class="wheel" id="wheel">
           <span class="wheel__halo"></span>
+          <span class="wheel__bezel"></span>
+          <div class="wheel__bulbs">${bulbs}</div>
           <div class="wheel__rot" id="wRot"><svg viewBox="0 0 200 200" id="wSvg"></svg><div class="wheel__avas" id="wAvas"></div></div>
-          <span class="wheel__ptr"></span>
-          <div class="wheel__center">
+          <span class="wheel__gloss"></span>
+          <span class="wheel__ptr" id="wPtr"><svg viewBox="0 0 30 38"><defs><linearGradient id="pvP" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff6c9"/><stop offset=".5" stop-color="#ffc94a"/><stop offset="1" stop-color="#e07a00"/></linearGradient></defs><path d="M15 37L3.5 13A12.4 12.4 0 1 1 26.500 13Z" fill="url(#pvP)" stroke="#7a3d00" stroke-width="1"/><circle cx="15" cy="12" r="5" fill="#ff3d7f" stroke="#fff" stroke-width="1.6"/></svg></span>
+          <div class="wheel__center" id="wCenter">
             <svg class="wheel__ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/><circle id="wRing" cx="50" cy="50" r="46"/></svg>
-            <small id="wLabel">${t('pvp.pot')}</small><b id="wPot">${star()}0</b><span id="wTimer"></span>
+            <div class="wc wc--pot" id="wcPot"><small id="wLabel">${t('pvp.pot')}</small><b id="wPot">${star()}<i id="wPotV">0</i></b><span id="wTimer"></span></div>
+            <div class="wc wc--who" id="wcWho" hidden></div>
+            <div class="wc wc--count" id="wcCount" hidden><b id="wCountV">3</b><small>${t('pvp.last')}</small></div>
           </div>
         </div>
         <div class="arena__stats">
           <div><small>${t('pvp.players')}</small><b id="aPlayers">0</b></div>
           <div class="is-accent"><small>${t('pvp.yourChance')}</small><b id="aChance">—</b></div>
-          <div><small>${t('pvp.yourBet')}</small><b id="aBet">—</b></div>
+          <div class="is-gold"><small>${t('pvp.mult')}</small><b id="aWin">—</b></div>
         </div>
+        <span class="arena__next" id="aNext"></span>
       </section>
       <div class="pvpres" id="pvpRes" hidden></div>
       ${betPanel()}${tail()}`,
@@ -1373,8 +1416,10 @@ const pvp = (() => {
         <div class="duel__sides">
           ${['fire', 'ice'].map((s) => `
           <button class="side side--${s}" data-side="${s}">
-            <span class="side__glow"></span>
-            <span class="side__ico">${s === 'fire' ? icon.fire : icon.snow}</span>
+            <span class="side__tex"></span>
+            <span class="side__fx">${'<i></i>'.repeat(7)}</span>
+            <span class="side__shade"></span>
+            <span class="side__art">${ART[s]}</span>
             <b class="side__name">${sideName(s)}</b>
             <span class="side__pool">${star()}<i id="${s}Pool">0</i></span>
             <span class="side__mult"><b id="${s}Mult">x—</b> ${t('pvp.ifWin')}</span>
@@ -1384,7 +1429,7 @@ const pvp = (() => {
           <span class="duel__vs" id="dVs">VS</span>
         </div>
         <div class="tug">
-          <div class="tug__bar"><i class="tug__fire" id="tugFire"></i><span class="tug__mark" id="tugMark" hidden></span></div>
+          <div class="tug__bar"><i class="tug__fire" id="tugFire"></i><span class="tug__clash" id="tugClash"></span><span class="tug__mark" id="tugMark" hidden></span></div>
           <div class="tug__pct"><b id="firePct">50%</b><span id="dStatus"></span><b id="icePct">50%</b></div>
         </div>
       </section>
@@ -1394,8 +1439,11 @@ const pvp = (() => {
 
   function render(root) {
     let alive = true, pollT, tickIv, st = null, offset = 0, roundId = null, sig = '', shown = null, revealed = false, revealT, busy = false;
+    let raf = 0, tickAt = 0, whoIdx = -1, cMode = 'pot', lastSec = -1, lastPot = 0;
     const $r = (q) => root.querySelector(q);
     const now = () => Date.now() + offset;
+    // сколько длится розыгрыш: чуть больше половины паузы между раундами (остальное — показ результата)
+    const showMs = () => Math.max(3800, Math.min(7000, ((st.result.nextAt - st.result.at) || 9000) * 0.56));
 
     root.innerHTML = `
       <div class="page-title"><h1>${t('pvp.title')}</h1><p>${t('pvp.sub')}</p></div>
@@ -1406,8 +1454,9 @@ const pvp = (() => {
       <div class="pvp-body" id="pvpBody"></div>`;
 
     function mount() {
-      clearTimeout(revealT);
+      clearTimeout(revealT); cancelAnimationFrame(raf);
       st = null; roundId = null; sig = ''; shown = null; revealed = false; busy = false; S.side = null;
+      cMode = 'pot'; lastSec = -1; lastPot = 0; whoIdx = -1;
       root.querySelectorAll('#pvpTabs [data-tab]').forEach((b) => b.classList.toggle('is-active', b.dataset.tab === S.tab));
       $r('#pvpBody').className = `pvp-body pvp-body--${S.tab}`;
       $r('#pvpBody').innerHTML = BODY[S.tab]();
@@ -1427,7 +1476,6 @@ const pvp = (() => {
         if (st?.my?.side && st.my.side !== b.dataset.side) return toast(t('pvp.sideLocked'), 'error');
         sound('tick'); haptic('select'); S.side = b.dataset.side; drawSides(); drawBet();
       }));
-      $r('#pList').addEventListener('click', () => {});
     }
 
     // ---------- ставка ----------
@@ -1443,7 +1491,18 @@ const pvp = (() => {
       go.disabled = locked || busy;
       $r('#pCancel').hidden = !st?.canCancel;
       if ($r('#pGift')) $r('#pGift').disabled = locked || busy;
-      $r('#pMy').innerHTML = st?.my ? `${t('pvp.yourBet')}: ${star()}${fmt(st.my.amount)}` : `≈ $${(S.amount / api.state.rates.usdToStars).toFixed(2)}`;
+      // подсказка под суммой: какой шанс / множитель даст эта ставка
+      const hint = $r('#pMy');
+      const others = st ? st.pot - (st.my?.amount || 0) : 0;
+      if (S.tab === 'roulette' && st && S.amount > 0 && others > 0 && !locked) {
+        const mine = (st.my?.amount || 0) + S.amount;
+        hint.innerHTML = `${t('pvp.chanceIf')} <b>${pct(mine / (st.pot + S.amount))}</b>`;
+      } else if (S.tab === 'fireice' && st && S.amount > 0 && side && !locked) {
+        const o = side === 'fire' ? 'ice' : 'fire', W = st.sides[side].pool + S.amount, L = st.sides[o].pool;
+        hint.innerHTML = L > 0 ? `${t('pvp.winIf')} <b>${star()}${fmt(S.amount + Math.floor(L * (1 - st.fee) * S.amount / W))}</b>` : `≈ $${(S.amount / api.state.rates.usdToStars).toFixed(2)}`;
+      } else {
+        hint.innerHTML = st?.my ? `${t('pvp.yourBet')}: ${star()}${fmt(st.my.amount)}` : `≈ $${(S.amount / api.state.rates.usdToStars).toFixed(2)}`;
+      }
     }
     async function bet() {
       if (busy || !st) return;
@@ -1480,8 +1539,10 @@ const pvp = (() => {
       if (st.fee > 0) { if ($r('#pFee')) $r('#pFee').textContent = pct(st.fee); } else if (root.querySelector('.pvp-fee')) root.querySelector('.pvp-fee').textContent = t('pvp.noFee');
       $r('#pList').innerHTML = st.players.length ? st.players.map((p, i) => {
         const isWin = win && (S.tab === 'roulette' ? st.result.winner?.id === p.id : st.result.winner === p.side);
+        const col = S.tab === 'roulette' ? COLORS[i % COLORS.length] : p.side === 'fire' ? 'var(--fire)' : 'var(--ice)';
         return `<div class="prow ${p.id === api.state.user.id ? 'is-me' : ''} ${isWin ? 'is-win' : win ? 'is-lose' : ''}">
-          ${S.tab === 'roulette' ? `<i class="prow__dot" style="background:${COLORS[i % COLORS.length]}"></i>` : sideIco(p.side)}
+          <i class="prow__bar" style="width:${Math.max(2, p.chance * 100)}%;background:${col}"></i>
+          ${S.tab === 'roulette' ? `<i class="prow__dot" style="background:${col}"></i>` : sideIco(p.side)}
           ${avatarHtml(p, 'prow__ava')}
           <span class="prow__nick">${uname(p)}</span>
           ${(p.gifts || []).length ? `<span class="prow__gifts">${p.gifts.slice(0, 3).map((x) => giftImg(x)).join('')}${p.gifts.length > 3 ? `<em>+${p.gifts.length - 3}</em>` : ''}</span>` : ''}
@@ -1493,33 +1554,85 @@ const pvp = (() => {
     function drawHistory() {
       const h = st.history || [];
       $r('#histBox').hidden = !h.length;
-      $r('#pHist').innerHTML = h.map((x) => S.tab === 'roulette'
-        ? `<div class="hchip">${x.winner ? avatarHtml(x.winner, 'hchip__ava') : ''}<b>${star()}${fmt(x.pot)}</b><small>${pct(x.chance)}</small></div>`
-        : `<div class="hchip hchip--${x.winner}">${sideIco(x.winner)}<b>${star()}${fmt(x.pot)}</b><small>${pct(x.chance)}</small></div>`).join('');
+      $r('#pHist').innerHTML = h.map((x) => {
+        const lucky = x.chance > 0 && x.chance < 0.3;
+        return S.tab === 'roulette'
+          ? `<div class="hchip ${lucky ? 'hchip--lucky' : ''}">${x.winner ? avatarHtml(x.winner, 'hchip__ava') : ''}<b>${star()}${fmt(x.pot)}</b><small>${x.chance > 0 ? mult(1 / x.chance) : ''} · ${pct(x.chance)}</small></div>`
+          : `<div class="hchip hchip--${x.winner} ${lucky ? 'hchip--lucky' : ''}">${sideIco(x.winner)}<b>${star()}${fmt(x.pot)}</b><small>${pct(x.chance)}</small></div>`;
+      }).join('');
+    }
+
+    // ---------- центр колеса: банк / отсчёт / кто под стрелкой ----------
+    function setCenter(mode) {
+      if (cMode === mode || !$r('#wcPot')) return;
+      cMode = mode;
+      $r('#wcPot').hidden = mode !== 'pot'; $r('#wcWho').hidden = mode !== 'who'; $r('#wcCount').hidden = mode !== 'count';
+    }
+    function buildWho() {
+      $r('#wcWho').innerHTML = st.players.map((p, i) => `<div class="wc__p" data-i="${i}" style="--c:${COLORS[i % COLORS.length]}">${avatarHtml(p, 'wc__ava')}<b>${uname(p)}</b><small>${pct(p.chance)}</small></div>`).join('');
+    }
+    function markWho(i) {
+      $r('#wcWho').querySelectorAll('.wc__p').forEach((el) => el.classList.toggle('is-on', +el.dataset.i === i));
+      $r('#wSvg').querySelectorAll('.wheel__seg').forEach((el, k) => el.classList.toggle('is-on', k === i));
+      $r('#wAvas').querySelectorAll('span').forEach((el) => el.classList.toggle('is-on', +el.dataset.i === i));
+    }
+    function flap() {
+      const p = $r('#wPtr'); if (!p) return;
+      p.classList.remove('is-flap'); void p.offsetWidth; p.classList.add('is-flap');
+    }
+    function floatPlus(n) {
+      const w = $r('#wheel'); if (!w || reduce()) return;
+      const el = document.createElement('span'); el.className = 'wheel__plus'; el.innerHTML = `+${fmt(n)}${star()}`;
+      w.appendChild(el); setTimeout(() => el.remove(), 1100);
     }
 
     // ---------- рулетка ----------
     function drawWheel() {
       const ps = st.players, pot = st.pot;
-      let acc = 0, segs = '', avas = '';
+      let acc = 0, segs = '', pegs = '', avas = '';
       ps.forEach((p, i) => {
-        const len = (p.amount / pot) * C, gap = ps.length > 1 ? Math.min(2, len / 3) : 0;
+        const len = (p.amount / pot) * C, gap = ps.length > 1 ? Math.min(2.4, len / 3) : 0;
         segs += `<circle class="wheel__seg" cx="100" cy="100" r="${R}" stroke="${COLORS[i % COLORS.length]}" stroke-dasharray="${Math.max(0.5, len - gap)} ${C}" stroke-dashoffset="${-acc}"/>`;
+        if (ps.length > 1) { const a = (acc / C) * 2 * Math.PI; pegs += `<circle class="wheel__peg" cx="${(100 + 90 * Math.cos(a)).toFixed(2)}" cy="${(100 + 90 * Math.sin(a)).toFixed(2)}" r="2.6"/>`; }
         if (p.amount / pot >= 0.07) {
           const a = ((acc + len / 2) / C) * 2 * Math.PI;
-          avas += `<span style="left:${50 + (R / 2) * Math.sin(a)}%;top:${50 - (R / 2) * Math.cos(a)}%">${avatarHtml(p)}</span>`;
+          avas += `<span data-i="${i}" style="left:${50 + (R / 2) * Math.sin(a)}%;top:${50 - (R / 2) * Math.cos(a)}%">${avatarHtml(p)}</span>`;
         }
         acc += len;
       });
-      $r('#wSvg').innerHTML = `<circle class="wheel__track" cx="100" cy="100" r="${R}"/><g transform="rotate(-90 100 100)">${segs}</g>`;
+      $r('#wSvg').innerHTML = `<circle class="wheel__track" cx="100" cy="100" r="${R}"/><g transform="rotate(-90 100 100)">${segs}${pegs}</g>`;
       $r('#wAvas').innerHTML = avas;
     }
-    function spin(late) {
-      const rot = $r('#wRot'); if (!rot) return;
-      const to = 360 * 6 - st.result.roll * 360;
-      rot.style.transition = late ? 'none' : `transform ${SPIN_MS - 400}ms cubic-bezier(.12,.75,.1,1)`;
-      rot.style.transform = `rotate(${to}deg)`;
-      if (!late) { $r('#wheel').classList.add('is-spin'); let n = 0; const tk = setInterval(() => { if (++n > 24 || !alive) return clearInterval(tk); sound('tick'); }, 170); }
+    // какой игрок сейчас под стрелкой при повороте колеса на deg
+    function idxAt(deg) {
+      const f = (((-deg % 360) + 360) % 360) / 360, ps = st.players;
+      let acc = 0;
+      for (let i = 0; i < ps.length; i++) { acc += ps[i].amount / st.pot; if (f < acc) return i; }
+      return ps.length - 1;
+    }
+    /* Крутим колесо покадрово: тики и «кто под стрелкой» идут ровно по тому, что на экране.
+       Все игроки заканчивают одновременно — опоздавший догоняет за оставшееся время. → сколько мс осталось (0 — показать сразу) */
+    function spin() {
+      const rot = $r('#wRot'), res = st.result; if (!rot) return 0;
+      const to = 360 * TURNS - res.roll * 360, T = showMs(), elapsed = Math.max(0, now() - res.at);
+      cancelAnimationFrame(raf);
+      buildWho(); setCenter('who');
+      if (elapsed > T - 900 || reduce()) { rot.style.transform = `rotate(${to}deg)`; rot.style.setProperty('--r', `${-to}deg`); markWho(idxAt(to)); return 0; }
+      const dur = T - elapsed, t0 = performance.now();
+      $r('#wheel').classList.add('is-spin'); $r('#arena').classList.add('is-spin');
+      let lastPeg = -1; whoIdx = -1;
+      const frame = (tn) => {
+        if (!alive) return;
+        const x = Math.min(1, (tn - t0) / dur), deg = to * (1 - Math.pow(1 - x, 3));
+        rot.style.transform = `rotate(${deg}deg)`; rot.style.setProperty('--r', `${-deg}deg`);
+        const peg = Math.floor(deg / 15);
+        if (peg !== lastPeg) { lastPeg = peg; if (tn - tickAt > 55) { tickAt = tn; sound('tick'); flap(); if (x > 0.7) haptic('select'); } }
+        const i = idxAt(deg);
+        if (i !== whoIdx) { whoIdx = i; markWho(i); }
+        if (x < 1) raf = requestAnimationFrame(frame);
+      };
+      raf = requestAnimationFrame(frame);
+      return dur;
     }
 
     // ---------- огонь и лёд ----------
@@ -1539,14 +1652,31 @@ const pvp = (() => {
         el.classList.toggle('is-lose', revealed && !!st.result && st.result.winner !== s);
       }
       $r('#tugFire').style.width = `${st.sides.fire.chance * 100}%`;
+      $r('#tugClash').style.left = `${st.sides.fire.chance * 100}%`;
     }
-    function duel(late) {
-      const mark = $r('#tugMark'); if (!mark) return;
-      mark.hidden = false;
-      const end = `${st.result.roll * 100}%`;
-      if (late || !mark.animate) { mark.style.left = end; return; }
-      mark.animate([{ left: '0%' }, { left: '100%' }, { left: '0%' }, { left: '100%' }, { left: end }], { duration: DUEL_MS - 400, easing: 'cubic-bezier(.3,.05,.2,1)', fill: 'forwards' });
-      let n = 0; const tk = setInterval(() => { if (++n > 20 || !alive) return clearInterval(tk); sound('tick'); }, 180);
+    /* Розыгрыш: метка качается между сторонами, как маятник, и с каждым взмахом затихает у итоговой точки.
+       Сторона, над которой сейчас метка, вспыхивает. → сколько мс осталось (0 — показать сразу) */
+    function duel() {
+      const mark = $r('#tugMark'), res = st.result; if (!mark) return 0;
+      const end = res.roll, cut = st.sides.fire.chance, T = showMs(), elapsed = Math.max(0, now() - res.at);
+      const put = (p) => { mark.style.left = `${p * 100}%`; };
+      const hotSide = (s) => root.querySelectorAll('.side').forEach((el) => el.classList.toggle('is-hot', el.dataset.side === s));
+      mark.hidden = false; cancelAnimationFrame(raf);
+      if (elapsed > T - 900 || reduce()) { put(end); return 0; }
+      const dur = T - elapsed, t0 = performance.now(), amp = Math.max(end, 1 - end) + 0.12;
+      $r('#duel').classList.add('is-duel');
+      let hot = '';
+      const frame = (tn) => {
+        if (!alive) return;
+        const x = Math.min(1, (tn - t0) / dur);
+        const p = x >= 1 ? end : Math.max(0.015, Math.min(0.985, end + Math.pow(1 - x, 1.7) * amp * Math.cos(2 * Math.PI * 4.25 * Math.pow(x, 0.85))));
+        put(p);
+        const s = p < cut ? 'fire' : 'ice';
+        if (s !== hot) { hot = s; hotSide(s); if (tn - tickAt > 70) { tickAt = tn; sound('tick'); haptic('select'); } }
+        if (x < 1) raf = requestAnimationFrame(frame);
+      };
+      raf = requestAnimationFrame(frame);
+      return dur;
     }
 
     // ---------- результат ----------
@@ -1554,16 +1684,32 @@ const pvp = (() => {
       if (!alive || !st?.result) return;
       revealed = true;
       const res = st.result, me = st.my, won = res.myPayout > 0;
-      $r('#wheel')?.classList.remove('is-spin');
+      const chance = S.tab === 'roulette' ? (st.players.find((p) => p.id === res.winner?.id)?.chance || 0) : (st.sides?.[res.winner]?.chance || 0);
+      const lucky = chance > 0 && chance < 0.3;
+      if (S.tab === 'roulette') {
+        $r('#wheel').classList.remove('is-spin'); $r('#wheel').classList.add('is-done');
+        $r('#arena').classList.remove('is-spin', 'is-hot'); $r('#arena').classList.add('is-done');
+        const wi = st.players.findIndex((p) => p.id === res.winner?.id);
+        if (wi >= 0) {
+          markWho(wi);
+          const el = $r(`#wcWho .wc__p[data-i="${wi}"]`);
+          if (el) { el.classList.add('is-winner'); el.querySelector('small').innerHTML = `+<i id="wWinV">0</i>${star()}`; countUp($r('#wWinV'), res.pot, 900); }
+        }
+      } else {
+        $r('#duel').classList.remove('is-duel', 'is-hot'); $r('#duel').classList.add('is-done');
+        root.querySelectorAll('.side').forEach((el) => el.classList.remove('is-hot'));
+      }
+      const sub = `${t('pvp.pot')} ${star()}${fmt(res.pot)}${chance > 0 ? ` · ${t('pvp.chance')} ${pct(chance)}${S.tab === 'roulette' ? ` · ${mult(1 / chance)}` : ''}` : ''}`;
       const who = S.tab === 'roulette'
-        ? `${res.winner ? avatarHtml(res.winner, 'pvpres__ava') : ''}<div><b>${t(won ? 'pvp.youWon' : 'pvp.won', { u: uname(res.winner) })}</b><small>${t('pvp.pot')} ${star()}${fmt(res.pot)}</small></div>`
-        : `${sideIco(res.winner)}<div><b>${t('pvp.sideWon', { s: sideName(res.winner) })}</b><small>${t('pvp.pot')} ${star()}${fmt(res.pot)}</small></div>`;
+        ? `${res.winner ? avatarHtml(res.winner, 'pvpres__ava') : ''}<div><b>${t(won ? 'pvp.youWon' : 'pvp.won', { u: uname(res.winner) })}</b><small>${sub}</small></div>`
+        : `${sideIco(res.winner)}<div><b>${t('pvp.sideWon', { s: sideName(res.winner) })}</b><small>${sub}</small></div>`;
       const box = $r('#pvpRes');
-      box.className = `pvpres ${won ? 'is-won' : me ? 'is-lost' : ''} ${S.tab === 'fireice' ? `pvpres--${res.winner}` : ''}`;
-      box.innerHTML = `${who}${won ? `<span class="pvpres__v">+${fmt(res.myPayout)}${star()}</span>` : me ? `<span class="pvpres__v pvpres__v--lost">−${fmt(me.amount)}${star()}</span>` : ''}`;
+      box.className = `pvpres ${won ? 'is-won' : me ? 'is-lost' : ''} ${lucky ? 'is-lucky' : ''} ${S.tab === 'fireice' ? `pvpres--${res.winner}` : ''}`;
+      box.innerHTML = `${lucky ? `<i class="pvpres__tag">${t('pvp.lucky')}</i>` : ''}${who}${won ? `<span class="pvpres__v">+${fmt(res.myPayout)}${star()}</span>` : me ? `<span class="pvpres__v pvpres__v--lost">−${fmt(me.amount)}${star()}</span>` : ''}`;
       box.hidden = false;
       if (won) { sound('win'); haptic('success'); confetti({ y: 0.35 }); toast(t('toast.gotStars', { n: fmt(res.myPayout) }), 'win'); }
       else if (me) { sound('lose'); haptic('error'); toast(t('pvp.youLost'), 'lose'); }
+      else sound('open');
       if (me) { if (api.live) api.refresh().catch(() => {}); else balanceChanged(); }
       drawPlayers(); drawSides(); drawTimer();
     }
@@ -1572,22 +1718,40 @@ const pvp = (() => {
     function drawTimer() {
       if (!st) return;
       const left = st.endsAt ? Math.max(0, st.endsAt - now()) : 0;
+      const counting = st.phase === 'countdown' && left > 0, sec = Math.ceil(left / 1000);
       let label, timer = '';
       if (st.phase === 'result') {
         label = revealed ? t('pvp.next', { n: Math.max(0, Math.ceil((st.result.nextAt - now()) / 1000)) }) : t('pvp.rolling');
       } else if (st.phase === 'countdown') {
         label = left > 0 ? '' : t('pvp.rolling');
-        timer = left > 0 ? `0:${String(Math.ceil(left / 1000)).padStart(2, '0')}` : '';
+        timer = left > 0 ? `0:${String(sec).padStart(2, '0')}` : '';
       } else {
         label = !st.open ? t('pvp.closed') : !st.players.length ? t('pvp.waiting') : t(S.tab === 'roulette' ? 'pvp.waitOne' : 'pvp.waitSide');
       }
+      // последние секунды: отсчёт, пульс и «сердцебиение»
+      const hot = counting && sec <= 5;
+      if (hot && sec !== lastSec) { lastSec = sec; sound(sec <= 3 ? 'beat' : 'tick'); if (sec <= 3) haptic('medium'); }
+      if (!counting) lastSec = -1;
       if (S.tab === 'roulette') {
         $r('#wTimer').textContent = timer || label;
         $r('#wTimer').classList.toggle('is-time', !!timer);
         $r('#wRing').style.strokeDashoffset = st.phase === 'countdown' ? 289 * (1 - left / (st.roundSeconds * 1000)) : 289;
+        $r('#arena').classList.toggle('is-hot', hot);
+        $r('#arena').classList.toggle('is-wait', st.phase === 'waiting');
+        $r('#aNext').textContent = st.phase === 'result' && revealed ? label : '';
+        if (cMode !== 'who') {
+          if (counting && sec <= 3) {
+            setCenter('count');
+            const v = $r('#wCountV');
+            if (v.textContent !== String(sec)) { v.textContent = sec; v.classList.remove('is-pop'); void v.offsetWidth; v.classList.add('is-pop'); }
+          } else setCenter('pot');
+        }
       } else {
-        $r('#dVs').textContent = timer ? Math.ceil(left / 1000) : 'VS';
-        $r('#dVs').classList.toggle('is-time', !!timer);
+        const vs = $r('#dVs');
+        vs.textContent = timer ? sec : 'VS';
+        vs.classList.toggle('is-time', !!timer);
+        if (hot && vs.dataset.s !== String(sec)) { vs.dataset.s = sec; vs.classList.remove('is-pop'); void vs.offsetWidth; vs.classList.add('is-pop'); }
+        $r('#duel').classList.toggle('is-hot', hot);
         $r('#dStatus').textContent = label;
       }
       if (st.phase === 'countdown' && left <= 0) drawBet();
@@ -1600,10 +1764,15 @@ const pvp = (() => {
       const newRound = next.id !== roundId;
       st = next;
       if (newRound) {
-        roundId = st.id; revealed = false; shown = null; sig = ''; clearTimeout(revealT);
+        roundId = st.id; revealed = false; shown = null; sig = ''; clearTimeout(revealT); cancelAnimationFrame(raf);
+        lastSec = -1; lastPot = 0; whoIdx = -1;
         const box = $r('#pvpRes'); if (box) box.hidden = true;
-        const rot = $r('#wRot'); if (rot) { rot.style.transition = 'none'; rot.style.transform = 'rotate(0deg)'; }
-        const mark = $r('#tugMark'); if (mark) { mark.getAnimations?.().forEach((a) => a.cancel()); mark.hidden = true; }
+        const rot = $r('#wRot'); if (rot) { rot.style.transform = 'rotate(0deg)'; rot.style.setProperty('--r', '0deg'); }
+        $r('#wheel')?.classList.remove('is-spin', 'is-done'); $r('#arena')?.classList.remove('is-spin', 'is-done', 'is-hot');
+        $r('#duel')?.classList.remove('is-duel', 'is-done', 'is-hot');
+        root.querySelectorAll('.side').forEach((el) => el.classList.remove('is-hot'));
+        cMode = ''; setCenter('pot');
+        const mark = $r('#tugMark'); if (mark) mark.hidden = true;
         if (S.tab === 'fireice' && !st.my) S.side = S.side || null;
       }
       const s2 = st.players.map((p) => `${p.id}:${p.amount}:${p.side}`).join('|');
@@ -1611,22 +1780,23 @@ const pvp = (() => {
         sig = s2;
         if (S.tab === 'roulette') {
           drawWheel();
-          $r('#wPot').innerHTML = `${star()}${fmt(st.pot)}`;
+          if (st.pot > lastPot && lastPot > 0 && st.phase !== 'result') floatPlus(st.pot - lastPot);
+          countUp($r('#wPotV'), st.pot, 500);
           $r('#aPlayers').textContent = st.players.length;
         }
+        lastPot = st.pot;
         drawPlayers();
       }
       if (S.tab === 'roulette') {
         $r('#aChance').textContent = st.my ? pct(st.my.chance) : '—';
-        $r('#aBet').innerHTML = st.my ? `${star()}${fmt(st.my.amount)}` : '—';
+        $r('#aWin').textContent = st.my && st.my.amount > 0 ? mult(st.pot / st.my.amount) : '—';
       }
       drawSides(); drawHistory(); drawBet();
-      // результат: крутим один раз за раунд
+      // результат: разыгрываем один раз за раунд
       if (st.phase === 'result' && shown !== st.id) {
         shown = st.id;
-        const late = st.now - st.result.at > 2500;
-        if (S.tab === 'roulette') spin(late); else duel(late);
-        if (late) reveal(); else revealT = setTimeout(reveal, S.tab === 'roulette' ? SPIN_MS : DUEL_MS);
+        const left = S.tab === 'roulette' ? spin() : duel();
+        if (left) revealT = setTimeout(reveal, left + 280); else reveal();
       }
       drawTimer();
     }
@@ -1652,7 +1822,7 @@ const pvp = (() => {
     }));
     mount(); poll();
     tickIv = setInterval(drawTimer, 250);
-    return () => { alive = false; clearTimeout(pollT); clearTimeout(revealT); clearInterval(tickIv); if (api.live) api.refresh().catch(() => {}); else balanceChanged(); };
+    return () => { alive = false; clearTimeout(pollT); clearTimeout(revealT); clearInterval(tickIv); cancelAnimationFrame(raf); if (api.live) api.refresh().catch(() => {}); else balanceChanged(); };
   }
   return { render, setTab: (x) => { S.tab = x; } };
 })();

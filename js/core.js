@@ -87,7 +87,7 @@ const dict = {
 
     'pay.title': 'Кошелёк', 'pay.dep': 'Пополнить', 'pay.wd': 'Вывести', 'pay.balance': 'Баланс',
     'pay.amount': 'Сумма', 'pay.packs': 'Быстрый выбор', 'pay.min': 'Введи сумму', 'pay.payStars': 'Оплатить {n} ⭐',
-    'pay.wdStars': 'Вывести ≈ {n} TON', 'pay.wdWallet': 'Твой TON-кошелёк', 'pay.wdWalletPh': 'Адрес UQ… или EQ…', 'pay.wdGet': 'Получишь', 'pay.wdRate': 'Вывод только в TON · комиссия {p}% · обычно до 24 часов', 'pay.wdNeedDep': 'Вывод откроется после пополнения от {n}', 'pay.badWallet': 'Проверь адрес TON-кошелька', 'pay.cash': 'Вывод временно недоступен — попробуй позже или забери подарком', 'pvp.noFee': 'Без комиссии — весь банк победителю', 'pay.via': 'Оплата через Telegram Stars', 'pay.wdNote': 'Заявка уходит администратору, вывод — подарком или звёздами',
+    'pay.wdStars': 'Вывести ≈ {n} TON', 'pay.wdWallet': 'Твой TON-кошелёк', 'pay.wdWalletPh': 'Адрес UQ… или EQ…', 'pay.wdGet': 'Получишь', 'pay.wdRate': 'Вывод только в TON · комиссия {p}% · обычно до 24 часов', 'pay.wdNeedDep': 'Вывод откроется после пополнения от {n}', 'pay.badWallet': 'Проверь адрес TON-кошелька', 'pay.cash': 'Вывод временно недоступен — попробуй позже или забери подарком', 'pvp.noFee': 'Без комиссии — весь банк победителю', 'pvp.mult': 'Множитель', 'pvp.chanceIf': 'Шанс с этой ставкой', 'pvp.winIf': 'Заберёшь при победе', 'pvp.last': 'Успей!', 'pvp.lucky': 'Удача!', 'pvp.chance': 'шанс', 'pay.via': 'Оплата через Telegram Stars', 'pay.wdNote': 'Заявка уходит администратору, вывод — подарком или звёздами',
     'pay.paid': 'Оплата прошла!', 'pay.wdSent': 'Заявка на вывод отправлена', 'pay.minWd': 'Минимум для вывода: {n}',
 
     'set.title': 'Настройки', 'set.sounds': 'Звуки', 'set.volume': 'Громкость', 'set.lang': 'Язык',
@@ -205,7 +205,7 @@ const dict = {
 
     'pay.title': 'Wallet', 'pay.dep': 'Top up', 'pay.wd': 'Withdraw', 'pay.balance': 'Balance',
     'pay.amount': 'Amount', 'pay.packs': 'Quick pick', 'pay.min': 'Enter an amount', 'pay.payStars': 'Pay {n} ⭐',
-    'pay.wdStars': 'Withdraw ≈ {n} TON', 'pay.wdWallet': 'Your TON wallet', 'pay.wdWalletPh': 'Address UQ… or EQ…', 'pay.wdGet': 'You get', 'pay.wdRate': 'TON only · fee {p}% · usually within 24 hours', 'pay.wdNeedDep': 'Withdrawals unlock after a deposit of {n} or more', 'pay.badWallet': 'Check the TON wallet address', 'pay.cash': 'Withdrawals are temporarily unavailable — try later or take a gift', 'pvp.noFee': 'No fee — the winner takes the whole pot', 'pay.via': 'Paid with Telegram Stars', 'pay.wdNote': 'The request goes to an admin; payout as a gift or stars',
+    'pay.wdStars': 'Withdraw ≈ {n} TON', 'pay.wdWallet': 'Your TON wallet', 'pay.wdWalletPh': 'Address UQ… or EQ…', 'pay.wdGet': 'You get', 'pay.wdRate': 'TON only · fee {p}% · usually within 24 hours', 'pay.wdNeedDep': 'Withdrawals unlock after a deposit of {n} or more', 'pay.badWallet': 'Check the TON wallet address', 'pay.cash': 'Withdrawals are temporarily unavailable — try later or take a gift', 'pvp.noFee': 'No fee — the winner takes the whole pot', 'pvp.mult': 'Multiplier', 'pvp.chanceIf': 'Chance with this bet', 'pvp.winIf': 'You get if you win', 'pvp.last': 'Hurry!', 'pvp.lucky': 'Lucky!', 'pvp.chance': 'chance', 'pay.via': 'Paid with Telegram Stars', 'pay.wdNote': 'The request goes to an admin; payout as a gift or stars',
     'pay.paid': 'Payment received!', 'pay.wdSent': 'Withdrawal request sent', 'pay.minWd': 'Minimum withdrawal: {n}',
 
     'set.title': 'Settings', 'set.sounds': 'Sounds', 'set.volume': 'Volume', 'set.lang': 'Language',
@@ -755,7 +755,7 @@ const api = {
 
 // ---------- Демо-PvP (только без сервера): раунды с ботами, логика как на сервере ----------
 const demoPvp = {
-  R: {}, n: 1, ROUND: 12000, SHOW: 9000, FEE: 0,
+  R: {}, n: 1, ROUND: 12000, SHOW: 13000, FEE: 0,
   round(game) {
     let r = this.R[game];
     if (!r || (r.done && Date.now() > r.at + this.SHOW)) r = this.R[game] = { id: this.n++, game, bets: [], endsAt: null, done: false, hist: r?.hist || [] };
@@ -865,7 +865,7 @@ function sound(type = 'tap') {
     const vol = (prefs.get('volume') / 100) * 0.14;
     const o = actx.createOscillator(); const g = actx.createGain();
     const now = actx.currentTime;
-    const map = { tap: [560, 0.05], win: [660, 0.35], lose: [200, 0.3], tick: [1300, 0.018], open: [900, 0.08] };
+    const map = { tap: [560, 0.05], win: [660, 0.35], lose: [200, 0.3], tick: [1300, 0.018], open: [900, 0.08], beat: [330, 0.11] };
     const [f, d] = map[type] || map.tap;
     o.type = type === 'lose' ? 'triangle' : 'sine';
     o.frequency.setValueAtTime(f, now);
