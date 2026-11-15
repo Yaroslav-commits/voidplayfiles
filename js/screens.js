@@ -268,7 +268,7 @@ function openAdmin() {
   const SRC = { roulette: 'Рулетка', fireice: 'Огонь и лёд', withdraw: 'Выводы', shop: 'Магазин' };
   const act = async (action, data = {}, okText = 'Готово') => {
     if (busy) return; busy = true; root.classList.add('is-busy');
-    try { const r = await api.admin(action, data); d = r; if ('found' in r) found = r.found; if (action === 'sync') okText = `Добавлено на склад: ${r.added}`; haptic('success'); toast(okText, 'success'); api.refresh().catch(() => {}); }
+    try { const r = await api.admin(action, data); d = r; if (r.error) { busy = false; root.classList.remove('is-busy'); draw(); return toast(r.error, 'error'); } if ('found' in r) found = r.found; if (action === 'sync') okText = `Добавлено на склад: ${r.added}`; haptic('success'); toast(okText, 'success'); api.refresh().catch(() => {}); }
     catch (e) { errToast(e); }
     busy = false; root.classList.remove('is-busy'); draw();
   };
@@ -304,7 +304,7 @@ function openAdmin() {
 
       <h4 class="adm__h">Склад и цены <small>${d.connected ? 'аккаунт подключён' : 'аккаунт не подключён'}</small></h4>
       <button class="btn btn--ghost btn--block" id="admSync">${icon.gift}Загрузить подарки с аккаунта</button>
-      ${d.stock.length ? `<p class="note" style="margin:0">Замок — подарок скрыт из магазина и апгрейдера</p><div class="ggrid">${d.stock.map((g) => `<div class="adm__g ${g.locked ? 'is-locked' : ''}">${giftCard(g)}<button class="adm__lock" data-lock="${esc(g.id)}" aria-label="lock">${g.locked ? icon.lock : icon.check}</button></div>`).join('')}</div>` : '<div class="adm__empty">Склад пуст: сюда попадают подарки с твоего аккаунта и проигранные в апгрейдере</div>'}
+      ${d.stock.length ? `<p class="note" style="margin:0">Нажми на подарок: блокировка, приз ТОПа, цена, забрать себе</p><div class="ggrid">${d.stock.map((g) => `<div class="adm__g ${g.locked ? 'is-locked' : ''}">${giftCard(g)}${g.prize ? `<i class="adm__prize">${icon.trophy}${g.prize}</i>` : g.locked ? `<i class="adm__lock">${icon.lock}</i>` : ''}</div>`).join('')}</div>` : '<div class="adm__empty">Склад пуст: сюда попадают подарки с твоего аккаунта и проигранные в апгрейдере</div>'}
       <form class="adm__form" id="admFloor"><input class="adm__in" name="name" placeholder="Коллекция (PlushPepe)" required /><input class="adm__in" name="price" inputmode="numeric" placeholder="Цена ⭐" required /><button class="btn btn--primary btn--sm">OK</button></form>
       <div class="adm__chips">${Object.entries(d.floors).sort().map(([k, v]) => `<span data-fl="${esc(k)}">${esc(k)} <b>${fmt(v)}</b></span>`).join('')}</div>
 
@@ -319,15 +319,32 @@ function openAdmin() {
     starifyNode(root);
     root.querySelectorAll('[data-wd]').forEach((b) => b.addEventListener('click', () => act(b.dataset.wd, { id: +b.dataset.id }, b.dataset.wd === 'wd_done' ? 'Отмечено: выплачено' : 'Отклонено, звёзды возвращены')));
     root.querySelectorAll('[data-game]').forEach((b) => b.addEventListener('click', () => act('game', { game: b.dataset.game, open: !d.games[b.dataset.game] })));
-    root.querySelectorAll('[data-lock]').forEach((b) => b.addEventListener('click', () => {
-      const g = d.stock.find((x) => x.id === b.dataset.lock);
-      act('lock', { id: g.id, locked: !g.locked }, g.locked ? 'Подарок снова доступен игрокам' : 'Подарок заблокирован');
-    }));
     root.querySelector('#admSync').addEventListener('click', () => act('sync'));
     const ff = root.querySelector('#admFloor');
     ff.addEventListener('submit', (e) => { e.preventDefault(); act('floor', { name: ff.name.value, price: parseInt(ff.price.value.replace(/\D/g, ''), 10) || 0 }); });
     root.querySelectorAll('[data-fl]').forEach((c) => c.addEventListener('click', () => { ff.name.value = c.dataset.fl; ff.price.focus(); }));
-    root.querySelectorAll('.ggrid [data-k]').forEach((c) => c.addEventListener('click', () => { ff.name.value = c.dataset.k.slice(4).split('-')[0]; ff.price.focus(); ff.scrollIntoView({ block: 'center', behavior: 'smooth' }); }));
+    root.querySelectorAll('.ggrid [data-k]').forEach((c) => c.addEventListener('click', () => {
+      const g = d.stock.find((x) => x.id === c.dataset.k); sound();
+      const m = sheet(`
+        <div class="nftv">
+          <div class="nftv__art" style="width:min(40vw,150px)">${giftImg(g)}<i class="gcard__tag">NFT</i></div>
+          <h3 class="nftv__name">${esc(g.name)}</h3>
+          <div class="nftv__price">${g.price ? star() + fmt(g.price) : 'цена не задана'}</div>
+          <div class="list" style="width:100%">
+            <button class="list__row" data-a="lock"><span class="list__ico">${icon.lock}</span><span class="grow">${g.locked ? 'Разблокировать — вернуть в магазин' : 'Заблокировать — скрыть от игроков'}</span></button>
+            <button class="list__row" data-a="prize"><span class="list__ico">${icon.trophy}</span><span class="grow">${g.prize ? `Убрать из призов ТОПа (${g.prize} место)` : 'Сделать призом ТОПа'}</span></button>
+            <button class="list__row" data-a="floor"><span class="list__ico">${icon.star}</span><span class="grow">Задать цену коллекции</span></button>
+            <button class="list__row" data-a="take"><span class="list__ico">${icon.gift}</span><span class="grow">Забрать себе в инвентарь</span></button>
+          </div>
+        </div>`, { title: '' });
+      m.el.querySelectorAll('[data-a]').forEach((x) => x.addEventListener('click', () => {
+        const a = x.dataset.a; m.close();
+        if (a === 'floor') { ff.name.value = g.slug.split('-')[0]; ff.price.focus(); return ff.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+        if (a === 'lock') act('lock', { id: g.id, locked: !g.locked }, g.locked ? 'Подарок снова доступен игрокам' : 'Подарок заблокирован');
+        else if (a === 'prize') act('prize', { id: g.id }, g.prize ? 'Убран из призов' : 'Добавлен в призы ТОПа (места идут по порядку добавления)');
+        else act('take', { id: g.id }, 'Подарок у тебя в инвентаре');
+      }));
+    }));
     const fq = root.querySelector('#admFind');
     fq.addEventListener('submit', (e) => { e.preventDefault(); act('user', { q: fq.q.value }, 'Найден'); });
     const fs = root.querySelector('#admStars');
