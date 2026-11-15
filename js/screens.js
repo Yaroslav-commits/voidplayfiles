@@ -1617,14 +1617,14 @@ const pvp = (() => {
       const to = 360 * TURNS - res.roll * 360, T = showMs(), elapsed = Math.max(0, now() - res.at);
       cancelAnimationFrame(raf);
       buildWho(); setCenter('who');
-      if (elapsed > T - 900 || reduce()) { rot.style.transform = `rotate(${to}deg)`; markWho(idxAt(to)); return 0; }
+      if (elapsed > T - 900 || reduce()) { rot.style.transform = `rotate(${to}deg)`; rot.style.setProperty('--r', `${-to}deg`); markWho(idxAt(to)); return 0; }
       const dur = T - elapsed, t0 = performance.now();
       $r('#wheel').classList.add('is-spin'); $r('#arena').classList.add('is-spin');
       let lastPeg = -1; whoIdx = -1;
       const frame = (tn) => {
         if (!alive) return;
         const x = Math.min(1, (tn - t0) / dur), deg = to * (1 - Math.pow(1 - x, 3));
-        rot.style.transform = `rotate(${deg}deg)`;
+        rot.style.transform = `rotate(${deg}deg)`; rot.style.setProperty('--r', `${-deg}deg`);
         const peg = Math.floor(deg / 15);
         if (peg !== lastPeg) { lastPeg = peg; if (tn - tickAt > 55) { tickAt = tn; sound('tick'); flap(); if (x > 0.7) haptic('select'); } }
         const i = idxAt(deg);
@@ -1767,7 +1767,7 @@ const pvp = (() => {
         roundId = st.id; revealed = false; shown = null; sig = ''; clearTimeout(revealT); cancelAnimationFrame(raf);
         lastSec = -1; lastPot = 0; whoIdx = -1;
         const box = $r('#pvpRes'); if (box) box.hidden = true;
-        const rot = $r('#wRot'); if (rot) rot.style.transform = 'rotate(0deg)';
+        const rot = $r('#wRot'); if (rot) { rot.style.transform = 'rotate(0deg)'; rot.style.setProperty('--r', '0deg'); }
         $r('#wheel')?.classList.remove('is-spin', 'is-done'); $r('#arena')?.classList.remove('is-spin', 'is-done', 'is-hot');
         $r('#duel')?.classList.remove('is-duel', 'is-done', 'is-hot');
         root.querySelectorAll('.side').forEach((el) => el.classList.remove('is-hot'));

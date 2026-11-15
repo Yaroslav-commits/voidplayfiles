@@ -973,7 +973,7 @@ h1, h2, h3, p { margin: 0; }
 .wheel__avas span { position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px; transition: transform .2s, opacity .3s; }
 .wheel__avas span.is-on { transform: scale(1.25); z-index: 1; }
 .wheel.is-done .wheel__avas span:not(.is-on) { opacity: .3; }
-.wheel__avas .ava { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid rgba(8, 8, 16, .85); }
+.wheel__avas .ava { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid rgba(8, 8, 16, .85); transform: rotate(var(--r, 0deg)); }
 /* объём: блик сверху-слева и тень снизу-справа, только по кольцу */
 .wheel__gloss {
   position: absolute; inset: 5%; border-radius: 50%; pointer-events: none;
