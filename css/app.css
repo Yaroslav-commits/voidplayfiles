@@ -1319,3 +1319,6 @@ h1, h2, h3, p { margin: 0; }
 .hero__g--nft { border-radius: 22%; object-fit: cover; box-shadow: 0 10px 26px rgba(0, 0, 0, .5), 0 0 0 2px rgba(255, 255, 255, .14); }
 .adm__g .gcard--nft { width: 100%; }
 .bootoff a.btn { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+
+.ggrid__empty { grid-column: 1 / -1; }
+.season__none { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; font-weight: 600; text-align: center; }

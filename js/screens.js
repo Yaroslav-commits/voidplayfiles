@@ -471,10 +471,13 @@ function freeSteps() {
   const steps = [];
   if (wb > 0) steps.push({ id: 'welcome', ic: icon.gift, reward: wb, done: true, title: t('free.welcome'), text: t('free.welcomeT') });
   steps.push({ id: 'sub', ic: icon.bolt, reward: api.cfg('subscribeReward', CONFIG.SUBSCRIBE_REWARD), done: !!st.subscribed, title: t('free.sub1'), text: t('free.sub1T') });
-  steps.push({ id: 'daily', ic: icon.calendar, reward: st.daily?.reward || api.cfg('dailyReward', 5), done: st.daily?.ready === false, title: t('free.daily'), text: st.daily?.ready === false ? t('free.dailyDone') : t('free.dailyT'), repeat: true });
+  const dMin = api.cfg('dailyMinDeposit', 0), dLock = api.live && dMin > 0 && api.cfg('deposited', 0) < dMin;
+  steps.push({ id: 'daily', ic: icon.calendar, reward: st.daily?.reward || api.cfg('dailyReward', 3), done: st.daily?.ready === false, lock: dLock, title: t('free.daily'), text: dLock ? `${t('free.dailyLock', { n: dMin })}` : st.daily?.ready === false ? t('free.dailyDone') : t('free.dailyT'), repeat: true });
   if (bets) steps.push({ id: 'bets', ic: icon.play, reward: bets.reward, done: !!bets.claimed, ready: bets.progress >= bets.goal, title: t('free.bets'), text: `${t('free.betsT')} · ${Math.min(bets.progress, bets.goal)}/${bets.goal}` });
-  steps.push({ id: 'ref', ic: icon.people, reward: st.referrals.perFriend || 10, done: st.referrals.count > 0, title: t('free.ref'), text: t('free.refT', { n: st.referrals.perFriend || 10 }), repeat: true });
-  const total = steps.reduce((a, x) => a + x.reward, 0);
+  const r3 = st.tasks.find((x) => x.id === 'ref3');
+  if (r3) steps.push({ id: 'ref', ic: icon.people, reward: r3.reward, done: !!r3.claimed, title: t('free.ref3'), text: `${t('free.ref3T')} · ${Math.min(r3.progress, r3.goal)}/${r3.goal}` });
+  else if (st.referrals.perFriend > 0) steps.push({ id: 'ref', ic: icon.people, reward: st.referrals.perFriend, done: st.referrals.count > 0, title: t('free.ref'), text: t('free.refT', { n: st.referrals.perFriend }), repeat: true });
+  const total = steps.filter((x) => !x.lock).reduce((a, x) => a + x.reward, 0);
   const done = steps.filter((x) => x.done).length;
   return { steps, total, done, left: steps.length - done };
 }
@@ -513,15 +516,22 @@ function wireFree(root, redraw) {
     sound(); haptic();
     const id = b.dataset.free;
     if (id === 'sub') openSubscribe();
-    else if (id === 'ref') shareRef();
-    else if (id === 'bets') {
+    else if (id === 'ref') {
+      const r3 = api.state.tasks.find((x) => x.id === 'ref3');
+      if (r3 && r3.progress >= r3.goal && !r3.claimed) {
+        b.classList.add('is-loading');
+        try { const r = await api.claimTask('ref3'); balanceChanged(); toast(t('toast.gotStars', { n: r }), 'success'); confetti({ count: 80 }); } catch (e) { errToast(e); }
+        redraw && redraw();
+      } else shareRef();
+    } else if (id === 'bets') {
       const bets = api.state.tasks.find((x) => x.id === 'bets5');
       if (bets && bets.progress >= bets.goal && !bets.claimed) {
         b.classList.add('is-loading');
         try { const r = await api.claimTask('bets5'); balanceChanged(); toast(t('toast.gotStars', { n: r }), 'success'); confetti({ count: 80 }); } catch (e) { errToast(e); }
         redraw && redraw();
-      } else go('mines');
+      } else go(api.gameOpen('mines') ? 'mines' : 'pvp');
     } else if (id === 'daily') {
+      if (api.live && api.cfg('dailyMinDeposit', 0) > api.cfg('deposited', 0)) { toast(`${t('free.dailyLock', { n: api.cfg('dailyMinDeposit', 0) })} ⭐`); return openPay('dep'); }
       b.classList.add('is-loading');
       try { const r = await api.claimDaily(); balanceChanged(); toast(t('toast.gotStars', { n: r }), 'success'); confetti({ y: 0.3, count: 80 }); }
       catch (e) { if (e.code === 'already') toast(t('bonus.daily.taken'), 'error'); else errToast(e); }
@@ -856,7 +866,7 @@ const upgrader = (() => {
     function drawTargets() {
       const list = filtered();
       const top = S.target ? [S.target, ...list.filter((n) => n.id !== S.target.id)] : list;
-      $r('#tGrid').innerHTML = top.slice(0, 6).map((n) => giftCard(n, { sel: S.target?.id === n.id })).join('') || emptyBox('—', icon.search);
+      $r('#tGrid').innerHTML = top.slice(0, 6).map((n) => giftCard(n, { sel: S.target?.id === n.id })).join('') || `<div class="ggrid__empty">${emptyBox(t(api.catalog.length ? 'up.noMatch' : 'up.noTargets'), api.catalog.length ? icon.search : icon.gift)}</div>`;
       $r('#tGrid').querySelectorAll('[data-k]').forEach((c) => c.addEventListener('click', () => {
         sound('tick'); haptic('select');
         const n = api.catalog.find((x) => x.id === c.dataset.k);
@@ -893,7 +903,11 @@ const upgrader = (() => {
       let res;
       try {
         res = await api.upgrade({ stakeStars: S.tab === 'stars' ? v : 0, stakeGift: S.tab === 'gifts' ? S.gift : null, target: S.target });
-      } catch (e) { S.spinning = false; ring.classList.remove('is-spinning'); drawChoices(); return errToast(e); }
+      } catch (e) {
+        S.spinning = false; ring.classList.remove('is-spinning');
+        if (e?.code === 'not_found') { S.target = null; api.refresh().then(() => { drawTargets(); drawChoices(); }).catch(() => {}); }   // цель уже забрали
+        drawChoices(); return errToast(e);
+      }
       balanceChanged();
       // Сектор выигрыша — от 0° (верх) по часовой до chance*360°
       const sector = res.chance * 360;
@@ -911,6 +925,8 @@ const upgrader = (() => {
         if (res.win) winReveal(won);
         else { sound('lose'); haptic('error'); toast(t('toast.lose'), 'lose'); }
         if (S.tab === 'gifts') S.gift = null;
+        if (!api.catalog.some((n) => n.id === S.target?.id)) S.target = null;   // выигранный подарок ушёл со склада
+        drawTargets();
         if (S.tab === 'stars') S.stake = Math.min(S.stake, Math.floor(st.balance.stars));
         drawBet(); drawChoices();
       }, 4400);
@@ -1099,7 +1115,7 @@ const leaders = (() => {
             <b>${p ? name(p) : '—'}</b>
             <span class="pod__v">${star()}${p ? fmt(p.value) : 0}</span>
           </div>
-          <div class="pod__col"><span class="pod__prize">${giftImg(prizes[n - 1] || api.catalog[0])}</span></div>
+          <div class="pod__col">${prizes[n - 1] ? `<span class="pod__prize">${giftImg(prizes[n - 1])}</span>` : ''}</div>
         </div>`;
       root.innerHTML = `
         <section class="season">
@@ -1109,7 +1125,7 @@ const leaders = (() => {
             <span class="tag tag--live"><i></i>${t('lead.active')}</span>
           </div>
           <div class="season__prizes">${[prizes[1], prizes[0], prizes[2]].filter(Boolean).map((g, i) => `<span class="season__p season__p--${i}">${giftImg(g)}</span>`).join('')}</div>
-          <h2>${t('lead.prizes')}</h2>
+          <h2>${t('lead.prizes')}</h2>${prizes.length ? '' : `<p class="season__none">${t('lead.noPrizes')}</p>`}
           <div class="season__meta"><span>${icon.people}${t('lead.members', { n: fmt(L.players || 0) })}</span><span>${icon.calendar}${t('lead.until', { d: dateLong(L.end) })}</span></div>
           <div class="timer" id="timer"></div>
         </section>

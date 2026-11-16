@@ -53,7 +53,7 @@ const dict = {
     'home.heroTitle': 'Апгрейдер', 'home.heroText': 'Поставь звёзды или подарок — и забери NFT дороже до x100',
     'home.online': 'Работает', 'feed.empty': 'Здесь появятся выигрыши игроков',
 
-    'bonus.daily.title': 'Ежедневный бонус', 'bonus.daily.text': 'Заходи каждый день и забирай звёзды бесплатно', 'bonus.daily.btn': 'Забрать', 'bonus.daily.taken': 'Уже получено — приходи завтра',
+    'bonus.daily.title': 'Ежедневный бонус', 'bonus.daily.text': 'Звёзды каждый день для тех, кто пополнял баланс', 'bonus.daily.btn': 'Забрать', 'bonus.daily.taken': 'Уже получено — приходи завтра',
     'bonus.invite.title': 'Пригласи друга', 'bonus.invite.text': 'Получай долю с комиссии проекта за каждого друга', 'bonus.invite.btn': 'Пригласить',
     'bonus.deposit.title': 'Пополни баланс', 'bonus.deposit.text': 'Пополняй через Telegram Stars — моментально', 'bonus.deposit.btn': 'Пополнить',
     'bonus.tasks.title': 'Задания', 'bonus.tasks.text': 'Выполняй задания и получай награды звёздами', 'bonus.tasks.btn': 'Открыть',
@@ -73,7 +73,7 @@ const dict = {
     'toast.gotStars': '+{n} Stars на баланс', 'toast.pickTarget': 'Выбери цель апгрейда', 'toast.pickStake': 'Введи ставку',
 
     'up.title': 'Апгрейдер', 'up.stake': 'Ставка', 'up.win': 'Цель', 'up.go': 'Прокачать', 'up.tabStars': 'Звёзды', 'up.tabGifts': 'Подарки',
-    'up.enterBet': 'Сумма ставки', 'up.giftForBet': 'Подарок для ставки', 'up.noGifts': 'У тебя пока нет подарков',
+    'up.enterBet': 'Сумма ставки', 'up.giftForBet': 'Подарок для ставки', 'up.noGifts': 'У тебя пока нет подарков', 'up.noTargets': 'Подарки для апгрейда скоро появятся', 'up.noMatch': 'Ничего не найдено', 'lead.noPrizes': 'Призы сезона объявим в канале', 'free.dailyLock': 'Откроется после пополнения от {n} ⭐', 'free.ref3': 'Пригласи 3 друзей', 'free.ref3T': 'Считаются друзья, которые пополнили баланс',
     'up.topUpGifts': 'Добавить подарок', 'up.target': 'Цель апгрейда', 'up.search': 'Поиск', 'up.chance': 'шанс',
     'up.pickStake': 'Выбери ставку', 'up.pickTarget': 'Выбери цель', 'up.auto': 'Авто-цель',
 
@@ -150,12 +150,12 @@ const dict = {
     'ton.pay': 'Оплатить ≈ {n} TON', 'ton.title': 'Оплата в TON', 'ton.send': 'Переведи ровно', 'ton.addr': 'Адрес', 'ton.comment': 'Комментарий',
     'ton.warn': 'Обязательно укажи комментарий — по нему мы найдём твой перевод', 'ton.open': 'Открыть кошелёк', 'ton.wait': 'Ждём перевод… Зачислим автоматически, обычно за минуту',
     'ton.off': 'Оплата в TON сейчас недоступна', 'ton.min': 'Минимум для TON: {n}', 'ton.rate': '1 TON ≈ {n}', 'ton.later': 'Можно закрыть это окно — звёзды придут, как только дойдёт перевод',
-    'free.title': 'Первый заработок без вложений', 'free.sub': 'Собери до {n} ⭐ бесплатно — пополнять не нужно',
+    'free.title': 'Первый заработок без вложений', 'free.sub': 'Собери до {n} ⭐ бонусами',
     'free.go': 'Начать', 'free.done': 'Готово', 'free.left': 'Осталось шагов: {n}', 'free.all': 'Все бесплатные шаги пройдены — так держать!',
     'free.welcome': 'Стартовый бонус', 'free.welcomeT': 'Уже на балансе — можно играть сразу',
     'free.sub1': 'Подпишись на канал', 'free.sub1T': 'Один раз — звёзды сразу на баланс',
     'free.daily': 'Ежедневный бонус', 'free.dailyT': 'Забирай каждый день', 'free.dailyDone': 'Получено — приходи завтра',
-    'free.bets': 'Сделай 5 ставок', 'free.betsT': 'Хоть по 1 ⭐ в Минах', 'free.betsClaim': 'Забрать награду',
+    'free.bets': 'Сделай 5 ставок', 'free.betsT': 'Хоть по 1 ⭐ в PvP', 'free.betsClaim': 'Забрать награду',
     'free.ref': 'Пригласи друга', 'free.refT': '+{n} ⭐ за каждого, кто пополнит', 'free.repeat': 'повторяется',
   },
   en: {
@@ -172,7 +172,7 @@ const dict = {
     'home.heroTitle': 'Upgrader', 'home.heroText': 'Bet stars or a gift and grab an NFT worth up to x100',
     'home.online': 'Live', 'feed.empty': 'Players\' wins will appear here',
 
-    'bonus.daily.title': 'Daily bonus', 'bonus.daily.text': 'Come back every day and grab free stars', 'bonus.daily.btn': 'Claim', 'bonus.daily.taken': 'Already claimed — come back tomorrow',
+    'bonus.daily.title': 'Daily bonus', 'bonus.daily.text': 'Daily stars for players who made a deposit', 'bonus.daily.btn': 'Claim', 'bonus.daily.taken': 'Already claimed — come back tomorrow',
     'bonus.invite.title': 'Invite a friend', 'bonus.invite.text': 'Earn a share of the project fee from every friend', 'bonus.invite.btn': 'Invite',
     'bonus.deposit.title': 'Top up', 'bonus.deposit.text': 'Top up instantly with Telegram Stars', 'bonus.deposit.btn': 'Top up',
     'bonus.tasks.title': 'Tasks', 'bonus.tasks.text': 'Complete tasks and earn stars', 'bonus.tasks.btn': 'Open',
@@ -193,7 +193,7 @@ const dict = {
 
     'up.title': 'Upgrader', 'up.stake': 'Bet', 'up.win': 'Target', 'up.go': 'Upgrade', 'up.tabStars': 'Stars', 'up.tabGifts': 'Gifts',
     'up.enterBet': 'Bet amount', 'up.giftForBet': 'Gift to bet', 'up.noGifts': "You don't have gifts yet",
-    'up.topUpGifts': 'Add a gift', 'up.target': 'Upgrade target', 'up.search': 'Search', 'up.chance': 'chance',
+    'up.topUpGifts': 'Add a gift', 'up.noTargets': 'Upgrade gifts are coming soon', 'up.noMatch': 'Nothing found', 'lead.noPrizes': 'Season prizes will be announced in the channel', 'free.dailyLock': 'Unlocks after a deposit of {n} ⭐ or more', 'free.ref3': 'Invite 3 friends', 'free.ref3T': 'Friends who made a deposit count', 'up.target': 'Upgrade target', 'up.search': 'Search', 'up.chance': 'chance',
     'up.pickStake': 'Pick a bet', 'up.pickTarget': 'Pick a target', 'up.auto': 'Auto target',
 
     'gift.title': 'How to add a gift', 'gift.warnTitle': "Don't send gifts from marketplaces",
@@ -606,6 +606,8 @@ const api = {
     if (this.live) {
       const r = await request('/api/upgrade', { target: target.id, stake: stakeStars, gift: stakeGift?.uid || null });
       state.balance.stars = r.balance; state.inventory = r.inventory;
+      if (r.catalog) this.catalog = r.catalog;
+      if (r.shop) state.shop = r.shop;
       return { ok: true, win: r.win, chance: r.chance };
     }
     const value = stakeGift ? stakeGift.price : stakeStars;
