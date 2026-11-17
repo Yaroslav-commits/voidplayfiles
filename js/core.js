@@ -53,7 +53,7 @@ const dict = {
     'home.heroTitle': 'Апгрейдер', 'home.heroText': 'Поставь звёзды или подарок — и забери NFT дороже до x100',
     'home.online': 'Работает', 'feed.empty': 'Здесь появятся выигрыши игроков',
 
-    'bonus.daily.title': 'Ежедневный бонус', 'bonus.daily.text': 'Заходи каждый день и забирай звёзды бесплатно', 'bonus.daily.btn': 'Забрать', 'bonus.daily.taken': 'Уже получено — приходи завтра',
+    'bonus.daily.title': 'Ежедневный бонус', 'bonus.daily.text': 'Звёзды каждый день для тех, кто пополнял баланс', 'bonus.daily.btn': 'Забрать', 'bonus.daily.taken': 'Уже получено — приходи завтра',
     'bonus.invite.title': 'Пригласи друга', 'bonus.invite.text': 'Получай долю с комиссии проекта за каждого друга', 'bonus.invite.btn': 'Пригласить',
     'bonus.deposit.title': 'Пополни баланс', 'bonus.deposit.text': 'Пополняй через Telegram Stars — моментально', 'bonus.deposit.btn': 'Пополнить',
     'bonus.tasks.title': 'Задания', 'bonus.tasks.text': 'Выполняй задания и получай награды звёздами', 'bonus.tasks.btn': 'Открыть',
@@ -73,7 +73,7 @@ const dict = {
     'toast.gotStars': '+{n} Stars на баланс', 'toast.pickTarget': 'Выбери цель апгрейда', 'toast.pickStake': 'Введи ставку',
 
     'up.title': 'Апгрейдер', 'up.stake': 'Ставка', 'up.win': 'Цель', 'up.go': 'Прокачать', 'up.tabStars': 'Звёзды', 'up.tabGifts': 'Подарки',
-    'up.enterBet': 'Сумма ставки', 'up.giftForBet': 'Подарок для ставки', 'up.noGifts': 'У тебя пока нет подарков',
+    'up.enterBet': 'Сумма ставки', 'up.giftForBet': 'Подарок для ставки', 'up.noGifts': 'У тебя пока нет подарков', 'up.noTargets': 'Подарки для апгрейда скоро появятся', 'up.noMatch': 'Ничего не найдено', 'lead.noPrizes': 'Призы сезона объявим в канале', 'free.dailyLock': 'Откроется после пополнения от {n} ⭐', 'free.ref3': 'Пригласи 3 друзей', 'free.ref3T': 'Считаются друзья, которые пополнили баланс',
     'up.topUpGifts': 'Добавить подарок', 'up.target': 'Цель апгрейда', 'up.search': 'Поиск', 'up.chance': 'шанс',
     'up.pickStake': 'Выбери ставку', 'up.pickTarget': 'Выбери цель', 'up.auto': 'Авто-цель',
 
@@ -87,7 +87,7 @@ const dict = {
 
     'pay.title': 'Кошелёк', 'pay.dep': 'Пополнить', 'pay.wd': 'Вывести', 'pay.balance': 'Баланс',
     'pay.amount': 'Сумма', 'pay.packs': 'Быстрый выбор', 'pay.min': 'Введи сумму', 'pay.payStars': 'Оплатить {n} ⭐',
-    'err.needDeposit': 'Доступно после первого пополнения от 50 ⭐', 'boot.tgTitle': 'Игра открывается в Telegram', 'boot.tgText': 'Запусти бота и нажми «Играть»', 'boot.tgBtn': 'Открыть бота',
+    'err.needDeposit': 'Доступно после первого пополнения от 50 ⭐', 'crash.title': 'Самолётик', 'crash.soon': 'Взлёт', 'crash.betsOpen': 'Ставки принимаются · {n} с', 'crash.gone': 'Улетел!', 'crash.bet': 'Поставить', 'crash.next': 'В следующий полёт', 'crash.cash': 'Забрать', 'crash.cancel': 'Отменить ставку', 'crash.unqueue': 'Отменить', 'crash.queued': 'Ставка {n} ⭐ уйдёт в следующий полёт', 'crash.inRound': 'Твоя ставка {n} ⭐ в этом полёте', 'crash.autoAt': 'автовывод {x}', 'crash.took': 'Забрал {x} · +{n}', 'crash.won': '+{n} Stars на {x}!', 'crash.lost': 'Самолётик улетел на {x}', 'crash.late': 'Не успел — самолётик уже улетел', 'crash.auto': 'Автовывод', 'crash.autoT': 'Забрать само на множителе', 'crash.ifAuto': 'Заберёшь', 'crash.note': 'Максимальный выигрыш за ставку — {n} ⭐', 'crash.bets': 'Ставки', 'crash.empty': 'В этом полёте ещё никто не играет', 'crash.helpTitle': 'Как играть в Самолётик', 'crash.h1': 'Сделай ставку, пока идёт отсчёт до взлёта', 'crash.h2': 'Самолётик взлетает — множитель растёт с x1.00', 'crash.h3': 'Жми «Забрать», пока он не улетел: получишь ставку × множитель. Не успел — ставка сгорает', 'crash.h4': 'Автовывод заберёт выигрыш сам на нужном множителе. Преимущество игры — {e}%: на дистанции игроки получают назад {e}% меньше поставленного, это честно и проверяемо', 'crash.fairT': 'Точка, где улетит самолётик, зашифрована в hash ещё до взлёта. После полёта раскрывается seed — по формуле ниже результат пересчитает кто угодно.', 'err.wdPending': 'Дождись выплаты прошлой заявки — потом можно новую', 'err.slow': 'Слишком быстро — подожди секунду', 'boot.tgTitle': 'Игра открывается в Telegram', 'boot.tgText': 'Запусти бота и нажми «Играть»', 'boot.tgBtn': 'Открыть бота',
     'pay.wdStars': 'Вывести ≈ {n} TON', 'pay.wdWallet': 'Твой TON-кошелёк', 'pay.wdWalletPh': 'Адрес UQ… или EQ…', 'pay.wdGet': 'Получишь', 'pay.wdRate': 'Вывод только в TON · комиссия {p}% · обычно до 24 часов', 'pay.wdNeedDep': 'Вывод откроется после пополнения от {n}', 'pay.badWallet': 'Проверь адрес TON-кошелька', 'pay.cash': 'Вывод временно недоступен — попробуй позже или забери подарком', 'pvp.noFee': 'Без комиссии — весь банк победителю', 'pvp.mult': 'Множитель', 'pvp.chanceIf': 'Шанс с этой ставкой', 'pvp.winIf': 'Заберёшь при победе', 'pvp.last': 'Успей!', 'pvp.lucky': 'Удача!', 'pvp.chance': 'шанс', 'pay.via': 'Оплата через Telegram Stars', 'pay.wdNote': 'Заявка уходит администратору, вывод — подарком или звёздами',
     'pay.paid': 'Оплата прошла!', 'pay.wdSent': 'Заявка на вывод отправлена', 'pay.minWd': 'Минимум для вывода: {n}',
 
@@ -150,12 +150,12 @@ const dict = {
     'ton.pay': 'Оплатить ≈ {n} TON', 'ton.title': 'Оплата в TON', 'ton.send': 'Переведи ровно', 'ton.addr': 'Адрес', 'ton.comment': 'Комментарий',
     'ton.warn': 'Обязательно укажи комментарий — по нему мы найдём твой перевод', 'ton.open': 'Открыть кошелёк', 'ton.wait': 'Ждём перевод… Зачислим автоматически, обычно за минуту',
     'ton.off': 'Оплата в TON сейчас недоступна', 'ton.min': 'Минимум для TON: {n}', 'ton.rate': '1 TON ≈ {n}', 'ton.later': 'Можно закрыть это окно — звёзды придут, как только дойдёт перевод',
-    'free.title': 'Первый заработок без вложений', 'free.sub': 'Собери до {n} ⭐ бесплатно — пополнять не нужно',
+    'free.title': 'Первый заработок без вложений', 'free.sub': 'Собери до {n} ⭐ бонусами',
     'free.go': 'Начать', 'free.done': 'Готово', 'free.left': 'Осталось шагов: {n}', 'free.all': 'Все бесплатные шаги пройдены — так держать!',
     'free.welcome': 'Стартовый бонус', 'free.welcomeT': 'Уже на балансе — можно играть сразу',
     'free.sub1': 'Подпишись на канал', 'free.sub1T': 'Один раз — звёзды сразу на баланс',
     'free.daily': 'Ежедневный бонус', 'free.dailyT': 'Забирай каждый день', 'free.dailyDone': 'Получено — приходи завтра',
-    'free.bets': 'Сделай 5 ставок', 'free.betsT': 'Хоть по 1 ⭐ в Минах', 'free.betsClaim': 'Забрать награду',
+    'free.bets': 'Сделай 5 ставок', 'free.betsT': 'Хоть по 1 ⭐ в PvP', 'free.betsClaim': 'Забрать награду',
     'free.ref': 'Пригласи друга', 'free.refT': '+{n} ⭐ за каждого, кто пополнит', 'free.repeat': 'повторяется',
   },
   en: {
@@ -172,7 +172,7 @@ const dict = {
     'home.heroTitle': 'Upgrader', 'home.heroText': 'Bet stars or a gift and grab an NFT worth up to x100',
     'home.online': 'Live', 'feed.empty': 'Players\' wins will appear here',
 
-    'bonus.daily.title': 'Daily bonus', 'bonus.daily.text': 'Come back every day and grab free stars', 'bonus.daily.btn': 'Claim', 'bonus.daily.taken': 'Already claimed — come back tomorrow',
+    'bonus.daily.title': 'Daily bonus', 'bonus.daily.text': 'Daily stars for players who made a deposit', 'bonus.daily.btn': 'Claim', 'bonus.daily.taken': 'Already claimed — come back tomorrow',
     'bonus.invite.title': 'Invite a friend', 'bonus.invite.text': 'Earn a share of the project fee from every friend', 'bonus.invite.btn': 'Invite',
     'bonus.deposit.title': 'Top up', 'bonus.deposit.text': 'Top up instantly with Telegram Stars', 'bonus.deposit.btn': 'Top up',
     'bonus.tasks.title': 'Tasks', 'bonus.tasks.text': 'Complete tasks and earn stars', 'bonus.tasks.btn': 'Open',
@@ -193,7 +193,7 @@ const dict = {
 
     'up.title': 'Upgrader', 'up.stake': 'Bet', 'up.win': 'Target', 'up.go': 'Upgrade', 'up.tabStars': 'Stars', 'up.tabGifts': 'Gifts',
     'up.enterBet': 'Bet amount', 'up.giftForBet': 'Gift to bet', 'up.noGifts': "You don't have gifts yet",
-    'up.topUpGifts': 'Add a gift', 'up.target': 'Upgrade target', 'up.search': 'Search', 'up.chance': 'chance',
+    'up.topUpGifts': 'Add a gift', 'up.noTargets': 'Upgrade gifts are coming soon', 'up.noMatch': 'Nothing found', 'lead.noPrizes': 'Season prizes will be announced in the channel', 'free.dailyLock': 'Unlocks after a deposit of {n} ⭐ or more', 'free.ref3': 'Invite 3 friends', 'free.ref3T': 'Friends who made a deposit count', 'up.target': 'Upgrade target', 'up.search': 'Search', 'up.chance': 'chance',
     'up.pickStake': 'Pick a bet', 'up.pickTarget': 'Pick a target', 'up.auto': 'Auto target',
 
     'gift.title': 'How to add a gift', 'gift.warnTitle': "Don't send gifts from marketplaces",
@@ -206,7 +206,7 @@ const dict = {
 
     'pay.title': 'Wallet', 'pay.dep': 'Top up', 'pay.wd': 'Withdraw', 'pay.balance': 'Balance',
     'pay.amount': 'Amount', 'pay.packs': 'Quick pick', 'pay.min': 'Enter an amount', 'pay.payStars': 'Pay {n} ⭐',
-    'err.needDeposit': 'Available after your first deposit of 50 ⭐ or more', 'boot.tgTitle': 'The game opens in Telegram', 'boot.tgText': 'Start the bot and tap Play', 'boot.tgBtn': 'Open the bot',
+    'err.needDeposit': 'Available after your first deposit of 50 ⭐ or more', 'crash.title': 'Plane', 'crash.soon': 'Take-off', 'crash.betsOpen': 'Bets are open · {n} s', 'crash.gone': 'Flew away!', 'crash.bet': 'Place bet', 'crash.next': 'Next flight', 'crash.cash': 'Cash out', 'crash.cancel': 'Cancel bet', 'crash.unqueue': 'Cancel', 'crash.queued': 'Your {n} ⭐ bet goes into the next flight', 'crash.inRound': 'Your {n} ⭐ bet is in this flight', 'crash.autoAt': 'auto cash-out {x}', 'crash.took': 'Cashed out {x} · +{n}', 'crash.won': '+{n} Stars at {x}!', 'crash.lost': 'The plane flew away at {x}', 'crash.late': 'Too late — the plane is gone', 'crash.auto': 'Auto cash-out', 'crash.autoT': 'Cash out automatically at', 'crash.ifAuto': 'You get', 'crash.note': 'Max win per bet — {n} ⭐', 'crash.bets': 'Bets', 'crash.empty': 'Nobody is in this flight yet', 'crash.helpTitle': 'How to play Plane', 'crash.h1': 'Bet while the countdown to take-off runs', 'crash.h2': 'The plane takes off and the multiplier grows from x1.00', 'crash.h3': 'Tap Cash out before it flies away to get bet × multiplier. Too late and the bet is lost', 'crash.h4': 'Auto cash-out takes the win at your multiplier. The game edge is {e}%: over time players get back {e}% less than they bet — fair and verifiable', 'crash.fairT': 'The point where the plane flies away is locked in the hash before take-off. After the flight the seed is revealed so anyone can recheck the result.', 'err.wdPending': 'Wait until your previous withdrawal is paid', 'err.slow': 'Too fast — wait a second', 'boot.tgTitle': 'The game opens in Telegram', 'boot.tgText': 'Start the bot and tap Play', 'boot.tgBtn': 'Open the bot',
     'pay.wdStars': 'Withdraw ≈ {n} TON', 'pay.wdWallet': 'Your TON wallet', 'pay.wdWalletPh': 'Address UQ… or EQ…', 'pay.wdGet': 'You get', 'pay.wdRate': 'TON only · fee {p}% · usually within 24 hours', 'pay.wdNeedDep': 'Withdrawals unlock after a deposit of {n} or more', 'pay.badWallet': 'Check the TON wallet address', 'pay.cash': 'Withdrawals are temporarily unavailable — try later or take a gift', 'pvp.noFee': 'No fee — the winner takes the whole pot', 'pvp.mult': 'Multiplier', 'pvp.chanceIf': 'Chance with this bet', 'pvp.winIf': 'You get if you win', 'pvp.last': 'Hurry!', 'pvp.lucky': 'Lucky!', 'pvp.chance': 'chance', 'pay.via': 'Paid with Telegram Stars', 'pay.wdNote': 'The request goes to an admin; payout as a gift or stars',
     'pay.paid': 'Payment received!', 'pay.wdSent': 'Withdrawal request sent', 'pay.minWd': 'Minimum withdrawal: {n}',
 
@@ -606,6 +606,8 @@ const api = {
     if (this.live) {
       const r = await request('/api/upgrade', { target: target.id, stake: stakeStars, gift: stakeGift?.uid || null });
       state.balance.stars = r.balance; state.inventory = r.inventory;
+      if (r.catalog) this.catalog = r.catalog;
+      if (r.shop) state.shop = r.shop;
       return { ok: true, win: r.win, chance: r.chance };
     }
     const value = stakeGift ? stakeGift.price : stakeStars;
@@ -694,6 +696,21 @@ const api = {
     return { ok: true };
   },
 
+  // ---------- Самолётик ----------
+  async crashState() { return this.live ? request('/api/crash', undefined, { timeout: 6000 }) : demoCrash.state(); },
+  async crashBet(amount, auto) {
+    if (this.live) { const r = await request('/api/crash/bet', { amount, auto }); state.balance.stars = r.balance; return r; }
+    return demoCrash.bet(amount, auto);
+  },
+  async crashCashout() {
+    if (this.live) { const r = await request('/api/crash/cashout', {}); state.balance.stars = r.balance; return r; }
+    return demoCrash.cashout();
+  },
+  async crashCancel() {
+    if (this.live) { const r = await request('/api/crash/cancel', {}); state.balance.stars = r.balance; return r; }
+    return demoCrash.cancel();
+  },
+
   // ---------- PvP ----------
   async pvpState(game) {
     if (this.live) return request(`/api/pvp?game=${game}`, undefined, { timeout: 8000 });
@@ -756,6 +773,63 @@ const api = {
 };
 
 // ---------- Демо-PvP (только без сервера): раунды с ботами, логика как на сервере ----------
+// демо-режим самолётика (без сервера): та же математика, что на сервере
+const demoCrash = {
+  r: null, hist: [], RATE: 0.0001, EDGE: 0.04,
+  m(ms) { return Math.floor(Math.exp(this.RATE * Math.max(0, ms)) * 100) / 100; },
+  round() {
+    const n = Date.now();
+    if (this.r && n < this.r.crashAt + 4000) return this.r;
+    if (this.r) this.hist.unshift({ id: this.r.id, x: this.r.crash });
+    this.hist = this.hist.slice(0, 24);
+    const x = Math.max(1, Math.min(100, Math.floor(((1 - this.EDGE) / (1 - Math.random())) * 100) / 100));
+    const start = n + 8000;
+    const bots = DEMO_PLAYERS.slice().sort(() => Math.random() - 0.5).slice(0, 3 + Math.floor(Math.random() * 5))
+      .map((p) => ({ ...p, amount: [10, 25, 50, 100, 250][Math.floor(Math.random() * 5)], target: 1.1 + Math.random() * Math.random() * 6 }));
+    this.r = { id: (this.r?.id || 0) + 1, startAt: start, crash: x, crashAt: start + Math.ceil(Math.log(x) / this.RATE), bots, my: null };
+    return this.r;
+  },
+  view() {
+    const r = this.round(), n = Date.now();
+    const phase = n < r.startAt ? 'bet' : n < r.crashAt ? 'fly' : 'crashed';
+    const cur = phase === 'fly' ? this.m(n - r.startAt) : phase === 'crashed' ? r.crash : 1;
+    if (r.my && !r.my.cashout && r.my.auto && cur >= r.my.auto && r.my.auto <= r.crash) this.pay(r.my.auto);
+    const players = r.bots.map((b) => {
+      const ok = phase !== 'bet' && b.target <= cur && b.target <= r.crash;
+      return { ...b, cashout: ok ? Math.floor(b.target * 100) / 100 : null, payout: ok ? Math.floor(b.amount * b.target) : 0 };
+    });
+    if (r.my) players.unshift({ ...state.user, amount: r.my.amount, cashout: r.my.cashout, payout: r.my.payout });
+    const out = { id: r.id, phase, now: n, startAt: r.startAt, rate: this.RATE, betSeconds: 8, hash: 'demo', open: true, players, count: players.length,
+      total: players.reduce((a, p) => a + p.amount, 0), my: r.my ? { ...r.my } : null, history: this.hist, minBet: 1, maxBet: 1000, maxWin: 20000, maxMult: 100, edge: this.EDGE };
+    if (phase === 'fly') out.mult = cur;
+    if (phase === 'crashed') Object.assign(out, { crash: r.crash, crashAt: r.crashAt, seed: 'demo', nextAt: r.crashAt + 4000 });
+    return out;
+  },
+  pay(x) { const my = this.r.my; my.cashout = x; my.payout = Math.floor(my.amount * x); state.balance.stars += my.payout; demoTx('win', my.payout, { game: 'Самолётик', item: 'stars' }); },
+  state() { return this.view(); },
+  bet(amount, auto) {
+    const r = this.round();
+    if (Date.now() >= r.startAt) throw new ApiError('wait');
+    if (r.my) throw new ApiError('already');
+    if (amount > state.balance.stars) throw new ApiError('no_stars');
+    state.balance.stars -= amount; demoTx('fee', amount, { game: 'Самолётик', item: 'stars' });
+    r.my = { amount, auto, cashout: null, payout: 0 };
+    return this.view();
+  },
+  cashout() {
+    const r = this.round(), n = Date.now();
+    if (!r.my || r.my.cashout || n < r.startAt) throw new ApiError('not_ready');
+    if (n >= r.crashAt) throw new ApiError('crashed');
+    this.pay(Math.min(this.m(n - r.startAt), r.crash));
+    return this.view();
+  },
+  cancel() {
+    const r = this.round();
+    if (!r.my || Date.now() >= r.startAt) throw new ApiError('not_ready');
+    state.balance.stars += r.my.amount; r.my = null; return this.view();
+  },
+};
+
 const demoPvp = {
   R: {}, n: 1, ROUND: 12000, SHOW: 13000, FEE: 0,
   round(game) {
@@ -916,7 +990,7 @@ function errToast(e) {
     bad_amount: 'err.badAmount', not_subscribed: 'sub.notYet', check_failed: 'err.checkFailed', auth: 'err.auth', banned: 'err.banned',
     network: 'err.network', timeout: 'err.timeout',
     closed: 'game.closedToast', wait: 'pvp.wait', full: 'pvp.full', side_locked: 'pvp.sideLocked', bad_side: 'pvp.pickSide',
-    stake_too_big: 'up.tooBig', ton_off: 'ton.off', no_price: 'nft.noPrice', need_deposit: 'err.needDeposit', bad_wallet: 'pay.badWallet', cash: 'pay.cash', transfer_failed: 'nft.failed',
+    stake_too_big: 'up.tooBig', ton_off: 'ton.off', no_price: 'nft.noPrice', need_deposit: 'err.needDeposit', wd_pending: 'err.wdPending', crashed: 'crash.late', slow: 'err.slow', bad_wallet: 'pay.badWallet', cash: 'pay.cash', transfer_failed: 'nft.failed',
   };
   toast(t(map[e?.code] || 'common.error'), 'error');
   if (e?.code === 'closed') api.refresh().catch(() => {});   // игру закрыли — подтянем свежие статусы
@@ -930,7 +1004,7 @@ function syncOverlay() {
   ov.classList.toggle('is-on', stack.length > 0);
   document.body.classList.toggle('is-locked', stack.length > 0);
   // кнопка «Назад» Telegram: открыта шторка или вложенный экран (апгрейдер, мины, друзья)
-  const sub = typeof current === 'function' && ['upgrader', 'mines', 'referrals'].includes(current());
+  const sub = typeof current === 'function' && ['upgrader', 'mines', 'crash', 'referrals'].includes(current());
   if (tg?.BackButton) { try { stack.length || sub ? tg.BackButton.show() : tg.BackButton.hide(); } catch (e) { /* ignore */ } }
 }
 function closeTop() { const top = stack[stack.length - 1]; if (top && top.closable()) { top.close(); return true; } return false; }
