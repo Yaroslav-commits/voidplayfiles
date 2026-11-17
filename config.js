@@ -5,16 +5,16 @@ window.VOIDPLAY_CONFIG = {
   // Домен бота на bothost (где работает main.py). Проверка: открой API_BASE + '/api/health'
   // в браузере — должно показать "ok": true.
   // Пустая строка '' — API на том же домене, что и сайт (если бот сам раздаёт сайт, WEBAPP_DIR).
-  API_BASE: 'https://voidplay.bothost.tech',
+  API_BASE: 'https://astraroll.bothost.tech',
 
   // Название проекта. Сервер может прислать своё (APP_NAME в .env бота) — тогда возьмётся оно.
-  APP_NAME: 'Void Play',
+  APP_NAME: 'AstraRoll',
 
   // Юзернейм бота без @ — для реферальных ссылок (сервер тоже присылает его сам)
-  BOT_USERNAME: 'voidplay_bot',
+  BOT_USERNAME: 'astrarollbot',
 
   // Ссылки по умолчанию (настоящие приходят с сервера)
-  CHANNEL_URL: 'https://t.me/testkanalbot',
+  CHANNEL_URL: 'https://t.me/astraroll',
   SUPPORT_URL: 'https://t.me/nersew',
   TERMS_URL: 'https://telegra.ph/',
   GIFTS_ACCOUNT: '@nersew',
