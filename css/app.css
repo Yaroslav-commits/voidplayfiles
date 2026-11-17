@@ -1322,3 +1322,64 @@ h1, h2, h3, p { margin: 0; }
 
 .ggrid__empty { grid-column: 1 / -1; }
 .season__none { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; font-weight: 600; text-align: center; }
+
+/* =====================================================================
+   Самолётик
+   ===================================================================== */
+.chist { display: flex; gap: 6px; margin: -4px 0 10px; padding-bottom: 2px; }
+.chist__x { flex: none; padding: 6px 9px; border-radius: 10px; font: 800 12px/1 var(--ff-d); font-variant-numeric: tabular-nums; background: var(--surface); border: 1px solid var(--line); }
+.chist__x.is-blue { color: #8fb0ff; }
+.chist__x.is-violet { color: #d4a6ff; border-color: rgba(168, 85, 247, .35); background: rgba(168, 85, 247, .1); }
+.chist__x.is-gold { color: var(--gold); border-color: rgba(255, 201, 74, .45); background: rgba(255, 201, 74, .1); }
+
+.sky {
+  position: relative; overflow: hidden; aspect-ratio: 16 / 10.5; border-radius: var(--r-xl); margin-bottom: 12px;
+  background: radial-gradient(80% 70% at 0% 100%, rgba(255, 61, 127, .28), transparent 70%), radial-gradient(90% 80% at 100% 0%, rgba(61, 107, 255, .38), transparent 70%), linear-gradient(180deg, #0d1030, #07071a);
+  border: 1px solid var(--line-2); box-shadow: inset 0 0 50px rgba(0, 0, 0, .5);
+}
+.sky__stars { position: absolute; inset: 0; opacity: .55; background-image: radial-gradient(1px 1px at 14% 22%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 72% 14%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 44% 40%, #c7d4ff 50%, transparent 51%), radial-gradient(1px 1px at 88% 52%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 28% 70%, #ffd1e1 50%, transparent 51%), radial-gradient(1.5px 1.5px at 62% 82%, #fff 50%, transparent 51%); background-size: 180px 120px; }
+.sky[data-phase="fly"] .sky__stars { animation: starsRun 2.4s linear infinite; }
+@keyframes starsRun { to { background-position: -180px 120px; } }
+.sky__svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sky__grid line { stroke: rgba(255, 255, 255, .05); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.sky.is-gone #cLine { stroke: #ff4d6d; opacity: .7; }
+.sky.is-gone #cArea { opacity: .35; }
+.sky__plane { position: absolute; z-index: 2; left: 3%; top: 93%; width: 58px; height: 40px; margin: -30px 0 0 -40px; transform: rotate(calc(var(--a, -8deg) + 18deg)); transform-origin: 40% 70%; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .55)) drop-shadow(0 0 14px rgba(143, 176, 255, .55)); transition: opacity .3s; }
+.sky__plane svg { position: relative; z-index: 1; display: block; width: 100%; height: 100%; }
+.sky[data-phase="bet"] .sky__plane { animation: planeIdle 2s ease-in-out infinite; }
+@keyframes planeIdle { 50% { margin-top: -34px; } }
+.sky__trail { position: absolute; right: 70%; top: 58%; width: 60px; height: 4px; border-radius: 4px; background: linear-gradient(90deg, transparent, rgba(255, 61, 127, .8)); opacity: 0; }
+.sky[data-phase="fly"] .sky__trail { opacity: 1; animation: trail .25s linear infinite alternate; }
+@keyframes trail { to { width: 76px; opacity: .65; } }
+.sky.is-gone .sky__plane { animation: flyAway .9s cubic-bezier(.5, 0, .9, .4) forwards; }
+@keyframes flyAway { to { transform: translate(260px, -220px) rotate(-38deg) scale(.6); opacity: 0; } }
+.sky__mid { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; pointer-events: none; text-align: center; }
+.sky__x { font: 800 52px/1 var(--ff-d); font-variant-numeric: tabular-nums; letter-spacing: -.01em; color: #fff; text-shadow: 0 4px 24px rgba(0, 0, 0, .6); transition: color .3s; }
+.sky__x.is-violet { color: #e0c2ff; text-shadow: 0 0 28px rgba(168, 85, 247, .7); }
+.sky__x.is-gold { color: var(--gold); text-shadow: 0 0 30px rgba(255, 201, 74, .7); }
+.sky__x.is-red { color: #ff4d6d; text-shadow: 0 0 30px rgba(255, 61, 61, .6); animation: crashShake .45s ease-out; }
+@keyframes crashShake { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
+.sky[data-phase="bet"] .sky__x { font-size: 30px; text-transform: uppercase; letter-spacing: .04em; }
+.sky__sub { color: rgba(255, 255, 255, .78); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; min-height: 16px; }
+.sky.is-gone .sky__sub { color: #ff8fa3; }
+.sky__wait { display: none; width: 58%; }
+.sky[data-phase="bet"] .sky__wait { display: block; }
+.sky__bar { display: block; height: 6px; border-radius: 6px; background: rgba(255, 255, 255, .1); overflow: hidden; }
+.sky__bar i { display: block; height: 100%; border-radius: 6px; background: var(--g-pink); }
+.sky__count { position: absolute; left: 0; right: 0; bottom: 10px; z-index: 3; text-align: center; color: var(--muted); font-size: 12px; font-weight: 600; }
+
+.cauto { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 16px; background: rgba(0, 0, 0, .25); border: 1px solid var(--line); }
+.cauto .grow { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cauto b { font-size: 14px; }
+.cauto small { color: var(--muted); font-size: 11.5px; font-weight: 600; }
+.cauto__in { display: flex; align-items: center; gap: 2px; padding: 0 10px; height: 38px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line-2); font: 800 15px/1 var(--ff-d); color: var(--muted); transition: opacity .2s; }
+.cauto__in input { width: 52px; background: none; border: 0; outline: 0; color: var(--text); font: 800 15px/1 var(--ff-d); font-variant-numeric: tabular-nums; }
+.cauto__in.is-off { opacity: .4; pointer-events: none; }
+.btn--cash { background: linear-gradient(180deg, #5df2b0 0%, #1fbf6b 55%, #12884b 100%); color: #fff; box-shadow: 0 6px 0 #0a5a31, 0 14px 26px rgba(31, 191, 107, .45), inset 0 2px 0 rgba(255, 255, 255, .45); text-shadow: 0 1px 2px rgba(0, 60, 25, .6); animation: cashPulse 1s ease-in-out infinite; margin-bottom: 6px; }
+.btn--cash b { font-variant-numeric: tabular-nums; }
+.btn--cash .star { width: 20px; height: 20px; }
+.btn--cash:active { transform: translateY(4px); box-shadow: 0 2px 0 #0a5a31, inset 0 2px 0 rgba(255, 255, 255, .45); }
+@keyframes cashPulse { 50% { filter: brightness(1.12); } }
+.prow__x { flex: none; padding: 4px 6px; border-radius: 8px; background: rgba(52, 211, 153, .14); color: var(--green); font: 700 12px/1 var(--ff-d); }
+.is-lite .sky__stars, .is-lite .sky__trail, .is-lite .btn--cash, .is-lite .sky__plane { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .sky__stars, .sky__trail, .btn--cash { animation: none !important; } }

@@ -569,7 +569,7 @@ const home = (() => {
   ];
   const GAMES = [
     { id: 'upgrade', c: 'blue', route: 'upgrader' }, { id: 'mines', c: 'blue', route: 'mines' },
-    { id: 'cases', c: 'pink' }, { id: 'crash', c: 'blue' }, { id: 'lottery', c: 'pink' },
+    { id: 'cases', c: 'pink' }, { id: 'crash', c: 'blue', route: 'crash' }, { id: 'lottery', c: 'pink' },
     { id: 'hockey', c: 'blue' }, { id: 'waterball', c: 'pink' }, { id: 'ball', c: 'pink' },
   ];
 
@@ -1850,4 +1850,251 @@ const pvp = (() => {
     return () => { alive = false; clearTimeout(pollT); clearTimeout(revealT); clearInterval(tickIv); cancelAnimationFrame(raf); if (api.live) api.refresh().catch(() => {}); else balanceChanged(); };
   }
   return { render, setTab: (x) => { S.tab = x; } };
+})();
+
+// ======================= экран: Самолётик =======================
+const crash = (() => {
+  const S = { amount: 0, autoOn: false, auto: 2, queued: null };
+  const VW = 360, VH = 210, PL = 10, PB = 14, PT = 26, PR = 34;
+  const PLANE = `<svg viewBox="0 0 64 44" aria-hidden="true">
+    <defs>
+      <linearGradient id="cpA" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset="1" stop-color="#cfd9ff"/></linearGradient>
+      <linearGradient id="cpB" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8fb0ff"/><stop offset="1" stop-color="#3d6bff"/></linearGradient>
+      <linearGradient id="cpC" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#ff3d7f"/><stop offset="1" stop-color="#ff8a3d"/></linearGradient>
+    </defs>
+    <path d="M2 24L62 4L24 30Z" fill="url(#cpA)"/>
+    <path d="M24 30L62 4L30 40Z" fill="url(#cpB)"/>
+    <path d="M24 30L30 40L27 31.5Z" fill="#1f3dff"/>
+    <path d="M2 24L24 30L20 26Z" fill="#b8c6ff"/>
+    <path d="M14 26.4L46 9.5" stroke="url(#cpC)" stroke-width="2.4" stroke-linecap="round"/>
+  </svg>`;
+  const xcls = (x) => (x >= 10 ? 'is-gold' : x >= 2 ? 'is-violet' : 'is-blue');
+  const fx = (x) => `x${Number(x).toFixed(2)}`;
+  const uname = (u) => esc(u?.username ? '@' + u.username : u?.name || '—');
+
+  function openHelp() {
+    sheet(`<ol class="steps">${['h1', 'h2', 'h3', 'h4'].map((k, i) => `<li><span>${i + 1}</span>${t('crash.' + k, { e: Math.round((api.cfg('crashEdge', 0.04)) * 100) })}</li>`).join('')}</ol>`, { title: t('crash.helpTitle') });
+  }
+
+  function render(root) {
+    let alive = true, st = null, offset = 0, pollT, raf = 0, roundId = null, crashedShown = null, lastWhole = 1, busy = false;
+    const $r = (q) => root.querySelector(q);
+    const now = () => Date.now() + offset;
+    const multAt = (ms) => Math.floor(Math.exp(st.rate * Math.max(0, ms)) * 100) / 100;
+
+    root.innerHTML = `
+      ${pageHead(t('crash.title'), 'cHelp')}
+      <div class="chist hscroll" id="cHist"></div>
+      <section class="sky" id="sky">
+        <span class="sky__stars"></span>
+        <svg class="sky__svg" viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="ckFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff3d7f" stop-opacity=".42"/><stop offset="1" stop-color="#ff3d7f" stop-opacity="0"/></linearGradient>
+            <linearGradient id="ckLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8fb0ff"/><stop offset=".6" stop-color="#ff3d7f"/><stop offset="1" stop-color="#ffc94a"/></linearGradient>
+          </defs>
+          <g class="sky__grid" id="cGrid"></g>
+          <path id="cArea" fill="url(#ckFill)"/>
+          <path id="cLine" fill="none" stroke="url(#ckLine)" stroke-width="3.2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <span class="sky__plane" id="cPlane">${PLANE}<i class="sky__trail"></i></span>
+        <div class="sky__mid">
+          <b class="sky__x" id="cX">x1.00</b>
+          <small class="sky__sub" id="cSub"></small>
+          <div class="sky__wait" id="cWait"><span class="sky__bar"><i id="cBar"></i></span></div>
+        </div>
+        <span class="sky__count" id="cCount"></span>
+      </section>
+      <section class="panel" id="cBet">
+        <label class="amount">
+          <span class="amount__l">${t('up.enterBet')}</span>
+          <span class="amount__in">${star()}<input id="cIn" inputmode="numeric" placeholder="0" value="${S.amount || ''}" autocomplete="off" /></span>
+          <span class="amount__usd" id="cHint"></span>
+        </label>
+        <div class="chips chips--4"><button class="chip" data-d="10">+10</button><button class="chip" data-d="50">+50</button><button class="chip" data-d="x2">x2</button><button class="chip" data-d="max">MAX</button></div>
+        <div class="cauto">
+          <button class="switch ${S.autoOn ? 'is-on' : ''}" id="cAutoSw" aria-label="auto"></button>
+          <span class="grow"><b>${t('crash.auto')}</b><small>${t('crash.autoT')}</small></span>
+          <label class="cauto__in ${S.autoOn ? '' : 'is-off'}" id="cAutoBox">x<input id="cAuto" inputmode="decimal" value="${S.auto.toFixed(2)}" autocomplete="off" /></label>
+        </div>
+        <button class="btn btn--xl btn--block btn--primary" id="cGo"></button>
+        <p class="note" id="cNote"></p>
+      </section>
+      <section class="panel"><div class="panel__h"><h3>${t('crash.bets')} <small id="cPCount">0</small></h3><span class="pvp-fee" id="cTotal"></span></div><div class="plist" id="cList"></div></section>
+      <button class="rowlink" id="cFair"><span class="rowlink__ico rowlink__ico--green">${icon.check}</span><span class="grow">${t('pvp.fair')}</span>${icon.chevron}</button>`;
+    wireBack(root);
+    $r('#cHelp').addEventListener('click', () => { sound(); openHelp(); });
+    for (let i = 1; i <= 4; i++) {
+      $r('#cGrid').insertAdjacentHTML('beforeend', `<line x1="0" x2="${VW}" y1="${(VH / 5) * i}" y2="${(VH / 5) * i}"/><line y1="0" y2="${VH}" x1="${(VW / 5) * i}" x2="${(VW / 5) * i}"/>`);
+    }
+
+    // ---------- ставка ----------
+    const inp = $r('#cIn'); fitAmount(inp);
+    inp.addEventListener('input', () => { S.amount = Math.max(0, parseInt(inp.value.replace(/\D/g, ''), 10) || 0); inp.value = S.amount || ''; drawBet(); });
+    root.querySelectorAll('#cBet [data-d]').forEach((b) => b.addEventListener('click', () => {
+      sound('tick'); haptic('select');
+      const d = b.dataset.d, bal = Math.floor(api.state.balance.stars), max = st?.maxBet || 1000;
+      S.amount = Math.min(max, d === 'max' ? bal : d === 'x2' ? S.amount * 2 : S.amount + +d);
+      inp.value = S.amount || ''; fitAmount(inp); drawBet();
+    }));
+    $r('#cAutoSw').addEventListener('click', (e) => { sound('tick'); haptic('select'); S.autoOn = !S.autoOn; e.currentTarget.classList.toggle('is-on', S.autoOn); $r('#cAutoBox').classList.toggle('is-off', !S.autoOn); drawBet(); });
+    $r('#cAuto').addEventListener('change', (e) => {
+      const v = Math.max(1.01, Math.min(st?.maxMult || 100, parseFloat(String(e.target.value).replace(',', '.')) || 2));
+      S.auto = Math.round(v * 100) / 100; e.target.value = S.auto.toFixed(2); drawBet();
+    });
+    $r('#cGo').addEventListener('click', press);
+    $r('#cFair').addEventListener('click', openFair);
+
+    function drawBet() {
+      const go = $r('#cGo'); if (!go || !st) return;
+      const my = st.my, ph = st.phase, open = st.open;
+      let cls = 'btn--primary', html = '', dis = false, note = '';
+      if (!open) { html = `${icon.lock}${t('game.closed')}`; dis = true; }
+      else if (my && my.cashout) { cls = 'btn--done'; html = `${icon.check}${t('crash.took', { x: fx(my.cashout), n: fmt(my.payout) })}`; dis = true; }
+      else if (my && ph === 'fly') { cls = 'btn--cash'; html = `${t('crash.cash')} <b id="cCash">${fmt(Math.min(my.amount * curMult(), st.maxWin))}</b>${star()}`; }
+      else if (my && ph === 'bet') { cls = 'btn--ghost'; html = t('crash.cancel'); note = t('crash.inRound', { n: fmt(my.amount) }) + (my.auto ? ` · ${t('crash.autoAt', { x: fx(my.auto) })}` : ''); }
+      else if (S.queued) { cls = 'btn--ghost'; html = t('crash.unqueue'); note = t('crash.queued', { n: fmt(S.queued.amount) }); }
+      else if (ph === 'bet') { html = `${icon.play}${t('crash.bet')}`; dis = busy; }
+      else { cls = 'btn--glass'; html = `${icon.play}${t('crash.next')}`; }
+      go.className = `btn btn--xl btn--block ${cls}`; go.innerHTML = html; go.disabled = dis || busy && cls !== 'btn--cash';
+      $r('#cNote').textContent = note || t('crash.note', { n: fmt(st.maxWin) });
+      $r('#cHint').innerHTML = S.amount > 0 && S.autoOn ? `${t('crash.ifAuto')} <b>${star()}${fmt(Math.min(Math.floor(S.amount * S.auto), st.maxWin))}</b>` : `≈ $${(S.amount / api.state.rates.usdToStars).toFixed(2)}`;
+    }
+    const curMult = () => (st?.phase === 'fly' ? multAt(now() - st.startAt) : st?.crash || 1);
+
+    async function placeBet(amount, auto) {
+      busy = true; drawBet();
+      try { const r = await api.crashBet(amount, auto); balanceChanged(); busy = false; sound(); haptic('medium'); apply(r); }
+      catch (e) { busy = false; errToast(e); drawBet(); }
+    }
+    async function press() {
+      if (!st || busy) return;
+      const my = st.my;
+      if (my && st.phase === 'fly' && !my.cashout) {     // «Забрать»
+        busy = true; haptic('heavy');
+        try {
+          const r = await api.crashCashout(); balanceChanged(); busy = false; apply(r);
+          sound('win'); haptic('success'); confetti({ y: 0.32, count: 70 });
+          toast(t('crash.won', { n: fmt(r.my?.payout || 0), x: fx(r.my?.cashout || 1) }), 'win');
+        } catch (e) { busy = false; if (e?.code === 'crashed') toast(t('crash.late'), 'lose'); else errToast(e); poll(true); }
+        return;
+      }
+      if (my && st.phase === 'bet') {                     // отмена ставки до взлёта
+        busy = true; sound();
+        try { const r = await api.crashCancel(); balanceChanged(); busy = false; apply(r); } catch (e) { busy = false; errToast(e); drawBet(); }
+        return;
+      }
+      if (S.queued) { S.queued = null; sound('tick'); return drawBet(); }
+      if (!S.amount) { inp.focus(); return toast(t('toast.pickStake'), 'error'); }
+      if (S.amount > api.state.balance.stars) { sound('lose'); openPay('dep'); return toast(t('toast.noStars'), 'error'); }
+      const auto = S.autoOn ? S.auto : null;
+      if (st.phase === 'bet') return placeBet(S.amount, auto);
+      S.queued = { amount: S.amount, auto }; sound('tick'); haptic('select'); drawBet();   // поставим, как только начнётся приём ставок
+    }
+
+    // ---------- список ставок, история ----------
+    function drawList() {
+      const crashed = st.phase === 'crashed';
+      $r('#cPCount').textContent = st.count;
+      $r('#cTotal').innerHTML = st.total ? `${t('pvp.pot')} ${star()}${fmt(st.total)}` : '';
+      $r('#cList').innerHTML = st.players.length ? st.players.map((p) => `
+        <div class="prow ${p.id === api.state.user.id ? 'is-me' : ''} ${p.cashout ? 'is-win' : crashed ? 'is-lose' : ''}">
+          ${avatarHtml(p, 'prow__ava')}<span class="prow__nick">${uname(p)}</span>
+          ${p.cashout ? `<span class="prow__x">${fx(p.cashout)}</span><span class="prow__win">+${fmt(p.payout)}</span>` : ''}
+          <span class="prow__v">${star()}${fmt(p.amount)}</span>
+        </div>`).join('') : emptyBox(t('crash.empty'), icon.play);
+    }
+    function drawHist() {
+      $r('#cHist').innerHTML = (st.history || []).map((h) => `<span class="chist__x ${xcls(h.x)}">${fx(h.x)}</span>`).join('');
+    }
+
+    // ---------- небо: кривая и самолётик ----------
+    function plot(ms, m) {
+      const W = Math.max(9000, ms * 1.18), H = Math.max(1, (m - 1) * 1.3);
+      const pt = (tm) => {
+        const mm = Math.exp(st.rate * tm);
+        return [PL + (tm / W) * (VW - PL - PR), VH - PB - ((mm - 1) / H) * (VH - PB - PT)];
+      };
+      let d = ''; const n = 36;
+      for (let i = 0; i <= n; i++) { const [x, y] = pt((ms * i) / n); d += `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`; }
+      const [ex, ey] = pt(ms), [bx, by] = pt(Math.max(0, ms - 400));
+      $r('#cLine').setAttribute('d', d);
+      $r('#cArea').setAttribute('d', `${d}L${ex.toFixed(1)} ${VH - PB}L${PL} ${VH - PB}Z`);
+      const ang = Math.atan2((by - ey) * ($r('#sky').clientHeight / VH), (ex - bx) * ($r('#sky').clientWidth / VW)) * 180 / Math.PI;
+      const pl = $r('#cPlane');
+      pl.style.left = `${(ex / VW) * 100}%`; pl.style.top = `${(ey / VH) * 100}%`;
+      pl.style.setProperty('--a', `${-Math.max(4, Math.min(48, ang || 10))}deg`);
+    }
+    function frame() {
+      if (!alive) return;
+      raf = requestAnimationFrame(frame);
+      if (!st) return;
+      const sky = $r('#sky'), t0 = now();
+      sky.dataset.phase = st.phase;
+      if (st.phase === 'bet') {
+        const left = Math.max(0, st.startAt - t0);
+        $r('#cX').textContent = t('crash.soon');
+        $r('#cSub').textContent = t('crash.betsOpen', { n: (left / 1000).toFixed(1) });
+        $r('#cBar').style.width = `${(left / (st.betSeconds * 1000)) * 100}%`;
+        if (left <= 0) poll(true);
+        return;
+      }
+      if (st.phase === 'fly') {
+        const ms = t0 - st.startAt, m = multAt(ms);
+        $r('#cX').textContent = fx(m);
+        $r('#cX').className = `sky__x ${xcls(m)}`;
+        $r('#cSub').textContent = '';
+        plot(ms, m);
+        const cash = $r('#cCash'); if (cash) cash.textContent = fmt(Math.min(st.my.amount * m, st.maxWin));
+        if (Math.floor(m) > lastWhole) { lastWhole = Math.floor(m); sound('tick'); }
+        return;
+      }
+      // улетел
+      $r('#cX').textContent = fx(st.crash); $r('#cX').className = 'sky__x is-red';
+      $r('#cSub').textContent = t('crash.gone');
+      const nx = Math.max(0, (st.nextAt || 0) - t0);
+      $r('#cCount').textContent = nx > 0 ? t('pvp.next', { n: Math.ceil(nx / 1000) }) : '';
+    }
+
+    // ---------- новое состояние с сервера ----------
+    function apply(next) {
+      if (!alive || !next) return;
+      offset = next.now - Date.now();
+      const fresh = next.id !== roundId;
+      st = next;
+      if (fresh) {
+        roundId = st.id; lastWhole = 1; crashedShown = null;
+        $r('#sky').classList.remove('is-gone'); $r('#cCount').textContent = '';
+        if (st.phase !== 'crashed') { $r('#cLine').setAttribute('d', ''); $r('#cArea').setAttribute('d', ''); }
+        const pl = $r('#cPlane'); pl.style.left = `${(PL / VW) * 100}%`; pl.style.top = `${((VH - PB) / VH) * 100}%`; pl.style.setProperty('--a', '-8deg');
+      }
+      if (st.phase === 'crashed' && crashedShown !== st.id) {
+        crashedShown = st.id;
+        const ms = (st.crashAt || now()) - st.startAt; if (ms > 0) plot(ms, st.crash);
+        $r('#sky').classList.add('is-gone');
+        if (st.my && !st.my.cashout) { sound('lose'); haptic('error'); toast(t('crash.lost', { x: fx(st.crash) }), 'lose'); }
+        else if (!st.my) sound('open');
+      }
+      if (st.phase === 'bet' && S.queued && !st.my && !busy) { const q = S.queued; S.queued = null; placeBet(q.amount, q.auto); }
+      drawList(); drawHist(); drawBet();
+    }
+    async function poll(once) {
+      if (!alive) return;
+      clearTimeout(pollT);
+      if (!document.hidden) { try { apply(await api.crashState()); } catch (e) { /* сеть моргнула */ } }
+      if (alive) pollT = setTimeout(poll, st?.phase === 'fly' ? 350 : 900);
+    }
+    function openFair() {
+      sound();
+      sheet(`<p class="howto__sub">${t('crash.fairT')}</p>
+        <button class="copyrow" id="fH"><small>hash (sha256)</small><span>${esc(st?.hash || '—')}</span>${icon.copy}</button>
+        ${st?.seed ? `<button class="copyrow" id="fS"><small>seed · ${fx(st.crash)}</small><span>${esc(st.seed)}</span>${icon.copy}</button>` : ''}
+        <p class="note">x = max(1, (1 − ${st?.edge ?? 0.04}) / (1 − u)), u = sha256(seed:${st?.id ?? 'id'}) → 0…1</p>`, { title: t('pvp.fair') });
+      document.querySelector('#fH')?.addEventListener('click', () => copyText(st?.hash || ''));
+      document.querySelector('#fS')?.addEventListener('click', () => copyText(st?.seed || ''));
+    }
+
+    poll(); raf = requestAnimationFrame(frame);
+    return () => { alive = false; clearTimeout(pollT); cancelAnimationFrame(raf); if (api.live) api.refresh().catch(() => {}); else balanceChanged(); };
+  }
+  return { render };
 })();
