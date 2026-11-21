@@ -569,7 +569,7 @@ const home = (() => {
   ];
   const GAMES = [
     { id: 'upgrade', c: 'blue', route: 'upgrader' }, { id: 'mines', c: 'blue', route: 'mines' },
-    { id: 'cases', c: 'pink' }, { id: 'crash', c: 'blue', route: 'crash' }, { id: 'lottery', c: 'pink' },
+    { id: 'cases', c: 'pink', route: 'cases' }, { id: 'crash', c: 'blue', route: 'crash' }, { id: 'lottery', c: 'pink' },
     { id: 'hockey', c: 'blue' }, { id: 'waterball', c: 'pink' }, { id: 'ball', c: 'pink' },
   ];
 
@@ -2095,6 +2095,135 @@ const crash = (() => {
 
     poll(); raf = requestAnimationFrame(frame);
     return () => { alive = false; clearTimeout(pollT); cancelAnimationFrame(raf); if (api.live) api.refresh().catch(() => {}); else balanceChanged(); };
+  }
+  return { render };
+})();
+
+// ======================= экран: Кейсы =======================
+const cases = (() => {
+  const S = { open: null, fast: false, busy: false };
+  const CW = 92;                        // ширина карточки в ленте вместе с отступом
+  const COLORS = {
+    blue: ['#8fb0ff', '#3d6bff', '#1a2fd9'], violet: ['#d8b4fe', '#a855f7', '#5b21b6'],
+    pink: ['#ff9ec0', '#ff3d7f', '#b3124d'], gold: ['#fff1b0', '#ffc94a', '#d97706'],
+  };
+  const tier = (v, price) => { const k = v / price; return k >= 8 ? 'gold' : k >= 3 ? 'pink' : k >= 1.2 ? 'violet' : k >= 0.6 ? 'blue' : 'grey'; };
+  const pct = (x) => (x >= 0.1 ? `${(x * 100).toFixed(0)}%` : x >= 0.01 ? `${(x * 100).toFixed(1)}%` : `${(x * 100).toFixed(2)}%`);
+
+  // Сундук: цвета кейса, золотая окантовка, блик
+  function chest(color, cls = '') {
+    const [a, b, c] = COLORS[color] || COLORS.blue, id = `ch${color}${Math.random().toString(36).slice(2, 6)}`;
+    return `<svg class="chest ${cls}" viewBox="0 0 120 110" aria-hidden="true">
+      <defs>
+        <linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient>
+        <linearGradient id="${id}l" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>
+        <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff6c9"/><stop offset=".5" stop-color="#ffc94a"/><stop offset="1" stop-color="#b86b00"/></linearGradient>
+      </defs>
+      <ellipse cx="60" cy="102" rx="44" ry="6" fill="#000" opacity=".35"/>
+      <rect x="14" y="46" width="92" height="54" rx="10" fill="url(#${id}b)"/>
+      <path d="M14 50c0-22 18-36 46-36s46 14 46 36v6H14z" fill="url(#${id}l)"/>
+      <path d="M22 30c8-9 21-13 38-13" stroke="#fff" stroke-opacity=".55" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <rect x="14" y="52" width="92" height="9" fill="url(#${id}g)"/>
+      <rect x="51" y="14" width="18" height="86" fill="url(#${id}g)"/>
+      <rect x="47" y="50" width="26" height="28" rx="6" fill="url(#${id}g)" stroke="#7a4200" stroke-width="1.4"/>
+      <path d="M60 57l2.4 5 5.4.6-4 3.7 1.1 5.3-4.9-2.7-4.9 2.7 1.1-5.3-4-3.7 5.4-.6z" fill="#fff" opacity=".95"/>
+      <rect x="18" y="84" width="84" height="5" rx="2.5" fill="#000" opacity=".18"/>
+    </svg>`;
+  }
+  const prizeArt = (it, price) => (it.kind === 'nft' && it.gift ? `<span class="cprize__img">${giftImg(it.gift)}</span>`
+    : it.kind === 'nft' ? `<span class="cprize__ico cprize__ico--gift">${icon.gift}</span>` : `<span class="cprize__ico">${icon.star}</span>`);
+  const prizeCard = (it, price, cls = '') => `
+    <div class="cprize t-${tier(it.value, price)} ${cls}">
+      ${prizeArt(it, price)}
+      <b>${it.kind === 'nft' ? (it.gift ? esc(String(it.gift.name).split(' #')[0]) : 'NFT') : fmt(it.value)}</b>
+      <small>${it.kind === 'nft' ? `≈${fmt(it.value)}` : 'Stars'}</small>
+    </div>`;
+
+  function render(root) {
+    let alive = true, list = [], raf = 0;
+    const $r = (q) => root.querySelector(q);
+
+    function drawList() {
+      root.innerHTML = `
+        ${pageHead(t('cases.title'), 'kHelp')}
+        <p class="cases__sub">${t('cases.sub')}</p>
+        <section class="cgrid">${list.map((c) => `
+          <button class="ccard ccard--${c.color}" data-case="${c.id}">
+            <span class="ccard__glow"></span>${chest(c.color, 'ccard__art')}
+            <b class="ccard__name">${esc(c.name)}</b>
+            <span class="ccard__top">${t('cases.upTo')} ${star()}${fmt(c.top)}</span>
+            <span class="ccard__price">${star()}${fmt(c.price)}</span>
+          </button>`).join('') || `<div class="ggrid__empty">${emptyBox('…', icon.gift)}</div>`}</section>`;
+      wireBack(root);
+      $r('#kHelp').addEventListener('click', () => { sound(); openHelp(); });
+      root.querySelectorAll('[data-case]').forEach((b) => b.addEventListener('click', () => { sound(); haptic(); S.open = b.dataset.case; drawCase(); }));
+    }
+    function openHelp() {
+      sheet(`<ol class="steps">${['h1', 'h2', 'h3'].map((k, i) => `<li><span>${i + 1}</span>${t('cases.' + k, { r: Math.round(api.cfg('caseRtp', 0.88) * 100) })}</li>`).join('')}</ol>`, { title: t('cases.helpTitle') });
+    }
+
+    function drawCase() {
+      const c = list.find((x) => x.id === S.open); if (!c) return drawList();
+      root.innerHTML = `
+        <div class="page-h"><button class="icon-btn" id="kBack" aria-label="back">${icon.back}</button><h1>${esc(c.name)}</h1><span class="icon-btn is-ghost"></span></div>
+        <section class="cstage ccard--${c.color}">
+          <span class="cstage__rays"></span>
+          <div class="cstage__art" id="kArt">${chest(c.color)}</div>
+          <div class="cstrip" id="kStrip" hidden><div class="cstrip__track" id="kTrack"></div><i class="cstrip__ptr"></i></div>
+        </section>
+        <div class="crow">
+          <button class="btn btn--xl btn--primary grow" id="kGo">${t('cases.open', { n: `${star()}${fmt(c.price)}` })}</button>
+          <button class="cfast ${S.fast ? 'is-on' : ''}" id="kFast">${icon.bolt}<small>${t('cases.fast')}</small></button>
+        </div>
+        <section class="panel"><div class="panel__h"><h3>${t('cases.inside')}</h3><span class="pvp-fee">${t('cases.rtp', { r: Math.round(api.cfg('caseRtp', 0.88) * 100) })}</span></div>
+          <div class="cprizes">${[...c.items].sort((a, b) => b.value - a.value).map((it) => `<div class="cprizes__i">${prizeCard(it, c.price)}<em>${pct(it.chance)}</em></div>`).join('')}</div>
+        </section>`;
+      $r('#kBack').addEventListener('click', () => { if (S.busy) return; sound(); S.open = null; drawList(); });
+      $r('#kFast').addEventListener('click', (e) => { S.fast = !S.fast; e.currentTarget.classList.toggle('is-on', S.fast); sound('tick'); haptic('select'); });
+      $r('#kGo').addEventListener('click', () => openCase(c));
+    }
+
+    async function openCase(c) {
+      if (S.busy) return;
+      if (c.price > api.state.balance.stars) { sound('lose'); openPay('dep'); return toast(t('toast.noStars'), 'error'); }
+      S.busy = true; const go = $r('#kGo'); go.disabled = true; go.classList.add('is-loading'); haptic('heavy');
+      let res;
+      try { res = await api.caseOpen(c.id); } catch (e) { S.busy = false; go.disabled = false; go.classList.remove('is-loading'); return errToast(e); }
+      balanceChanged(); go.classList.remove('is-loading');
+      const win = c.items.find((x) => x.i === res.prize.i) || c.items[0];
+      const shown = { ...win, kind: res.prize.kind, value: res.prize.value, gift: res.prize.gift || win.gift };
+      // лента: случайные призы по их шансам, победный — на позиции 46
+      const pick = () => { let r = Math.random(), a = 0; for (const x of c.items) { a += x.chance; if (r < a) return x; } return c.items[0]; };
+      const items = Array.from({ length: 54 }, (_, k) => (k === 46 ? shown : pick()));
+      const track = $r('#kTrack'), strip = $r('#kStrip');
+      $r('#kArt').classList.add('is-open');
+      strip.hidden = false;
+      track.innerHTML = items.map((it, k) => prizeCard(it, c.price, k === 46 ? 'is-win' : '')).join('');
+      const center = strip.clientWidth / 2, to = 46 * CW + CW / 2 - center + (Math.random() - 0.5) * (CW * 0.6);
+      const dur = S.fast || reduce() ? 0 : 5600, t0 = performance.now();
+      let last = -1;
+      await new Promise((done) => {
+        const step = (now) => {
+          if (!alive) return done();
+          const x = dur ? Math.min(1, (now - t0) / dur) : 1, e = 1 - Math.pow(1 - x, 4), pos = to * e;
+          track.style.transform = `translateX(${-pos}px)`;
+          const idx = Math.floor((pos + center) / CW);
+          if (idx !== last) { last = idx; if (dur) { sound('tick'); if (x > 0.75) haptic('select'); } }
+          if (x < 1) raf = requestAnimationFrame(step); else done();
+        };
+        raf = requestAnimationFrame(step);
+      });
+      if (!alive) return;
+      strip.classList.add('is-done');
+      const good = res.prize.value >= c.price;
+      if (res.prize.kind === 'nft') winReveal(res.prize.gift);
+      else { sound(good ? 'win' : 'open'); haptic(good ? 'success' : 'light'); if (good) confetti({ y: 0.3, count: res.prize.value >= c.price * 3 ? 140 : 70 }); toast(t('cases.got', { n: fmt(res.prize.value) }), good ? 'win' : 'info'); }
+      setTimeout(() => { if (!alive) return; S.busy = false; const g = $r('#kGo'); if (g) g.disabled = false; }, 600);
+    }
+
+    api.cases().then((l) => { list = l; if (alive) (S.open ? drawCase() : drawList()); }).catch((e) => { errToast(e); });
+    drawList();
+    return () => { alive = false; cancelAnimationFrame(raf); S.busy = false; if (api.live) api.refresh().catch(() => {}); };
   }
   return { render };
 })();

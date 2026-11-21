@@ -2,11 +2,11 @@
 // Роутер, шапка, нижнее меню, загрузка и связь с сервером
 
 // ======================= роутер =======================
-const ROUTES = { home, upgrader, mines, crash, pvp, leaders, bonus, profile, referrals };
+const ROUTES = { home, upgrader, mines, crash, cases, pvp, leaders, bonus, profile, referrals };
 const ALIAS = { tasks: 'bonus' };
 const NAV_OF = { home: 'home', upgrader: 'home', mines: 'home', pvp: 'pvp', leaders: 'leaders', bonus: 'bonus', profile: 'profile', referrals: 'profile' };
 // экран → игра, которую админ может закрыть из бота
-const GAME_OF = { upgrader: 'upgrade', mines: 'mines', crash: 'crash' };
+const GAME_OF = { upgrader: 'upgrade', mines: 'mines', crash: 'crash', cases: 'cases' };
 
 let cleanup = null;
 const current = () => { const n = (location.hash.replace(/^#\/?/, '') || 'home').split('?')[0]; return ALIAS[n] || n; };
