@@ -87,7 +87,7 @@ const dict = {
 
     'pay.title': 'Кошелёк', 'pay.dep': 'Пополнить', 'pay.wd': 'Вывести', 'pay.balance': 'Баланс',
     'pay.amount': 'Сумма', 'pay.packs': 'Быстрый выбор', 'pay.min': 'Введи сумму', 'pay.payStars': 'Оплатить {n} ⭐',
-    'err.needDeposit': 'Доступно после первого пополнения от 50 ⭐', 'crash.title': 'Самолётик', 'crash.soon': 'Взлёт', 'crash.betsOpen': 'Ставки принимаются · {n} с', 'crash.gone': 'Улетел!', 'crash.bet': 'Поставить', 'crash.next': 'В следующий полёт', 'crash.cash': 'Забрать', 'crash.cancel': 'Отменить ставку', 'crash.unqueue': 'Отменить', 'crash.queued': 'Ставка {n} ⭐ уйдёт в следующий полёт', 'crash.inRound': 'Твоя ставка {n} ⭐ в этом полёте', 'crash.autoAt': 'автовывод {x}', 'crash.took': 'Забрал {x} · +{n}', 'crash.won': '+{n} Stars на {x}!', 'crash.lost': 'Самолётик улетел на {x}', 'crash.late': 'Не успел — самолётик уже улетел', 'crash.auto': 'Автовывод', 'crash.autoT': 'Забрать само на множителе', 'crash.ifAuto': 'Заберёшь', 'crash.note': 'Максимальный выигрыш за ставку — {n} ⭐', 'crash.bets': 'Ставки', 'crash.empty': 'В этом полёте ещё никто не играет', 'crash.helpTitle': 'Как играть в Самолётик', 'crash.h1': 'Сделай ставку, пока идёт отсчёт до взлёта', 'crash.h2': 'Самолётик взлетает — множитель растёт с x1.00', 'crash.h3': 'Жми «Забрать», пока он не улетел: получишь ставку × множитель. Не успел — ставка сгорает', 'crash.h4': 'Автовывод заберёт выигрыш сам на нужном множителе. Преимущество игры — {e}%: на дистанции игроки получают назад {e}% меньше поставленного, это честно и проверяемо', 'crash.fairT': 'Точка, где улетит самолётик, зашифрована в hash ещё до взлёта. После полёта раскрывается seed — по формуле ниже результат пересчитает кто угодно.', 'err.wdPending': 'Дождись выплаты прошлой заявки — потом можно новую', 'err.slow': 'Слишком быстро — подожди секунду', 'boot.tgTitle': 'Игра открывается в Telegram', 'boot.tgText': 'Запусти бота и нажми «Играть»', 'boot.tgBtn': 'Открыть бота',
+    'err.needDeposit': 'Доступно после первого пополнения от 50 ⭐', 'cases.title': 'Кейсы', 'cases.sub': 'Открывай кейсы — забирай звёзды и настоящие NFT', 'cases.upTo': 'до', 'cases.open': 'Открыть за {n}', 'cases.fast': 'Быстро', 'cases.inside': 'Что внутри', 'cases.rtp': 'Возврат {r}%', 'cases.got': '+{n} Stars на баланс', 'cases.helpTitle': 'Как работают кейсы', 'cases.h1': 'Выбери кейс и открой его за звёзды', 'cases.h2': 'Лента остановится на призе: звёзды сразу на баланс, NFT — в инвентарь', 'cases.h3': 'Шансы каждого приза указаны в кейсе. В среднем кейсы возвращают {r}% цены — это преимущество игры', 'crash.title': 'Самолётик', 'crash.soon': 'Взлёт', 'crash.betsOpen': 'Ставки принимаются · {n} с', 'crash.gone': 'Улетел!', 'crash.bet': 'Поставить', 'crash.next': 'В следующий полёт', 'crash.cash': 'Забрать', 'crash.cancel': 'Отменить ставку', 'crash.unqueue': 'Отменить', 'crash.queued': 'Ставка {n} ⭐ уйдёт в следующий полёт', 'crash.inRound': 'Твоя ставка {n} ⭐ в этом полёте', 'crash.autoAt': 'автовывод {x}', 'crash.took': 'Забрал {x} · +{n}', 'crash.won': '+{n} Stars на {x}!', 'crash.lost': 'Самолётик улетел на {x}', 'crash.late': 'Не успел — самолётик уже улетел', 'crash.auto': 'Автовывод', 'crash.autoT': 'Забрать само на множителе', 'crash.ifAuto': 'Заберёшь', 'crash.note': 'Максимальный выигрыш за ставку — {n} ⭐', 'crash.bets': 'Ставки', 'crash.empty': 'В этом полёте ещё никто не играет', 'crash.helpTitle': 'Как играть в Самолётик', 'crash.h1': 'Сделай ставку, пока идёт отсчёт до взлёта', 'crash.h2': 'Самолётик взлетает — множитель растёт с x1.00', 'crash.h3': 'Жми «Забрать», пока он не улетел: получишь ставку × множитель. Не успел — ставка сгорает', 'crash.h4': 'Автовывод заберёт выигрыш сам на нужном множителе. Преимущество игры — {e}%: на дистанции игроки получают назад {e}% меньше поставленного, это честно и проверяемо', 'crash.fairT': 'Точка, где улетит самолётик, зашифрована в hash ещё до взлёта. После полёта раскрывается seed — по формуле ниже результат пересчитает кто угодно.', 'err.wdPending': 'Дождись выплаты прошлой заявки — потом можно новую', 'err.slow': 'Слишком быстро — подожди секунду', 'boot.tgTitle': 'Игра открывается в Telegram', 'boot.tgText': 'Запусти бота и нажми «Играть»', 'boot.tgBtn': 'Открыть бота',
     'pay.wdStars': 'Вывести ≈ {n} TON', 'pay.wdWallet': 'Твой TON-кошелёк', 'pay.wdWalletPh': 'Адрес UQ… или EQ…', 'pay.wdGet': 'Получишь', 'pay.wdRate': 'Вывод только в TON · комиссия {p}% · обычно до 24 часов', 'pay.wdNeedDep': 'Вывод откроется после пополнения от {n}', 'pay.badWallet': 'Проверь адрес TON-кошелька', 'pay.cash': 'Вывод временно недоступен — попробуй позже или забери подарком', 'pvp.noFee': 'Без комиссии — весь банк победителю', 'pvp.mult': 'Множитель', 'pvp.chanceIf': 'Шанс с этой ставкой', 'pvp.winIf': 'Заберёшь при победе', 'pvp.last': 'Успей!', 'pvp.lucky': 'Удача!', 'pvp.chance': 'шанс', 'pay.via': 'Оплата через Telegram Stars', 'pay.wdNote': 'Заявка уходит администратору, вывод — подарком или звёздами',
     'pay.paid': 'Оплата прошла!', 'pay.wdSent': 'Заявка на вывод отправлена', 'pay.minWd': 'Минимум для вывода: {n}',
 
@@ -206,7 +206,7 @@ const dict = {
 
     'pay.title': 'Wallet', 'pay.dep': 'Top up', 'pay.wd': 'Withdraw', 'pay.balance': 'Balance',
     'pay.amount': 'Amount', 'pay.packs': 'Quick pick', 'pay.min': 'Enter an amount', 'pay.payStars': 'Pay {n} ⭐',
-    'err.needDeposit': 'Available after your first deposit of 50 ⭐ or more', 'crash.title': 'Plane', 'crash.soon': 'Take-off', 'crash.betsOpen': 'Bets are open · {n} s', 'crash.gone': 'Flew away!', 'crash.bet': 'Place bet', 'crash.next': 'Next flight', 'crash.cash': 'Cash out', 'crash.cancel': 'Cancel bet', 'crash.unqueue': 'Cancel', 'crash.queued': 'Your {n} ⭐ bet goes into the next flight', 'crash.inRound': 'Your {n} ⭐ bet is in this flight', 'crash.autoAt': 'auto cash-out {x}', 'crash.took': 'Cashed out {x} · +{n}', 'crash.won': '+{n} Stars at {x}!', 'crash.lost': 'The plane flew away at {x}', 'crash.late': 'Too late — the plane is gone', 'crash.auto': 'Auto cash-out', 'crash.autoT': 'Cash out automatically at', 'crash.ifAuto': 'You get', 'crash.note': 'Max win per bet — {n} ⭐', 'crash.bets': 'Bets', 'crash.empty': 'Nobody is in this flight yet', 'crash.helpTitle': 'How to play Plane', 'crash.h1': 'Bet while the countdown to take-off runs', 'crash.h2': 'The plane takes off and the multiplier grows from x1.00', 'crash.h3': 'Tap Cash out before it flies away to get bet × multiplier. Too late and the bet is lost', 'crash.h4': 'Auto cash-out takes the win at your multiplier. The game edge is {e}%: over time players get back {e}% less than they bet — fair and verifiable', 'crash.fairT': 'The point where the plane flies away is locked in the hash before take-off. After the flight the seed is revealed so anyone can recheck the result.', 'err.wdPending': 'Wait until your previous withdrawal is paid', 'err.slow': 'Too fast — wait a second', 'boot.tgTitle': 'The game opens in Telegram', 'boot.tgText': 'Start the bot and tap Play', 'boot.tgBtn': 'Open the bot',
+    'err.needDeposit': 'Available after your first deposit of 50 ⭐ or more', 'cases.title': 'Cases', 'cases.sub': 'Open cases — win stars and real NFTs', 'cases.upTo': 'up to', 'cases.open': 'Open for {n}', 'cases.fast': 'Fast', 'cases.inside': 'What is inside', 'cases.rtp': 'Return {r}%', 'cases.got': '+{n} Stars added', 'cases.helpTitle': 'How cases work', 'cases.h1': 'Pick a case and open it with stars', 'cases.h2': 'The strip stops on your prize: stars go to balance, NFTs to inventory', 'cases.h3': 'Every prize chance is shown in the case. On average cases return {r}% of the price — that is the game edge', 'crash.title': 'Plane', 'crash.soon': 'Take-off', 'crash.betsOpen': 'Bets are open · {n} s', 'crash.gone': 'Flew away!', 'crash.bet': 'Place bet', 'crash.next': 'Next flight', 'crash.cash': 'Cash out', 'crash.cancel': 'Cancel bet', 'crash.unqueue': 'Cancel', 'crash.queued': 'Your {n} ⭐ bet goes into the next flight', 'crash.inRound': 'Your {n} ⭐ bet is in this flight', 'crash.autoAt': 'auto cash-out {x}', 'crash.took': 'Cashed out {x} · +{n}', 'crash.won': '+{n} Stars at {x}!', 'crash.lost': 'The plane flew away at {x}', 'crash.late': 'Too late — the plane is gone', 'crash.auto': 'Auto cash-out', 'crash.autoT': 'Cash out automatically at', 'crash.ifAuto': 'You get', 'crash.note': 'Max win per bet — {n} ⭐', 'crash.bets': 'Bets', 'crash.empty': 'Nobody is in this flight yet', 'crash.helpTitle': 'How to play Plane', 'crash.h1': 'Bet while the countdown to take-off runs', 'crash.h2': 'The plane takes off and the multiplier grows from x1.00', 'crash.h3': 'Tap Cash out before it flies away to get bet × multiplier. Too late and the bet is lost', 'crash.h4': 'Auto cash-out takes the win at your multiplier. The game edge is {e}%: over time players get back {e}% less than they bet — fair and verifiable', 'crash.fairT': 'The point where the plane flies away is locked in the hash before take-off. After the flight the seed is revealed so anyone can recheck the result.', 'err.wdPending': 'Wait until your previous withdrawal is paid', 'err.slow': 'Too fast — wait a second', 'boot.tgTitle': 'The game opens in Telegram', 'boot.tgText': 'Start the bot and tap Play', 'boot.tgBtn': 'Open the bot',
     'pay.wdStars': 'Withdraw ≈ {n} TON', 'pay.wdWallet': 'Your TON wallet', 'pay.wdWalletPh': 'Address UQ… or EQ…', 'pay.wdGet': 'You get', 'pay.wdRate': 'TON only · fee {p}% · usually within 24 hours', 'pay.wdNeedDep': 'Withdrawals unlock after a deposit of {n} or more', 'pay.badWallet': 'Check the TON wallet address', 'pay.cash': 'Withdrawals are temporarily unavailable — try later or take a gift', 'pvp.noFee': 'No fee — the winner takes the whole pot', 'pvp.mult': 'Multiplier', 'pvp.chanceIf': 'Chance with this bet', 'pvp.winIf': 'You get if you win', 'pvp.last': 'Hurry!', 'pvp.lucky': 'Lucky!', 'pvp.chance': 'chance', 'pay.via': 'Paid with Telegram Stars', 'pay.wdNote': 'The request goes to an admin; payout as a gift or stars',
     'pay.paid': 'Payment received!', 'pay.wdSent': 'Withdrawal request sent', 'pay.minWd': 'Minimum withdrawal: {n}',
 
@@ -696,6 +696,13 @@ const api = {
     return { ok: true };
   },
 
+  // ---------- Кейсы ----------
+  async cases() { return this.live ? (await request('/api/cases')).cases : demoCases.list(); },
+  async caseOpen(id) {
+    if (this.live) { const r = await request('/api/cases/open', { id }); state.balance.stars = r.balance; state.inventory = r.inventory; return r; }
+    return demoCases.open(id);
+  },
+
   // ---------- Самолётик ----------
   async crashState() { return this.live ? request('/api/crash', undefined, { timeout: 6000 }) : demoCrash.state(); },
   async crashBet(amount, auto) {
@@ -773,6 +780,29 @@ const api = {
 };
 
 // ---------- Демо-PvP (только без сервера): раунды с ботами, логика как на сервере ----------
+// демо-режим кейсов (шансы — как на сервере при возврате 88%)
+const demoCases = {
+  C: [
+    { id: 'start', name: 'Стартовый', price: 25, color: 'blue', v: [5, 15, 25, 50, 100, 250], p: [0.3166, 0.3224, 0.2149, 0.1075, 0.0322, 0.0064] },
+    { id: 'star', name: 'Звёздный', price: 100, color: 'violet', v: [30, 60, 100, 200, 500, 1000], p: [0.2977, 0.3488, 0.2326, 0.093, 0.0233, 0.0047] },
+    { id: 'gift', name: 'Подарочный', price: 500, color: 'pink', v: [150, 300, 500, 1000, 2500, 5000], p: [0.3217, 0.3358, 0.2239, 0.0895, 0.0224, 0.0067], nft: 4 },
+    { id: 'legend', name: 'Легенда', price: 2500, color: 'gold', v: [800, 1500, 2500, 5000, 12000, 25000], p: [0.2739, 0.3822, 0.2293, 0.0892, 0.0191, 0.0064], nft: 4 },
+  ],
+  list() {
+    return this.C.map((c) => ({ id: c.id, name: c.name, price: c.price, color: c.color, top: c.v[c.v.length - 1],
+      items: c.v.map((v, i) => ({ i, kind: c.nft && i >= c.nft ? 'nft' : 'stars', value: v, chance: c.p[i], gift: null })) }));
+  },
+  open(id) {
+    const c = this.list().find((x) => x.id === id);
+    if (c.price > state.balance.stars) throw new ApiError('no_stars');
+    state.balance.stars -= c.price; demoTx('fee', c.price, { game: 'Кейсы', item: 'stars' });
+    let r = Math.random(), a = 0, it = c.items[0];
+    for (const x of c.items) { a += x.chance; if (r < a) { it = x; break; } }
+    state.balance.stars += it.value; demoTx('win', it.value, { game: 'Кейсы', item: 'stars' });
+    return { prize: { i: it.i, kind: 'stars', value: it.value, gift: null }, balance: state.balance.stars };
+  },
+};
+
 // демо-режим самолётика (без сервера): та же математика, что на сервере
 const demoCrash = {
   r: null, hist: [], RATE: 0.0001, EDGE: 0.04,
@@ -1004,7 +1034,7 @@ function syncOverlay() {
   ov.classList.toggle('is-on', stack.length > 0);
   document.body.classList.toggle('is-locked', stack.length > 0);
   // кнопка «Назад» Telegram: открыта шторка или вложенный экран (апгрейдер, мины, друзья)
-  const sub = typeof current === 'function' && ['upgrader', 'mines', 'crash', 'referrals'].includes(current());
+  const sub = typeof current === 'function' && ['upgrader', 'mines', 'crash', 'cases', 'referrals'].includes(current());
   if (tg?.BackButton) { try { stack.length || sub ? tg.BackButton.show() : tg.BackButton.hide(); } catch (e) { /* ignore */ } }
 }
 function closeTop() { const top = stack[stack.length - 1]; if (top && top.closable()) { top.close(); return true; } return false; }
