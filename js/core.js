@@ -147,7 +147,7 @@ const dict = {
     'pvp.closed': 'Игра временно закрыта', 'pvp.closedT': 'Загляни чуть позже', 'pvp.full': 'Раунд заполнен — дождись следующего', 'pvp.wait': 'Раунд разыгрывается — подожди пару секунд',
     'game.closed': 'Закрыто', 'game.closedToast': 'Игра временно закрыта',
     'up.maxStake': 'Макс. ставка для этой цели: {n}', 'up.tooBig': 'Ставка слишком большая для этой цели', 'up.needBigger': 'Для этого подарка нужна цель дороже',
-    'ton.pay': 'Оплатить ≈ {n} TON', 'ton.title': 'Оплата в TON', 'ton.send': 'Переведи ровно', 'ton.addr': 'Адрес', 'ton.comment': 'Комментарий',
+    'w.title': 'TON-кошелёк', 'w.connect': 'Подключить кошелёк', 'w.connected': 'Кошелёк подключён', 'w.change': 'Сменить', 'w.off': 'Отключить', 'w.sub': 'Пополняй и выводи TON в один тап — Wallet, Tonkeeper и другие', 'w.pay': 'Оплатить {n} TON из кошелька', 'w.manual': 'Перевести вручную', 'w.sent': 'Перевод отправлен — ждём подтверждения сети', 'w.cancel': 'Перевод отменён', 'w.fail': 'Не удалось открыть кошелёк', 'w.use': 'Подставить мой кошелёк', 'ton.pay': 'Оплатить ≈ {n} TON', 'ton.title': 'Оплата в TON', 'ton.send': 'Переведи ровно', 'ton.addr': 'Адрес', 'ton.comment': 'Комментарий',
     'ton.warn': 'Обязательно укажи комментарий — по нему мы найдём твой перевод', 'ton.open': 'Открыть кошелёк', 'ton.wait': 'Ждём перевод… Зачислим автоматически, обычно за минуту',
     'ton.off': 'Оплата в TON сейчас недоступна', 'ton.min': 'Минимум для TON: {n}', 'ton.rate': '1 TON ≈ {n}', 'ton.later': 'Можно закрыть это окно — звёзды придут, как только дойдёт перевод',
     'free.title': 'Первый заработок без вложений', 'free.sub': 'Собери до {n} ⭐ бонусами',
@@ -266,7 +266,7 @@ const dict = {
     'pvp.closed': 'Game is temporarily closed', 'pvp.closedT': 'Check back a bit later', 'pvp.full': 'Round is full — wait for the next one', 'pvp.wait': 'Round is being drawn — wait a few seconds',
     'game.closed': 'Closed', 'game.closedToast': 'This game is temporarily closed',
     'up.maxStake': 'Max bet for this target: {n}', 'up.tooBig': 'Bet is too big for this target', 'up.needBigger': 'This gift needs a pricier target',
-    'ton.pay': 'Pay ≈ {n} TON', 'ton.title': 'Pay with TON', 'ton.send': 'Send exactly', 'ton.addr': 'Address', 'ton.comment': 'Comment',
+    'w.title': 'TON wallet', 'w.connect': 'Connect wallet', 'w.connected': 'Wallet connected', 'w.change': 'Change', 'w.off': 'Disconnect', 'w.sub': 'Top up and withdraw TON in one tap — Wallet, Tonkeeper and more', 'w.pay': 'Pay {n} TON from wallet', 'w.manual': 'Send manually', 'w.sent': 'Transfer sent — waiting for network confirmation', 'w.cancel': 'Transfer cancelled', 'w.fail': 'Could not open the wallet', 'w.use': 'Use my wallet', 'ton.pay': 'Pay ≈ {n} TON', 'ton.title': 'Pay with TON', 'ton.send': 'Send exactly', 'ton.addr': 'Address', 'ton.comment': 'Comment',
     'ton.warn': 'The comment is required — it is how we find your transfer', 'ton.open': 'Open wallet', 'ton.wait': 'Waiting for the transfer… It is credited automatically, usually within a minute',
     'ton.off': 'TON payments are unavailable right now', 'ton.min': 'Minimum for TON: {n}', 'ton.rate': '1 TON ≈ {n}', 'ton.later': 'You can close this window — stars arrive as soon as the transfer lands',
     'free.title': 'First earnings, no deposit', 'free.sub': 'Collect up to {n} ⭐ for free — no top-up needed',
@@ -743,12 +743,13 @@ const api = {
   },
 
   // ---------- пополнение в TON ----------
+  async saveWallet(address) { if (this.live) { await request('/api/wallet', { address }); state.wallet = address; } },
   async tonInvoice(stars) {
     if (this.live) return request('/api/ton/invoice', { stars });
     await wait(400);
     const per = state.rates.tonToStars || 120;
     this._demoTon = { stars, at: Date.now() };
-    return { id: 1, stars, ton: (stars / per).toFixed(3), comment: 'VP1', address: 'UQDemo...Wallet', link: 'https://ton.org', rate: per };
+    return { id: 1, stars, ton: (stars / per).toFixed(3), nano: Math.ceil((stars / per) * 1e9), comment: 'VP1', address: 'UQDSyfkCHWx7UZ40fJ9L2ZCL1tWFH0Kjf0wCau-ZdTTSC8Cy', link: 'https://ton.org', rate: per };
   },
   async tonCheck(id) {
     if (this.live) { const r = await request('/api/ton/check', { id }); if (r.status === 'paid') state.balance.stars = r.balance; return r; }
