@@ -120,7 +120,7 @@ const dict = {
     'err.badAmount': 'Неверная сумма', 'err.checkFailed': 'Не удалось проверить подписку, попробуй позже',
     'err.auth': 'Открой приложение через бота', 'err.banned': 'Аккаунт заблокирован', 'err.network': 'Нет связи с сервером', 'err.timeout': 'Сервер долго отвечает',
 
-    'player.dm': 'Написать в ЛС', 'player.won': 'выиграл(а)', 'player.noUser': 'У игрока нет юзернейма',
+    'pp.title': 'Профиль игрока', 'pp.dm': 'Написать в Telegram', 'pp.hidden': 'Игрок скрыл юзернейм', 'pp.games': 'Игр', 'pp.won': 'Выиграно', 'pp.wins': 'Побед', 'pp.best': 'Лучший выигрыш', 'pp.fav': 'Любимая игра', 'pp.rank': 'Место по обороту', 'pp.gifts': 'Коллекция', 'pp.noGifts': 'Пока без подарков', 'pp.since': 'Играет с {d}', 'pp.me': 'Так твой профиль видят другие', 'pp.hide': 'Скрыть мой юзернейм', 'pp.hideT': 'Другие не смогут написать тебе из профиля', 'pp.priv': 'Приватность', 'player.dm': 'Написать в ЛС', 'player.won': 'выиграл(а)', 'player.noUser': 'У игрока нет юзернейма',
 
     'mines.title': 'Мины', 'mines.count': 'Мин на поле', 'mines.play': 'Играть', 'mines.cash': 'Забрать {n}',
     'mines.mult': 'Множитель', 'mines.next': 'Следующий', 'mines.win': 'Выигрыш',
@@ -239,7 +239,7 @@ const dict = {
     'err.badAmount': 'Invalid amount', 'err.checkFailed': 'Could not check subscription, try later',
     'err.auth': 'Open the app via the bot', 'err.banned': 'Account banned', 'err.network': 'No connection to server', 'err.timeout': 'Server is slow to respond',
 
-    'player.dm': 'Message', 'player.won': 'won', 'player.noUser': 'This player has no username',
+    'pp.title': 'Player profile', 'pp.dm': 'Message in Telegram', 'pp.hidden': 'Username is hidden', 'pp.games': 'Games', 'pp.won': 'Won', 'pp.wins': 'Wins', 'pp.best': 'Best win', 'pp.fav': 'Favourite game', 'pp.rank': 'Turnover rank', 'pp.gifts': 'Collection', 'pp.noGifts': 'No gifts yet', 'pp.since': 'Playing since {d}', 'pp.me': 'This is how others see your profile', 'pp.hide': 'Hide my username', 'pp.hideT': 'Others won\'t be able to message you from your profile', 'pp.priv': 'Privacy', 'player.dm': 'Message', 'player.won': 'won', 'player.noUser': 'This player has no username',
 
     'mines.title': 'Mines', 'mines.count': 'Mines on board', 'mines.play': 'Play', 'mines.cash': 'Cash out {n}',
     'mines.mult': 'Multiplier', 'mines.next': 'Next', 'mines.win': 'Win',
@@ -309,6 +309,8 @@ const icon = {
   search: svg(`<circle cx="11" cy="11" r="6.5" ${SW} stroke-width="2.3"/><path ${SW} stroke-width="2.3" d="M16 16l4.5 4.5"/>`),
   copy: svg(`<rect x="8.5" y="8.5" width="12" height="12" rx="3" ${SW}/><path ${SW} d="M15.5 5.5A2 2 0 0 0 13.5 3.5h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2"/>`),
   share: svg(`<path ${SW} d="M12 15V3.5M7.5 8L12 3.5 16.5 8M5 12.5v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>`),
+  eye: svg(`<path ${SW} d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle ${SW} cx="12" cy="12" r="3"/>`),
+  send: svg(`<path ${SW} d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/>`),
   clock: svg(`<circle cx="12" cy="12" r="9" ${SW}/><path ${SW} d="M12 7.5V12l3 2"/>`),
   sound: svg(`<path fill="currentColor" d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path ${SW} d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/>`),
   globe: svg(`<circle cx="12" cy="12" r="9" ${SW}/><path ${SW} d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>`),
@@ -743,6 +745,14 @@ const api = {
   },
 
   // ---------- пополнение в TON ----------
+  async profile(uid) {
+    if (this.live) return request(`/api/user/${encodeURIComponent(uid)}`);
+    const me = String(uid) === String(state.user.id), dp = DEMO_PLAYERS.find((x) => String(x.id) === String(uid)) || DEMO_PLAYERS[0], name = me ? state.user.username || 'guest' : dp.username || dp.name;
+    const gifts = (me ? state.inventory : DEMO_CATALOG.slice(0, 4)).slice(0, 6);
+    return { id: uid, name: me ? state.user.name : dp.name || name, username: me && state.user.hideUser ? '' : name, joined: Date.now() - 864e5 * 23, games: 148, turnover: 12840, wins: 61, won: 15320,
+      rank: 7, best: { amount: 2400, game: 'Самолётик', gift: null }, favorite: 'Самолётик', gifts, giftCount: gifts.length, giftValue: gifts.reduce((a, g) => a + (g.price || 0), 0), hidden: me && !!state.user.hideUser };
+  },
+  async setPrivacy(hide) { if (this.live) await request('/api/privacy', { hideUser: hide }); state.user.hideUser = hide; },
   async saveWallet(address) { if (this.live) { await request('/api/wallet', { address }); state.wallet = address; } },
   async tonInvoice(stars) {
     if (this.live) return request('/api/ton/invoice', { stars });
@@ -1098,7 +1108,7 @@ function modal(html, { closeDelay = 0, onClose, cls = '' } = {}) {
 function closeAll() { while (stack.length) stack[stack.length - 1].close(); }
 
 // ---------- игроки ----------
-const tgAttr = (u) => (u?.username ? `data-tg="${esc(u.username)}"` : '');
+const tgAttr = (u) => (u?.id ? `data-uid="${esc(u.id)}"` : '');
 function avatarHtml(u, cls = '') {
   const fb = letterAvatar(u?.name || u?.username || '?', Number(u?.id) || 0);
   return `<img class="ava ${cls}" src="${esc(api.avatarUrl(u))}" alt="" loading="lazy" ${tgAttr(u)} onerror="this.onerror=null;this.src='${fb}'" />`;
@@ -1109,8 +1119,8 @@ function openUser(username) {
   openLink(`https://t.me/${String(username).replace(/^@/, '')}`);
 }
 document.addEventListener('click', (e) => {
-  const el = e.target.closest('[data-tg]');
-  if (el) { e.stopPropagation(); openUser(el.dataset.tg); }
+  const el = e.target.closest('[data-uid]');
+  if (el && typeof openProfile === 'function') { e.stopPropagation(); e.preventDefault(); openProfile(el.dataset.uid); }
 }, true);
 
 // Поле суммы растёт вместе с числом (звезда стоит рядом с цифрами)

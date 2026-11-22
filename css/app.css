@@ -1462,3 +1462,55 @@ h1, h2, h3, p { margin: 0; }
 .wdw__me svg { width: 20px; height: 20px; }
 .wsent { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; background: rgba(52, 211, 153, .12); border: 1px solid rgba(52, 211, 153, .4); color: var(--green); font-size: 13.5px; font-weight: 700; }
 .wsent svg { width: 20px; height: 20px; flex: none; }
+
+/* =====================================================================
+   Публичный профиль игрока
+   ===================================================================== */
+.sheet--pp .sheet__body { padding-top: 0; }
+.pp { --h: 230; position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.pp--load { min-height: 260px; justify-content: center; }
+.pp__spin { width: 34px; height: 34px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, .12); border-top-color: var(--blue-l); animation: spin .8s linear infinite; }
+.pp__banner { position: relative; overflow: hidden; width: calc(100% + 32px); height: 120px; margin: 0 -16px -58px; border-radius: 22px 22px 0 0;
+  background: radial-gradient(90% 120% at 15% 0%, hsl(var(--h) 85% 60% / .75), transparent 60%), radial-gradient(80% 120% at 100% 20%, hsl(calc(var(--h) + 70) 85% 58% / .6), transparent 65%), linear-gradient(180deg, #171a3a, #0c0c18); }
+.pp__orb { position: absolute; border-radius: 50%; filter: blur(2px); opacity: .5; }
+.pp__orb--1 { width: 90px; height: 90px; right: 12%; top: -30px; background: radial-gradient(circle at 30% 30%, #fff8, transparent 70%), hsl(calc(var(--h) + 40) 80% 60%); }
+.pp__orb--2 { width: 40px; height: 40px; left: 14%; bottom: 14px; background: radial-gradient(circle at 30% 30%, #fff8, transparent 70%), hsl(calc(var(--h) - 40) 80% 60%); }
+.pp__stars { position: absolute; inset: 0; opacity: .5; background-image: radial-gradient(1px 1px at 20% 30%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 62% 18%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 82% 62%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 36% 74%, #fff 50%, transparent 51%); }
+.pp__ava { position: relative; z-index: 1; width: 104px; height: 104px; padding: 4px; border-radius: 34px; background: conic-gradient(from 200deg, hsl(var(--h) 90% 65%), #ff3d7f, #ffc94a, hsl(var(--h) 90% 65%)); box-shadow: 0 14px 30px rgba(0, 0, 0, .5); }
+.pp__ava .ava { width: 100%; height: 100%; border-radius: 30px; object-fit: cover; border: 3px solid #0c0c18; background: #0c0c18; }
+.pp__crown { position: absolute; right: -8px; top: -8px; width: 32px; height: 32px; padding: 6px; border-radius: 50%; background: var(--g-gold); color: #3a2500; box-shadow: 0 4px 12px rgba(255, 159, 26, .6); }
+.pp__crown--2 { background: linear-gradient(135deg, #f1f5ff, #a9b4cf); } .pp__crown--3 { background: linear-gradient(135deg, #ffd2a8, #c8783c); }
+.pp__name { margin: 4px 0 0; font: 800 22px/1.15 var(--ff-d); max-width: 92%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pp__user { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 999px; background: rgba(61, 107, 255, .16); border: 1px solid rgba(122, 162, 255, .4); color: var(--blue-l); font-size: 14px; font-weight: 700; }
+.pp__user svg { width: 14px; height: 14px; }
+.pp__user.is-hidden { background: var(--surface); border-color: var(--line); color: var(--muted); font-weight: 600; font-size: 13px; }
+.pp__tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.pp__tag { display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); font-size: 12px; font-weight: 600; }
+.pp__tag svg { width: 14px; height: 14px; }
+.pp__tag em { font-style: normal; opacity: .75; }
+.pp__tag--gold { color: var(--gold); border-color: rgba(255, 201, 74, .4); background: rgba(255, 201, 74, .08); font-weight: 800; }
+.pp__stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; margin-top: 4px; }
+.pp__stat { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 12px 6px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
+.pp__stat b { display: flex; align-items: center; gap: 4px; font: 800 17px/1 var(--ff-d); }
+.pp__stat b .star { width: 14px; height: 14px; }
+.pp__stat small { color: var(--dim); font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.pp__stat.is-gold b { color: var(--gold); }
+.pp__best { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; border-radius: 18px; text-align: left; background: linear-gradient(135deg, rgba(255, 201, 74, .16), rgba(255, 201, 74, .03)); border: 1px solid rgba(255, 201, 74, .38); }
+.pp__bimg { width: 48px; height: 48px; flex: none; border-radius: 12px; overflow: hidden; } .pp__bimg img { width: 100%; height: 100%; object-fit: cover; }
+.pp__bstar { width: 44px; height: 44px; flex: none; color: var(--gold); }
+.pp__best .grow { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pp__best small { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.pp__best b { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pp__best em { font-style: normal; color: var(--dim); font-size: 12px; }
+.pp__bv { display: flex; align-items: center; gap: 4px; flex: none; color: var(--gold); font: 800 16px/1 var(--ff-d) !important; }
+.pp__h { display: flex; align-items: baseline; justify-content: space-between; width: 100%; margin-top: 6px; }
+.pp__h h3 { margin: 0; font: 800 16px/1 var(--ff-d); } .pp__h small { color: var(--muted); font-size: 12px; }
+.pp__h > span { display: flex; align-items: center; gap: 3px; color: var(--muted); font: 700 13px/1 var(--ff-d); }
+.pp__gifts { width: 100%; }
+.pp__gifts .is-static { pointer-events: none; }
+.pp__empty { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; padding: 18px; border-radius: 16px; border: 1px dashed var(--line-2); color: var(--muted); font-size: 13px; }
+.pp__empty svg { width: 26px; height: 26px; opacity: .6; }
+.pp__priv { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border-radius: 16px; text-align: left; background: var(--surface); border: 1px solid var(--line); }
+.pp__priv .grow { display: flex; flex-direction: column; gap: 3px; } .pp__priv b { font-size: 14px; } .pp__priv small { color: var(--muted); font-size: 12px; }
+.me__ava { position: relative; }
+.me__eye { position: absolute; right: -4px; bottom: -4px; width: 28px; height: 28px; padding: 6px; border-radius: 50%; background: var(--blue); color: #fff; box-shadow: 0 0 0 3px #0c0c18; }

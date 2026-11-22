@@ -178,6 +178,7 @@ function openSettings({ onLang } = {}) {
         <div class="seg seg--mini"><button data-l="ru" class="${l === 'ru' ? 'is-active' : ''}">RU</button><button data-l="en" class="${l === 'en' ? 'is-active' : ''}">EN</button></div></div>
       <button class="list__row" id="terms"><span class="list__ico">${icon.doc}</span><span class="grow">${t('set.terms')}</span><span class="list__chev">${icon.chevron}</span></button>
       <button class="list__row" id="support"><span class="list__ico">${icon.support}</span><span class="grow">${t('set.support')}</span><span class="list__chev">${icon.chevron}</span></button>
+      <button class="list__row" id="privBtn"><span class="list__ico">${icon.lock}</span><span class="grow">${t('pp.priv')}</span><span class="list__chev">${icon.chevron}</span></button>
       ${api.cfg('admin', false) ? `<button class="list__row list__row--adm" id="admBtn"><span class="list__ico">${icon.bolt}</span><span class="grow">Админ-панель</span><span class="list__chev">${icon.chevron}</span></button>` : ''}
       <div class="list__row"><span class="list__ico">${icon.server}</span><span class="grow">${t('set.server')}</span><span class="netpill is-${conn.status}"><i></i>${conn.status === 'demo' ? 'demo' : conn.status}</span></div>
     </div>
@@ -187,6 +188,7 @@ function openSettings({ onLang } = {}) {
   el.querySelector('#vol').addEventListener('input', (e) => prefs.set('volume', +e.target.value));
   el.querySelector('#vol').addEventListener('change', () => sound('tick'));
   el.querySelectorAll('[data-l]').forEach((b) => b.addEventListener('click', () => { sound('tick'); prefs.set('lang', b.dataset.l); setLang(b.dataset.l); s.close(); onLang && onLang(); }));
+  el.querySelector('#privBtn').addEventListener('click', () => { s.close(); openProfile(api.state.user.id); });
   el.querySelector('#admBtn')?.addEventListener('click', () => { sound(); s.close(); openAdmin(); });
   el.querySelector('#terms').addEventListener('click', () => { sound(); openLink(CONFIG.TERMS_URL); });
   el.querySelector('#support').addEventListener('click', () => { sound(); openLink(api.cfg('supportUrl', CONFIG.SUPPORT_URL)); });
@@ -424,21 +426,54 @@ function openNft(g) {
 }
 
 // ---------- Игрок из ленты ----------
-function openPlayer(win) {
-  const u = win.user || {};
-  const s = sheet(`
-    <div class="player">
-      ${avatarHtml(u, 'player__ava')}
-      <div class="player__name">${esc(u.name || u.username)}</div>
-      ${u.username ? `<div class="player__user">@${esc(u.username)}</div>` : ''}
-      <div class="player__win">
-        ${win.gift ? giftImg(win.gift) : `<span class="player__star">${icon.star}</span>`}
-        <span>${t('player.won')} <b>${esc(win.gift ? win.gift.name : `${fmt(win.price)} Stars`)}</b><em>${esc(win.game || '')}</em></span>
-        <b class="player__v">${star()}${fmt(win.price)}</b>
+function openPlayer(win) { if (win?.user?.id) openProfile(win.user.id); }
+
+// ---------- Публичный профиль игрока ----------
+let profileOpen = false;
+async function openProfile(uid) {
+  if (!uid || profileOpen) return;
+  profileOpen = true; sound(); haptic('light');
+  const me = String(uid) === String(api.state.user.id);
+  const s = sheet('<div class="pp pp--load"><span class="pp__spin"></span></div>', { cls: 'sheet--pp', onClose: () => { profileOpen = false; } });
+  let p;
+  try { p = await api.profile(uid); } catch (e) { s.close(); return errToast(e); }
+  const since = new Date(p.joined || Date.now()).toLocaleDateString(getLang() === 'en' ? 'en-GB' : 'ru-RU', { month: 'long', year: 'numeric' });
+  const hue = (Number(p.id) * 47) % 360;
+  const stat = (v, l, cls = '') => `<div class="pp__stat ${cls}"><b>${v}</b><small>${l}</small></div>`;
+  const draw = () => {
+    const user = me ? (api.state.user.hideUser ? '' : api.state.user.username) : p.username;
+    s.set(`
+    <div class="pp" style="--h:${hue}">
+      <div class="pp__banner"><span class="pp__orb pp__orb--1"></span><span class="pp__orb pp__orb--2"></span><span class="pp__stars"></span></div>
+      <div class="pp__ava">${avatarHtml({ ...p, username: '' }).replace('data-uid', 'data-x')}${p.rank && p.rank <= 3 ? `<i class="pp__crown pp__crown--${p.rank}">${icon.trophy}</i>` : ''}</div>
+      <h2 class="pp__name">${esc(p.name)}</h2>
+      ${user ? `<button class="pp__user" id="ppDm">@${esc(user)}${icon.chevron}</button>` : `<span class="pp__user is-hidden">${icon.lock}${t('pp.hidden')}</span>`}
+      <div class="pp__tags">
+        ${p.rank ? `<span class="pp__tag pp__tag--gold">${icon.trophy}#${fmt(p.rank)} <em>${t('pp.rank')}</em></span>` : ''}
+        ${p.favorite ? `<span class="pp__tag">${icon.play}${esc(p.favorite)}</span>` : ''}
+        <span class="pp__tag">${icon.clock}${t('pp.since', { d: since })}</span>
       </div>
-      <button class="btn btn--primary btn--lg btn--block" id="dmBtn" ${u.username ? '' : 'disabled'}>${u.username ? t('player.dm') : t('player.noUser')}</button>
+      <div class="pp__stats">
+        ${stat(fmt(p.games), t('pp.games'))}${stat(`${star()}${fmt(p.won)}`, t('pp.won'), 'is-gold')}${stat(fmt(p.wins), t('pp.wins'))}
+      </div>
+      ${p.best ? `<div class="pp__best">${p.best.gift ? `<span class="pp__bimg">${giftImg(p.best.gift)}</span>` : `<span class="pp__bstar">${icon.star}</span>`}
+        <span class="grow"><small>${t('pp.best')}</small><b>${p.best.gift ? esc(p.best.gift.name) : `${fmt(p.best.amount)} Stars`}</b><em>${esc(p.best.game || '')}</em></span>
+        <b class="pp__bv">${star()}${fmt(p.best.amount)}</b></div>` : ''}
+      <div class="pp__h"><h3>${t('pp.gifts')} <small>${fmt(p.giftCount || 0)}</small></h3>${p.giftValue ? `<span>${star()}${fmt(p.giftValue)}</span>` : ''}</div>
+      ${(p.gifts || []).length ? `<div class="ggrid pp__gifts">${p.gifts.map((g) => giftCard(g, { cls: 'is-static' })).join('')}</div>` : `<div class="pp__empty">${icon.gift}<span>${t('pp.noGifts')}</span></div>`}
+      ${user ? `<button class="btn btn--primary btn--lg btn--block" id="ppDm2">${icon.send}${t('pp.dm')}</button>` : ''}
+      ${me ? `<div class="pp__priv"><span class="grow"><b>${t('pp.hide')}</b><small>${t('pp.hideT')}</small></span><button class="switch ${api.state.user.hideUser ? 'is-on' : ''}" id="ppHide" aria-label="hide"></button></div>
+        <p class="note">${t('pp.me')}</p>` : ''}
     </div>`);
-  s.el.querySelector('#dmBtn').addEventListener('click', () => openUser(u.username));
+    const dm = () => { sound(); haptic(); openLink(`https://t.me/${user}`); };
+    s.el.querySelector('#ppDm')?.addEventListener('click', dm);
+    s.el.querySelector('#ppDm2')?.addEventListener('click', dm);
+    s.el.querySelector('#ppHide')?.addEventListener('click', async () => {
+      sound('tick'); haptic('select');
+      try { await api.setPrivacy(!api.state.user.hideUser); draw(); } catch (e) { errToast(e); }
+    });
+  };
+  draw();
 }
 
 // ---------- Реферальные уровни ----------
@@ -1265,7 +1300,7 @@ const profile = (() => {
         <section class="me">
           <span class="me__orb me__orb--1"></span><span class="me__orb me__orb--2"></span>
           <button class="icon-btn me__set" id="setBtn" aria-label="settings">${icon.gear}</button>
-          <div class="me__ava">${avatarHtml(u)}</div>
+          <button class="me__ava" id="meView">${avatarHtml({ ...u, id: 0 })}<i class="me__eye">${icon.eye}</i></button>
           <h1 class="me__name">${esc(u.name)}</h1>
           ${u.username ? `<div class="me__user">@${esc(u.username)}</div>` : ''}
           <div class="me__stats">
@@ -1302,6 +1337,7 @@ const profile = (() => {
       const $r = (s) => root.querySelector(s);
       $r('#setBtn').addEventListener('click', () => { sound(); openSettings({ onLang: relocalize }); });
       $r('#dep').addEventListener('click', () => { sound(); haptic(); openPay('dep'); });
+      $r('#meView').addEventListener('click', () => openProfile(u.id));
       $r('#wCard').addEventListener('click', async () => {
         sound(); haptic();
         try { if (tonWallet.address) await tonWallet.disconnect(); else await tonWallet.connect(); } catch (e) { toast(t('w.fail'), 'error'); }
