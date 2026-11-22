@@ -1445,3 +1445,20 @@ h1, h2, h3, p { margin: 0; }
 .cprizes__i em { font-style: normal; color: var(--muted); font: 700 11.5px/1 var(--ff-d); }
 .is-lite .ccard__glow, .is-lite .ccard__art, .is-lite .cstage__rays, .is-lite .cstage__art { animation: none !important; }
 @media (prefers-reduced-motion: reduce) { .ccard__glow, .ccard__art, .cstage__rays, .cstage__art { animation: none !important; } }
+
+/* ---------- TON-кошелёк ---------- */
+.wcard { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; margin: 10px 0 2px; border-radius: 20px; text-align: left;
+  background: linear-gradient(135deg, rgba(0, 152, 234, .22), rgba(61, 107, 255, .1)); border: 1px solid rgba(58, 160, 255, .38); }
+.wcard__ico { flex: none; width: 42px; height: 42px; padding: 10px; border-radius: 14px; background: #0098ea; color: #fff; box-shadow: 0 6px 16px rgba(0, 152, 234, .45); }
+.wcard .grow { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.wcard b { font-size: 14.5px; }
+.wcard small { color: var(--muted); font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wcard.is-on small { color: #7cc8ff; font-family: ui-monospace, Menlo, monospace; }
+.wcard__go { flex: none; color: var(--muted); font-size: 12px; font-weight: 700; }
+.wcard__go svg { width: 18px; height: 18px; }
+.wdw__row { display: flex; gap: 8px; }
+.wdw__row .adm__in { flex: 1; min-width: 0; }
+.wdw__me { flex: none; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 12px; background: #0098ea; color: #fff; }
+.wdw__me svg { width: 20px; height: 20px; }
+.wsent { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; background: rgba(52, 211, 153, .12); border: 1px solid rgba(52, 211, 153, .4); color: var(--green); font-size: 13.5px; font-weight: 700; }
+.wsent svg { width: 20px; height: 20px; flex: none; }

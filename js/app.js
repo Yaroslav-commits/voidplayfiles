@@ -163,6 +163,8 @@ function start() {
   setTimeout(() => $('#loader')?.remove(), 600);
   if (conn.status === 'demo') { setTimeout(() => netbar(t('conn.demo'), 'demo'), 900); setTimeout(() => conn.status === 'demo' && netbar(''), 6000); }
   if (!api.state.subscribed) setTimeout(openSubscribe, 900);
+  // кошелёк подключали раньше — тихо восстанавливаем подключение (библиотека грузится только в этом случае)
+  try { if (Object.keys(localStorage).some((k) => k.startsWith('ton-connect'))) setTimeout(() => tonWallet.restore().then(() => document.dispatchEvent(new Event('state'))), 1500); } catch (e) { /* ignore */ }
 }
 window.__vpStarted = true;
 boot();

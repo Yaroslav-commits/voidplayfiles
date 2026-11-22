@@ -36,7 +36,7 @@ function openPay(mode = 'dep') {
   const s = sheet('', { title: t('pay.title'), cls: 'sheet--pay', onClose: () => { closed = true; } });
   const tonOn = () => !!api.cfg('ton', {}).enabled && st.rates.tonToStars > 0;
   const tonAmount = () => (amount / st.rates.tonToStars).toFixed(3);
-  let wallet = st.wallet || '';
+  let wallet = st.wallet || tonWallet.address || '';
   const wdFee = () => api.cfg('withdrawFee', 0);
   const wdTon = () => (st.rates.tonOut > 0 ? Math.floor(amount * (1 - wdFee()) / st.rates.tonOut * 1000) / 1000 : 0).toFixed(3);
   const wdLocked = () => api.live && api.cfg('deposited', 0) < api.cfg('wdMinDeposit', 0);
@@ -44,20 +44,23 @@ function openPay(mode = 'dep') {
     : method === 'ton' ? t('ton.pay', { n: tonAmount() }) : t('pay.payStars', { n: fmt(amount) }));
 
   // Шаг 2 для TON: адрес, сумма, комментарий — и ждём перевод
-  function tonStep(inv) {
+  function tonStep(inv, sent = false) {
     s.set(`
       <div class="tonpay">
+        ${sent ? `<div class="wsent">${icon.check}<span>${t('w.sent')}</span></div>` : ''}
         <div class="tonpay__sum"><span class="tonpay__ico">${icon.ton}</span><div><small>${t('ton.send')}</small><b>${esc(inv.ton)} TON</b><em>= ${star()}${fmt(inv.stars)}</em></div></div>
         <button class="copyrow" data-copy="${esc(inv.ton)}"><small>${t('pay.amount')}</small><span>${esc(inv.ton)} TON</span>${icon.copy}</button>
         <button class="copyrow" data-copy="${esc(inv.address)}"><small>${t('ton.addr')}</small><span>${esc(inv.address)}</span>${icon.copy}</button>
         <button class="copyrow copyrow--key" data-copy="${esc(inv.comment)}"><small>${t('ton.comment')}</small><span>${esc(inv.comment)}</span>${icon.copy}</button>
         <div class="warn">${icon.help}<div><b>${t('ton.warn')}</b></div></div>
-        <button class="btn btn--ton btn--lg btn--block" id="tonOpen">${icon.ton}${t('ton.open')}</button>
+        ${sent ? '' : `<button class="btn btn--ton btn--lg btn--block" id="tonWallet">${icon.ton}${tonWallet.address ? t('w.pay', { n: esc(inv.ton) }) : t('w.connect')}</button>`}
+        <button class="btn btn--ghost btn--block" id="tonOpen">${t('w.manual')}</button>
         <div class="tonpay__wait"><i></i><span>${t('ton.wait')}</span></div>
         <p class="note">${t('ton.later')}</p>
       </div>`);
     s.el.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', () => { sound('tick'); copyText(b.dataset.copy); }));
     s.el.querySelector('#tonOpen').addEventListener('click', () => { sound(); haptic('medium'); openLink(inv.link); });
+    s.el.querySelector('#tonWallet')?.addEventListener('click', () => payFromWallet(inv));
     const check = async () => {
       if (closed) return;
       try {
@@ -71,6 +74,18 @@ function openPay(mode = 'dep') {
       setTimeout(check, 4000);
     };
     setTimeout(check, 4000);
+  }
+
+  // перевод из подключённого кошелька: сумма и комментарий подставляются сами
+  async function payFromWallet(inv) {
+    sound(); haptic('medium');
+    try {
+      await tonWallet.pay({ address: inv.address, nano: inv.nano, comment: inv.comment });
+      if (!closed) tonStep(inv, true);
+    } catch (e) {
+      const m = String(e?.message || e);
+      toast(t(/reject|cancel|declin|abort/i.test(m) || e?.code === 'wallet_cancel' ? 'w.cancel' : 'w.fail'), 'error');
+    }
   }
 
   const draw = (focus) => {
@@ -94,7 +109,7 @@ function openPay(mode = 'dep') {
       </label>
       <div class="chips">${packs.map((p) => `<button class="chip ${amount === p ? 'is-active' : ''}" data-p="${p}">${star()}${fmt(p)}${dep && st.packs.find((x) => x.stars === p)?.bonus ? `<em>+${st.packs.find((x) => x.stars === p).bonus}</em>` : ''}</button>`).join('')}</div>
       ${dep && tonOn() ? `<div class="seg seg--2 seg--pay"><button data-pm="stars" class="${method === 'stars' ? 'is-active' : ''}">${icon.star}Telegram Stars</button><button data-pm="ton" class="${method === 'ton' ? 'is-active' : ''}">${icon.ton}TON</button></div>` : ''}
-      ${!dep ? `<label class="wdw"><small>${icon.ton}${t('pay.wdWallet')}</small><input id="payWal" class="adm__in" placeholder="${t('pay.wdWalletPh')}" value="${esc(wallet)}" autocomplete="off" spellcheck="false" /></label>
+      ${!dep ? `<label class="wdw"><small>${icon.ton}${t('pay.wdWallet')}</small><span class="wdw__row"><input id="payWal" class="adm__in" placeholder="${t('pay.wdWalletPh')}" value="${esc(wallet)}" autocomplete="off" spellcheck="false" /><button class="wdw__me" id="payMe" aria-label="${t('w.use')}">${icon.wallet}</button></span></label>
         <div class="wdget"><span>${t('pay.wdGet')}</span><b><i>${icon.ton}</i><em id="wdTon">${wdTon()}</em> TON</b></div>` : ''}
       <button class="btn btn--${!dep ? 'pink' : method === 'ton' ? 'ton' : 'primary'} btn--lg btn--block" id="payGo" ${amount ? '' : 'disabled'}>${goLabel()}</button>
       ${!dep ? `<button class="btn btn--gift btn--block" id="payShop">${icon.gift}${t('shop.open')}</button>` : ''}
@@ -116,6 +131,10 @@ function openPay(mode = 'dep') {
     el.querySelectorAll('[data-p]').forEach((b) => b.addEventListener('click', () => { sound('tick'); haptic('select'); amount = +b.dataset.p; draw(); }));
     el.querySelectorAll('[data-pm]').forEach((b) => b.addEventListener('click', () => { sound('tick'); haptic('select'); method = b.dataset.pm; draw(); }));
     el.querySelector('#payWal')?.addEventListener('input', (e) => { wallet = e.target.value.trim(); });
+    el.querySelector('#payMe')?.addEventListener('click', async () => {
+      sound(); const a = tonWallet.address || await tonWallet.connect().catch(() => '');
+      if (a) { wallet = a; const w = el.querySelector('#payWal'); if (w) w.value = a; haptic('select'); }
+    });
     el.querySelector('#payShop')?.addEventListener('click', () => { sound(); s.close(); openShop(); });
     el.querySelector('#payGo').addEventListener('click', async (e) => {
       if (busy || !amount) return;
@@ -133,7 +152,7 @@ function openPay(mode = 'dep') {
         if (mode === 'dep' && method === 'ton') {
           const min = api.cfg('ton', {}).minStars || 1;
           if (amount < min) toast(`${t('ton.min', { n: min })} ⭐`, 'error');
-          else { const inv = await api.tonInvoice(amount); busy = false; return tonStep(inv); }
+          else { const inv = await api.tonInvoice(amount); busy = false; tonStep(inv); if (tonWallet.address) payFromWallet(inv); return; }
         } else if (mode === 'dep') {
           const r = await api.deposit(amount);
           if (r.ok) { balanceChanged(); toast(r.credited ? t('toast.gotStars', { n: fmt(r.credited) }) : t('pay.paid'), 'success'); s.close(); confetti(); }
@@ -1259,6 +1278,11 @@ const profile = (() => {
             <button class="btn btn--glass btn--lg" id="wd">${icon.up}${t('pay.wd')}</button>
           </div>
         </section>
+        <button class="wcard ${tonWallet.address ? 'is-on' : ''}" id="wCard">
+          <span class="wcard__ico">${icon.ton}</span>
+          <span class="grow"><b>${tonWallet.address ? t('w.connected') : t('w.connect')}</b><small>${tonWallet.address ? esc(tonWallet.short(tonWallet.address)) : t('w.sub')}</small></span>
+          <span class="wcard__go">${tonWallet.address ? t('w.off') : icon.chevron}</span>
+        </button>
 
         <section class="panel">
           <div class="panel__h"><h3>${t('prof.inventory')}${inv.length ? ` <small>${star()}${fmt(invValue)}</small>` : ''}</h3>${inv.length ? `<button class="link" id="invAll">${t('common.showAll')} ${inv.length}${icon.chevron}</button>` : ''}</div>
@@ -1278,6 +1302,11 @@ const profile = (() => {
       const $r = (s) => root.querySelector(s);
       $r('#setBtn').addEventListener('click', () => { sound(); openSettings({ onLang: relocalize }); });
       $r('#dep').addEventListener('click', () => { sound(); haptic(); openPay('dep'); });
+      $r('#wCard').addEventListener('click', async () => {
+        sound(); haptic();
+        try { if (tonWallet.address) await tonWallet.disconnect(); else await tonWallet.connect(); } catch (e) { toast(t('w.fail'), 'error'); }
+        draw();
+      });
       $r('#wd').addEventListener('click', () => { sound(); haptic(); openPay('wd'); });
       $r('#invAll')?.addEventListener('click', () => { sound(); openInventory(); });
       root.querySelectorAll('.ggrid [data-k]').forEach((b) => b.addEventListener('click', () => { sound(); go('upgrader'); }));
