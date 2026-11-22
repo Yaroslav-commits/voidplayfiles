@@ -88,7 +88,7 @@ const dict = {
     'pay.title': 'Кошелёк', 'pay.dep': 'Пополнить', 'pay.wd': 'Вывести', 'pay.balance': 'Баланс',
     'pay.amount': 'Сумма', 'pay.packs': 'Быстрый выбор', 'pay.min': 'Введи сумму', 'pay.payStars': 'Оплатить {n} ⭐',
     'err.needDeposit': 'Доступно после первого пополнения от 50 ⭐', 'cases.title': 'Кейсы', 'cases.sub': 'Открывай кейсы — забирай звёзды и настоящие NFT', 'cases.upTo': 'до', 'cases.open': 'Открыть за {n}', 'cases.fast': 'Быстро', 'cases.inside': 'Что внутри', 'cases.rtp': 'Возврат {r}%', 'cases.got': '+{n} Stars на баланс', 'cases.helpTitle': 'Как работают кейсы', 'cases.h1': 'Выбери кейс и открой его за звёзды', 'cases.h2': 'Лента остановится на призе: звёзды сразу на баланс, NFT — в инвентарь', 'cases.h3': 'Шансы каждого приза указаны в кейсе. В среднем кейсы возвращают {r}% цены — это преимущество игры', 'crash.title': 'Самолётик', 'crash.soon': 'Взлёт', 'crash.betsOpen': 'Ставки принимаются · {n} с', 'crash.gone': 'Улетел!', 'crash.bet': 'Поставить', 'crash.next': 'В следующий полёт', 'crash.cash': 'Забрать', 'crash.cancel': 'Отменить ставку', 'crash.unqueue': 'Отменить', 'crash.queued': 'Ставка {n} ⭐ уйдёт в следующий полёт', 'crash.inRound': 'Твоя ставка {n} ⭐ в этом полёте', 'crash.autoAt': 'автовывод {x}', 'crash.took': 'Забрал {x} · +{n}', 'crash.won': '+{n} Stars на {x}!', 'crash.lost': 'Самолётик улетел на {x}', 'crash.late': 'Не успел — самолётик уже улетел', 'crash.auto': 'Автовывод', 'crash.autoT': 'Забрать само на множителе', 'crash.ifAuto': 'Заберёшь', 'crash.note': 'Максимальный выигрыш за ставку — {n} ⭐', 'crash.bets': 'Ставки', 'crash.empty': 'В этом полёте ещё никто не играет', 'crash.helpTitle': 'Как играть в Самолётик', 'crash.h1': 'Сделай ставку, пока идёт отсчёт до взлёта', 'crash.h2': 'Самолётик взлетает — множитель растёт с x1.00', 'crash.h3': 'Жми «Забрать», пока он не улетел: получишь ставку × множитель. Не успел — ставка сгорает', 'crash.h4': 'Автовывод заберёт выигрыш сам на нужном множителе. Преимущество игры — {e}%: на дистанции игроки получают назад {e}% меньше поставленного, это честно и проверяемо', 'crash.fairT': 'Точка, где улетит самолётик, зашифрована в hash ещё до взлёта. После полёта раскрывается seed — по формуле ниже результат пересчитает кто угодно.', 'err.wdPending': 'Дождись выплаты прошлой заявки — потом можно новую', 'err.slow': 'Слишком быстро — подожди секунду', 'boot.tgTitle': 'Игра открывается в Telegram', 'boot.tgText': 'Запусти бота и нажми «Играть»', 'boot.tgBtn': 'Открыть бота',
-    'pay.wdStars': 'Вывести ≈ {n} TON', 'pay.wdWallet': 'Твой TON-кошелёк', 'pay.wdWalletPh': 'Адрес UQ… или EQ…', 'pay.wdGet': 'Получишь', 'pay.wdRate': 'Вывод только в TON · комиссия {p}% · обычно до 24 часов', 'pay.wdNeedDep': 'Вывод откроется после пополнения от {n}', 'pay.badWallet': 'Проверь адрес TON-кошелька', 'pay.cash': 'Вывод временно недоступен — попробуй позже или забери подарком', 'pvp.noFee': 'Без комиссии — весь банк победителю', 'pvp.mult': 'Множитель', 'pvp.chanceIf': 'Шанс с этой ставкой', 'pvp.winIf': 'Заберёшь при победе', 'pvp.last': 'Успей!', 'pvp.lucky': 'Удача!', 'pvp.chance': 'шанс', 'pay.via': 'Оплата через Telegram Stars', 'pay.wdNote': 'Заявка уходит администратору, вывод — подарком или звёздами',
+    'pay.wdStars': 'Вывести ≈ {n} TON', 'pay.wdWallet': 'Твой TON-кошелёк', 'pay.wdWalletPh': 'Адрес UQ… или EQ…', 'pay.wdGet': 'Получишь', 'pay.wdRate': 'Вывод только в TON · комиссия {p}% · обычно до 24 часов', 'pay.wdNeedDep': 'Вывод откроется после пополнения от {n}', 'pay.badWallet': 'Проверь адрес TON-кошелька', 'pay.cash': 'Вывод временно недоступен — попробуй позже или забери подарком', 'ph.title': 'История раундов', 'ph.btn': 'История', 'ph.empty': 'Сыгранных раундов пока нет', 'ph.round': 'Раунд #{n}', 'ph.took': 'забрал банк', 'ph.replay': 'Повтор раунда', 'ph.again': 'Прокрутить ещё раз', 'ph.players': 'Участники', 'ph.you': 'ты', 'ph.gifts': 'подарков в банке: {n}', 'ph.ago': '{n} назад', 'qc.title': 'Быстрые ставки', 'qc.text': 'Настрой кнопки под себя. Число — поставить ровно столько, +N или −N — прибавить или убавить, x2 — удвоить, max — весь баланс', 'qc.save': 'Сохранить', 'qc.reset': 'По умолчанию', 'qc.bad': 'Кнопка {n}: непонятное значение', 'pvp.minBet': 'Минимальная ставка — {n} ⭐', 'pvp.noFee': 'Без комиссии — весь банк победителю', 'pvp.mult': 'Множитель', 'pvp.chanceIf': 'Шанс с этой ставкой', 'pvp.winIf': 'Заберёшь при победе', 'pvp.last': 'Успей!', 'pvp.lucky': 'Удача!', 'pvp.chance': 'шанс', 'pay.via': 'Оплата через Telegram Stars', 'pay.wdNote': 'Заявка уходит администратору, вывод — подарком или звёздами',
     'pay.paid': 'Оплата прошла!', 'pay.wdSent': 'Заявка на вывод отправлена', 'pay.minWd': 'Минимум для вывода: {n}',
 
     'set.title': 'Настройки', 'set.sounds': 'Звуки', 'set.volume': 'Громкость', 'set.lang': 'Язык',
@@ -207,7 +207,7 @@ const dict = {
     'pay.title': 'Wallet', 'pay.dep': 'Top up', 'pay.wd': 'Withdraw', 'pay.balance': 'Balance',
     'pay.amount': 'Amount', 'pay.packs': 'Quick pick', 'pay.min': 'Enter an amount', 'pay.payStars': 'Pay {n} ⭐',
     'err.needDeposit': 'Available after your first deposit of 50 ⭐ or more', 'cases.title': 'Cases', 'cases.sub': 'Open cases — win stars and real NFTs', 'cases.upTo': 'up to', 'cases.open': 'Open for {n}', 'cases.fast': 'Fast', 'cases.inside': 'What is inside', 'cases.rtp': 'Return {r}%', 'cases.got': '+{n} Stars added', 'cases.helpTitle': 'How cases work', 'cases.h1': 'Pick a case and open it with stars', 'cases.h2': 'The strip stops on your prize: stars go to balance, NFTs to inventory', 'cases.h3': 'Every prize chance is shown in the case. On average cases return {r}% of the price — that is the game edge', 'crash.title': 'Plane', 'crash.soon': 'Take-off', 'crash.betsOpen': 'Bets are open · {n} s', 'crash.gone': 'Flew away!', 'crash.bet': 'Place bet', 'crash.next': 'Next flight', 'crash.cash': 'Cash out', 'crash.cancel': 'Cancel bet', 'crash.unqueue': 'Cancel', 'crash.queued': 'Your {n} ⭐ bet goes into the next flight', 'crash.inRound': 'Your {n} ⭐ bet is in this flight', 'crash.autoAt': 'auto cash-out {x}', 'crash.took': 'Cashed out {x} · +{n}', 'crash.won': '+{n} Stars at {x}!', 'crash.lost': 'The plane flew away at {x}', 'crash.late': 'Too late — the plane is gone', 'crash.auto': 'Auto cash-out', 'crash.autoT': 'Cash out automatically at', 'crash.ifAuto': 'You get', 'crash.note': 'Max win per bet — {n} ⭐', 'crash.bets': 'Bets', 'crash.empty': 'Nobody is in this flight yet', 'crash.helpTitle': 'How to play Plane', 'crash.h1': 'Bet while the countdown to take-off runs', 'crash.h2': 'The plane takes off and the multiplier grows from x1.00', 'crash.h3': 'Tap Cash out before it flies away to get bet × multiplier. Too late and the bet is lost', 'crash.h4': 'Auto cash-out takes the win at your multiplier. The game edge is {e}%: over time players get back {e}% less than they bet — fair and verifiable', 'crash.fairT': 'The point where the plane flies away is locked in the hash before take-off. After the flight the seed is revealed so anyone can recheck the result.', 'err.wdPending': 'Wait until your previous withdrawal is paid', 'err.slow': 'Too fast — wait a second', 'boot.tgTitle': 'The game opens in Telegram', 'boot.tgText': 'Start the bot and tap Play', 'boot.tgBtn': 'Open the bot',
-    'pay.wdStars': 'Withdraw ≈ {n} TON', 'pay.wdWallet': 'Your TON wallet', 'pay.wdWalletPh': 'Address UQ… or EQ…', 'pay.wdGet': 'You get', 'pay.wdRate': 'TON only · fee {p}% · usually within 24 hours', 'pay.wdNeedDep': 'Withdrawals unlock after a deposit of {n} or more', 'pay.badWallet': 'Check the TON wallet address', 'pay.cash': 'Withdrawals are temporarily unavailable — try later or take a gift', 'pvp.noFee': 'No fee — the winner takes the whole pot', 'pvp.mult': 'Multiplier', 'pvp.chanceIf': 'Chance with this bet', 'pvp.winIf': 'You get if you win', 'pvp.last': 'Hurry!', 'pvp.lucky': 'Lucky!', 'pvp.chance': 'chance', 'pay.via': 'Paid with Telegram Stars', 'pay.wdNote': 'The request goes to an admin; payout as a gift or stars',
+    'pay.wdStars': 'Withdraw ≈ {n} TON', 'pay.wdWallet': 'Your TON wallet', 'pay.wdWalletPh': 'Address UQ… or EQ…', 'pay.wdGet': 'You get', 'pay.wdRate': 'TON only · fee {p}% · usually within 24 hours', 'pay.wdNeedDep': 'Withdrawals unlock after a deposit of {n} or more', 'pay.badWallet': 'Check the TON wallet address', 'pay.cash': 'Withdrawals are temporarily unavailable — try later or take a gift', 'ph.title': 'Round history', 'ph.btn': 'History', 'ph.empty': 'No rounds played yet', 'ph.round': 'Round #{n}', 'ph.took': 'took the pot', 'ph.replay': 'Round replay', 'ph.again': 'Spin again', 'ph.players': 'Players', 'ph.you': 'you', 'ph.gifts': 'gifts in pot: {n}', 'ph.ago': '{n} ago', 'qc.title': 'Quick bets', 'qc.text': 'Set the buttons your way. A number sets the bet, +N or −N adds or subtracts, x2 doubles, max bets the whole balance', 'qc.save': 'Save', 'qc.reset': 'Default', 'qc.bad': 'Button {n}: unknown value', 'pvp.minBet': 'Minimum bet is {n} ⭐', 'pvp.noFee': 'No fee — the winner takes the whole pot', 'pvp.mult': 'Multiplier', 'pvp.chanceIf': 'Chance with this bet', 'pvp.winIf': 'You get if you win', 'pvp.last': 'Hurry!', 'pvp.lucky': 'Lucky!', 'pvp.chance': 'chance', 'pay.via': 'Paid with Telegram Stars', 'pay.wdNote': 'The request goes to an admin; payout as a gift or stars',
     'pay.paid': 'Payment received!', 'pay.wdSent': 'Withdrawal request sent', 'pay.minWd': 'Minimum withdrawal: {n}',
 
     'set.title': 'Settings', 'set.sounds': 'Sounds', 'set.volume': 'Volume', 'set.lang': 'Language',
@@ -309,6 +309,7 @@ const icon = {
   search: svg(`<circle cx="11" cy="11" r="6.5" ${SW} stroke-width="2.3"/><path ${SW} stroke-width="2.3" d="M16 16l4.5 4.5"/>`),
   copy: svg(`<rect x="8.5" y="8.5" width="12" height="12" rx="3" ${SW}/><path ${SW} d="M15.5 5.5A2 2 0 0 0 13.5 3.5h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2"/>`),
   share: svg(`<path ${SW} d="M12 15V3.5M7.5 8L12 3.5 16.5 8M5 12.5v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>`),
+  pen: svg(`<path ${SW} d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4zM13.5 6.5l4 4"/>`),
   eye: svg(`<path ${SW} d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle ${SW} cx="12" cy="12" r="3"/>`),
   send: svg(`<path ${SW} d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/>`),
   clock: svg(`<circle cx="12" cy="12" r="9" ${SW}/><path ${SW} d="M12 7.5V12l3 2"/>`),
@@ -725,6 +726,10 @@ const api = {
     if (this.live) return request(`/api/pvp?game=${game}`, undefined, { timeout: 8000 });
     return demoPvp.state(game);
   },
+  async pvpHistory(game) {
+    if (this.live) return (await request(`/api/pvp/history?game=${game}&limit=30`)).rounds;
+    return demoPvp.fullHistory(game);
+  },
   async pvpBet(game, amount, side, gift) {
     if (this.live) { const r = await request('/api/pvp/bet', { game, amount, side, gift }); state.balance.stars = r.balance; if (gift) await this.refresh().catch(() => {}); return r; }
     if (gift) throw new ApiError('not_found');
@@ -872,6 +877,18 @@ const demoCrash = {
 };
 
 const demoPvp = {
+  fullHistory(game) {   // демо: правдоподобная история из прошедших раундов
+    return Array.from({ length: 12 }, (_, k) => {
+      const ps = DEMO_PLAYERS.slice(k % 4, (k % 4) + 2 + (k % 4)).map((p, i) => ({ ...p, amount: [25, 80, 150, 40, 300][(i + k) % 5], gifts: [] }));
+      const pot = ps.reduce((a, p) => a + p.amount, 0); ps.forEach((p) => { p.chance = p.amount / pot; p.payout = 0; });
+      const roll = ((k * 0.37) % 1) || 0.42; let acc = 0, w = ps[ps.length - 1];
+      for (const p of ps) { acc += p.amount; if (roll * pot < acc) { w = p; break; } }
+      w.payout = pot;
+      if (game === 'fireice') ps.forEach((p, i) => { p.side = i % 2 ? 'ice' : 'fire'; });
+      return { id: 900 - k, at: Date.now() - k * 95000, pot, roll, seed: 'demo', hash: 'demo', chance: w.chance, players: ps, my: null, prize: 0,
+        winner: game === 'roulette' ? w : (roll < 0.5 ? 'fire' : 'ice') };
+    });
+  },
   R: {}, n: 1, ROUND: 12000, SHOW: 13000, FEE: 0,
   round(game) {
     let r = this.R[game];
@@ -920,7 +937,7 @@ const demoPvp = {
     const mine = players.find((p) => p.id === state.user.id);
     const out = {
       game: r.game, id: r.id, open: true, phase: r.done ? 'result' : r.endsAt ? 'countdown' : 'waiting', now: Date.now(), endsAt: r.endsAt,
-      roundSeconds: this.ROUND / 1000, pot, hash: 'demo', fee: this.FEE, minBet: 1, maxBet: 50000, players,
+      roundSeconds: this.ROUND / 1000, pot, hash: 'demo', fee: this.FEE, minBet: 5, maxBet: 50000, players,
       my: mine ? { amount: mine.amount, side: mine.side, chance: mine.chance } : null, canCancel: !!mine && !r.done && !r.endsAt, history: r.hist,
     };
     if (r.game === 'fireice') {

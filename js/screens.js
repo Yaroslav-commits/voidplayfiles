@@ -1457,6 +1457,119 @@ const pvp = (() => {
     return `<i style="left:${(50 + 47.6 * Math.sin(a)).toFixed(2)}%;top:${(50 - 47.6 * Math.cos(a)).toFixed(2)}%"></i>`;
   }).join('');
 
+  // ---------- быстрые ставки: игрок настраивает 4 кнопки под себя ----------
+  const QDEF = ['-10', '+50', 'x2', 'max'];
+  const quickChips = () => { try { const v = JSON.parse(localStorage.getItem('vp_chips') || 'null'); if (Array.isArray(v) && v.length === 4) return v; } catch (e) { /* ignore */ } return QDEF; };
+  const qNorm = (r) => {
+    const v = String(r || '').trim().toLowerCase().replace(/\s/g, '').replace('−', '-').replace('х', 'x').replace('×', 'x');
+    if (v === 'max' || v === 'макс' || v === 'all') return 'max';
+    if (/^x[2-9]$/.test(v) || v === '1/2' || v === '/2') return v === '1/2' ? '/2' : v;
+    if (/^[+-]\d{1,6}$/.test(v) || /^\d{1,6}$/.test(v)) return v;
+    return null;
+  };
+  const qLabel = (r) => (r === 'max' ? 'MAX' : r === '/2' ? '½' : r[0] === '-' ? `−${r.slice(1)}` : r);
+  function applyQuick(r, cur, bal) {
+    if (r === 'max') return bal;
+    if (r === '/2') return Math.floor(cur / 2);
+    if (r[0] === 'x') return cur * +r.slice(1);
+    if (r[0] === '+' || r[0] === '-') return Math.max(0, cur + Number(r));
+    return Number(r);
+  }
+  function editQuick(done) {
+    const cur = quickChips();
+    const s = sheet(`<p class="howto__sub">${t('qc.text')}</p>
+      <div class="qedit">${cur.map((r, i) => `<label><small>${i + 1}</small><input class="adm__in" data-qi="${i}" value="${esc(r)}" maxlength="8" autocomplete="off" /></label>`).join('')}</div>
+      <div class="qedit__ex">${['10', '100', '+25', '-5', 'x2', '1/2', 'max'].map((x) => `<button class="chip" data-ex="${x}">${esc(qLabel(qNorm(x)))}</button>`).join('')}</div>
+      <button class="btn btn--primary btn--lg btn--block" id="qSave">${t('qc.save')}</button>
+      <button class="btn btn--ghost btn--block" id="qReset">${t('qc.reset')}</button>`, { title: t('qc.title') });
+    let focus = s.el.querySelector('[data-qi="0"]');
+    s.el.querySelectorAll('[data-qi]').forEach((i) => i.addEventListener('focus', () => { focus = i; }));
+    s.el.querySelectorAll('[data-ex]').forEach((b) => b.addEventListener('click', () => { sound('tick'); focus.value = b.dataset.ex; const n = s.el.querySelector(`[data-qi="${+focus.dataset.qi + 1}"]`); if (n) { n.focus(); focus = n; } }));
+    s.el.querySelector('#qSave').addEventListener('click', () => {
+      const vals = [...s.el.querySelectorAll('[data-qi]')].map((i) => qNorm(i.value));
+      const bad = vals.findIndex((v) => !v);
+      if (bad >= 0) { haptic('warning'); return toast(t('qc.bad', { n: bad + 1 }), 'error'); }
+      try { localStorage.setItem('vp_chips', JSON.stringify(vals)); } catch (e) { /* ignore */ }
+      sound(); haptic('success'); s.close(); done();
+    });
+    s.el.querySelector('#qReset').addEventListener('click', () => { try { localStorage.removeItem('vp_chips'); } catch (e) { /* ignore */ } sound(); s.close(); done(); });
+  }
+
+  // ---------- история раундов и повтор ----------
+  const ago = (ms) => {
+    const s = Math.max(1, Math.round((Date.now() - ms) / 1000)), en = getLang() === 'en';
+    const v = s < 60 ? `${s} ${en ? 's' : 'с'}` : s < 3600 ? `${Math.round(s / 60)} ${en ? 'min' : 'мин'}` : s < 86400 ? `${Math.round(s / 3600)} ${en ? 'h' : 'ч'}` : `${Math.round(s / 86400)} ${en ? 'd' : 'дн'}`;
+    return t('ph.ago', { n: v });
+  };
+  async function openHistory(game) {
+    sound(); haptic();
+    const s = sheet('<div class="pp pp--load"><span class="pp__spin"></span></div>', { title: t('ph.title'), cls: 'sheet--hist' });
+    let list;
+    try { list = await api.pvpHistory(game); } catch (e) { s.close(); return errToast(e); }
+    const me = api.state.user.id;
+    s.set(list.length ? `<div class="hlist">${list.map((r, k) => {
+      const w = game === 'roulette' ? r.winner : null, my = r.my, won = my && my.payout > 0;
+      const gifts = r.players.flatMap((p) => p.gifts || []).slice(0, 3);
+      return `<button class="hrow ${won ? 'is-won' : my ? 'is-lost' : ''}" data-k="${k}">
+        ${game === 'roulette' ? avatarHtml(w || {}, 'hrow__ava').replace('data-uid', 'data-x') : `<span class="hrow__side hrow__side--${r.winner}">${r.winner === 'fire' ? icon.fire : icon.snow}</span>`}
+        <span class="hrow__main"><b>${game === 'roulette' ? esc(w ? (w.username ? '@' + w.username : w.name) : '—') : t('pvp.sideWon', { s: t(r.winner === 'fire' ? 'pvp.fire' : 'pvp.ice') })}</b>
+          <small>${t('ph.round', { n: r.id })} · ${ago(r.at)} · ${r.players.length} ${icon.people}</small></span>
+        ${gifts.length ? `<span class="hrow__gifts">${gifts.map((g) => giftImg(g)).join('')}</span>` : ''}
+        <span class="hrow__pot"><b>${star()}${fmt(r.pot)}</b><small>${(r.chance * 100).toFixed(r.chance < 0.1 ? 1 : 0)}%${won ? ` · <em class="is-won">+${fmt(my.payout)}</em>` : my ? ' · <em class="is-lost">' + t('ph.you') + '</em>' : ''}</small></span>
+      </button>`;
+    }).join('')}</div>` : emptyBox(t('ph.empty'), icon.clock));
+    s.el.querySelectorAll('[data-k]').forEach((b) => b.addEventListener('click', () => replay(game, list[+b.dataset.k], me)));
+  }
+  function replay(game, r, me) {
+    sound(); haptic();
+    const ps = r.players, pot = ps.reduce((a, p) => a + p.amount, 0) || 1;
+    const wid = game === 'roulette' ? r.winner?.id : null;
+    let segs = '', acc = 0;
+    ps.forEach((p, i) => { const len = (p.amount / pot) * C, gap = ps.length > 1 ? Math.min(2.4, len / 3) : 0;
+      segs += `<circle class="wheel__seg" data-i="${i}" cx="100" cy="100" r="${R}" stroke="${COLORS[i % COLORS.length]}" stroke-dasharray="${Math.max(0.5, len - gap)} ${C}" stroke-dashoffset="${-acc}"/>`; acc += len; });
+    const s = sheet(`
+      <div class="rp">
+        <div class="rp__head"><b>${t('ph.round', { n: r.id })}</b><small>${ago(r.at)} · ${t('pvp.pot')} ${star()}${fmt(r.pot)}${r.prize ? ` · ${t('ph.gifts', { n: r.prize })}` : ''}</small></div>
+        ${game === 'roulette' ? `
+        <div class="rp__wheel" id="rpW"><span class="wheel__bezel"></span>
+          <div class="wheel__rot" id="rpRot"><svg viewBox="0 0 200 200"><circle class="wheel__track" cx="100" cy="100" r="${R}"/><g transform="rotate(-90 100 100)">${segs}</g></svg></div>
+          <span class="wheel__ptr"><svg viewBox="0 0 30 38"><path d="M15 37L3.5 13A12.4 12.4 0 1 1 26.5 13Z" fill="#ffc94a" stroke="#7a3d00"/><circle cx="15" cy="12" r="5" fill="#ff3d7f" stroke="#fff" stroke-width="1.6"/></svg></span>
+          <div class="rp__center" id="rpC"><small>${t('pvp.pot')}</small><b>${star()}${fmt(r.pot)}</b></div>
+        </div>` : `
+        <div class="rp__tug"><div class="tug__bar"><i class="tug__fire" style="width:${(ps.filter((p) => p.side === 'fire').reduce((a, p) => a + p.amount, 0) / pot) * 100}%"></i><span class="tug__mark" id="rpMark" style="left:0%"></span></div></div>`}
+        <button class="btn btn--glass btn--block" id="rpAgain">${icon.play}${t('ph.again')}</button>
+        <div class="pp__h"><h3>${t('ph.players')} <small>${ps.length}</small></h3></div>
+        <div class="plist">${ps.map((p, i) => {
+          const win = game === 'roulette' ? p.id === wid : p.side === r.winner;
+          return `<div class="prow ${p.id === me ? 'is-me' : ''} ${win ? 'is-win' : 'is-lose'}" data-row="${i}">
+            ${game === 'roulette' ? `<i class="prow__dot" style="background:${COLORS[i % COLORS.length]}"></i>` : sideIco(p.side)}
+            ${avatarHtml(p, 'prow__ava')}<span class="prow__nick">${uname(p)}</span>
+            ${(p.gifts || []).length ? `<span class="prow__gifts">${p.gifts.slice(0, 3).map((g) => giftImg(g)).join('')}</span>` : ''}
+            ${win && p.payout ? `<span class="prow__win">+${fmt(p.payout)}</span>` : `<span class="prow__pct">${pct(p.chance)}</span>`}
+            <span class="prow__v">${star()}${fmt(p.amount)}</span></div>`; }).join('')}</div>
+        <button class="copyrow" id="rpSeed"><small>seed · roll ${Number(r.roll).toFixed(6)}</small><span>${esc(r.seed)}</span>${icon.copy}</button>
+      </div>`, { title: t('ph.replay'), cls: 'sheet--hist' });
+    const play = () => {
+      sound('open'); s.el.querySelectorAll('.prow').forEach((x) => x.classList.add('is-wait'));
+      const done = () => { s.el.querySelectorAll('.prow').forEach((x) => x.classList.remove('is-wait')); s.el.querySelector('#rpW')?.classList.add('is-done'); };
+      if (game === 'roulette') {
+        const rot = s.el.querySelector('#rpRot'); s.el.querySelector('#rpW').classList.remove('is-done');
+        rot.style.transition = 'none'; rot.style.transform = 'rotate(0deg)'; void rot.offsetWidth;
+        rot.style.transition = 'transform 4.6s cubic-bezier(.12,.75,.1,1)'; rot.style.transform = `rotate(${360 * 6 - r.roll * 360}deg)`;
+        let n = 0; const tk = setInterval(() => { if (++n > 22) return clearInterval(tk); sound('tick'); }, 180);
+        setTimeout(() => { done(); const w = ps.findIndex((p) => p.id === wid); s.el.querySelectorAll('.wheel__seg').forEach((x) => x.classList.toggle('is-on', +x.dataset.i === w));
+          s.el.querySelector('#rpC').innerHTML = w >= 0 ? `${avatarHtml(ps[w], 'rp__ava').replace('data-uid', 'data-x')}<b class="is-gold">+${fmt(ps[w].payout)}</b>` : ''; sound('win'); haptic('success'); }, 4700);
+      } else {
+        const m = s.el.querySelector('#rpMark');
+        m.animate([{ left: '0%' }, { left: '100%' }, { left: '8%' }, { left: '92%' }, { left: `${r.roll * 100}%` }], { duration: 3800, easing: 'cubic-bezier(.3,.05,.2,1)', fill: 'forwards' });
+        setTimeout(() => { done(); sound('win'); }, 3900);
+      }
+    };
+    s.el.querySelector('#rpAgain').addEventListener('click', play);
+    s.el.querySelector('#rpSeed').addEventListener('click', () => copyText(r.seed));
+    setTimeout(play, 350);
+  }
+
   const betPanel = () => `
     <section class="panel" id="betPanel">
       <label class="amount">
@@ -1464,7 +1577,7 @@ const pvp = (() => {
         <span class="amount__in">${star()}<input id="pIn" inputmode="numeric" placeholder="0" value="${S.amount || ''}" autocomplete="off" /></span>
         <span class="amount__usd" id="pMy"></span>
       </label>
-      <div class="chips chips--4"><button class="chip" data-d="-10">−10</button><button class="chip" data-d="50">+50</button><button class="chip" data-d="x2">x2</button><button class="chip" data-d="max">MAX</button></div>
+      <div class="qchips" id="qChips">${quickChips().map((r) => `<button class="chip" data-q="${esc(r)}">${esc(qLabel(r))}</button>`).join('')}<button class="chip chip--edit" id="qEdit" aria-label="edit">${icon.pen}</button></div>
       <button class="btn btn--xl btn--block btn--primary" id="pGo"></button>
       ${S.tab === 'roulette' ? `<button class="btn btn--gift btn--block" id="pGift">${icon.gift}${t('nft.bet')}</button>` : ''}
       <button class="btn btn--ghost btn--block" id="pCancel" hidden>${t('pvp.cancel')}</button>
@@ -1536,7 +1649,8 @@ const pvp = (() => {
     const showMs = () => Math.max(3800, Math.min(7000, ((st.result.nextAt - st.result.at) || 9000) * 0.56));
 
     root.innerHTML = `
-      <div class="page-title"><h1>${t('pvp.title')}</h1><p>${t('pvp.sub')}</p></div>
+      <div class="page-title page-title--row"><div><h1>${t('pvp.title')}</h1><p>${t('pvp.sub')}</p></div>
+        <button class="histbtn" id="pvpHist">${icon.clock}<span>${t('ph.btn')}</span></button></div>
       <div class="seg seg--2 seg--pvp" id="pvpTabs">
         <button data-tab="roulette">${icon.trophy}${t('pvp.roulette')}</button>
         <button data-tab="fireice">${icon.fire}${t('pvp.fireice')}</button>
@@ -1552,12 +1666,12 @@ const pvp = (() => {
       $r('#pvpBody').innerHTML = BODY[S.tab]();
       const inp = $r('#pIn'); fitAmount(inp);
       inp.addEventListener('input', () => { S.amount = Math.max(0, parseInt(inp.value.replace(/\D/g, ''), 10) || 0); inp.value = S.amount || ''; drawBet(); });
-      root.querySelectorAll('#betPanel [data-d]').forEach((b) => b.addEventListener('click', () => {
+      root.querySelectorAll('#betPanel [data-q]').forEach((b) => b.addEventListener('click', () => {
         sound('tick'); haptic('select');
-        const d = b.dataset.d, bal = Math.floor(api.state.balance.stars);
-        S.amount = d === 'max' ? bal : d === 'x2' ? S.amount * 2 : Math.max(0, S.amount + +d);
+        S.amount = applyQuick(b.dataset.q, S.amount, Math.floor(api.state.balance.stars));
         inp.value = S.amount || ''; fitAmount(inp); drawBet();
       }));
+      $r('#qEdit').addEventListener('click', () => { sound(); editQuick(() => mount()); });
       $r('#pGo').addEventListener('click', bet);
       $r('#pCancel').addEventListener('click', cancel);
       $r('#pGift')?.addEventListener('click', betGift);
@@ -1599,6 +1713,7 @@ const pvp = (() => {
       const side = st.my?.side || S.side;
       if (S.tab === 'fireice' && !side) { haptic('warning'); return toast(t('pvp.pickSide'), 'error'); }
       if (!S.amount) { $r('#pIn').focus(); return toast(t('toast.pickStake'), 'error'); }
+      if (S.amount < (st.minBet || 1)) { haptic('warning'); return toast(t('pvp.minBet', { n: st.minBet }), 'error'); }
       if (S.amount > api.state.balance.stars) { sound('lose'); openPay('dep'); return toast(t('toast.noStars'), 'error'); }
       busy = true; drawBet(); sound(); haptic('medium');
       try { const r = await api.pvpBet(S.tab, S.amount, side); balanceChanged(); busy = false; apply(r); }
@@ -1906,6 +2021,7 @@ const pvp = (() => {
       if (!document.hidden) { try { apply(await api.pvpState(S.tab)); } catch (e) { /* сеть моргнула */ } }
       if (alive) pollT = setTimeout(poll, 1000);
     };
+    $r('#pvpHist').addEventListener('click', () => openHistory(S.tab));
     root.querySelectorAll('#pvpTabs [data-tab]').forEach((b) => b.addEventListener('click', () => {
       if (S.tab === b.dataset.tab) return;
       sound('tick'); haptic('select'); S.tab = b.dataset.tab; mount(); clearTimeout(pollT); poll();
